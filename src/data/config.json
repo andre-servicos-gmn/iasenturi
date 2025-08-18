@@ -1,0 +1,220 @@
+{
+  "dominios": [
+    {
+      "dominio": "Domínio 1 - Demandas Psicológicas",
+      "classificacao": "critico",
+      "acoes": [
+        "Workshop de gestão de tempo e priorização",
+        "Implementar pausas cognitivas programadas",
+        "Sessão de coaching com liderança sobre distribuição de tarefas"
+      ]
+    },
+    {
+      "dominio": "Domínio 1 - Demandas Psicológicas",
+      "classificacao": "atencao",
+      "acoes": [
+        "Treinamento em técnicas de organização pessoal",
+        "Implementar sistema de micro-pausas",
+        "Gamificação com desafios de produtividade"
+      ]
+    },
+    {
+      "dominio": "Domínio 1 - Demandas Psicológicas",
+      "classificacao": "favoravel",
+      "acoes": [
+        "Reconhecer boas práticas da equipe",
+        "Compartilhar experiências positivas",
+        "Manter monitoramento preventivo"
+      ]
+    },
+    {
+      "dominio": "Domínio 2 - Demandas Físicas",
+      "classificacao": "critico",
+      "acoes": [
+        "Avaliação ergonômica completa",
+        "Implementar ginástica laboral",
+        "Revisão de postos de trabalho"
+      ]
+    },
+    {
+      "dominio": "Domínio 2 - Demandas Físicas",
+      "classificacao": "atencao",
+      "acoes": [
+        "Treinamento em ergonomia básica",
+        "Exercícios de alongamento programados",
+        "Ajustes pontuais nos postos"
+      ]
+    },
+    {
+      "dominio": "Domínio 2 - Demandas Físicas",
+      "classificacao": "favoravel",
+      "acoes": [
+        "Manter programa de ginástica laboral",
+        "Reconhecer boas práticas ergonômicas",
+        "Monitoramento contínuo"
+      ]
+    },
+    {
+      "dominio": "Domínio 3 - Influência e Possibilidades de Desenvolvimento",
+      "classificacao": "critico",
+      "acoes": [
+        "Programa de empowerment e autonomia",
+        "Workshop de tomada de decisão",
+        "Mentoria individual e em grupo"
+      ]
+    },
+    {
+      "dominio": "Domínio 3 - Influência e Possibilidades de Desenvolvimento",
+      "classificacao": "atencao",
+      "acoes": [
+        "Treinamento em liderança participativa",
+        "Sistema de feedback 360°",
+        "Programa de desenvolvimento de carreira"
+      ]
+    },
+    {
+      "dominio": "Domínio 3 - Influência e Possibilidades de Desenvolvimento",
+      "classificacao": "favoravel",
+      "acoes": [
+        "Reconhecer lideranças exemplares",
+        "Compartilhar casos de sucesso",
+        "Manter cultura de desenvolvimento"
+      ]
+    },
+    {
+      "dominio": "Domínio 4 - Suporte Social e Liderança",
+      "classificacao": "critico",
+      "acoes": [
+        "Programa de desenvolvimento de liderança",
+        "Workshop de comunicação efetiva",
+        "Sessões de team building intensivas"
+      ]
+    },
+    {
+      "dominio": "Domínio 4 - Suporte Social e Liderança",
+      "classificacao": "atencao",
+      "acoes": [
+        "Treinamento em feedback construtivo",
+        "Programa de mentoria entre pares",
+        "Atividades de integração de equipe"
+      ]
+    },
+    {
+      "dominio": "Domínio 4 - Suporte Social e Liderança",
+      "classificacao": "favoravel",
+      "acoes": [
+        "Reconhecer líderes exemplares",
+        "Compartilhar práticas de sucesso",
+        "Manter cultura de apoio mútuo"
+      ]
+    },
+    {
+      "dominio": "Domínio 5 - Clima de Trabalho",
+      "classificacao": "critico",
+      "acoes": [
+        "Programa de clima organizacional",
+        "Workshop de resolução de conflitos",
+        "Sessões de mediação e diálogo"
+      ]
+    },
+    {
+      "dominio": "Domínio 5 - Clima de Trabalho",
+      "classificacao": "atencao",
+      "acoes": [
+        "Treinamento em comunicação não-violenta",
+        "Programa de feedback estruturado",
+        "Atividades de integração"
+      ]
+    },
+    {
+      "dominio": "Domínio 5 - Clima de Trabalho",
+      "classificacao": "favoravel",
+      "acoes": [
+        "Reconhecer ambientes positivos",
+        "Compartilhar práticas de sucesso",
+        "Manter cultura de respeito"
+      ]
+    },
+    {
+      "dominio": "Domínio 6 - Insegurança no Trabalho",
+      "classificacao": "critico",
+      "acoes": [
+        "Programa de transparência organizacional",
+        "Workshop de gestão de mudanças",
+        "Sessões de planejamento de carreira"
+      ]
+    },
+    {
+      "dominio": "Domínio 6 - Insegurança no Trabalho",
+      "classificacao": "atencao",
+      "acoes": [
+        "Comunicação clara sobre mudanças",
+        "Programa de desenvolvimento de competências",
+        "Mentoria para adaptação"
+      ]
+    },
+    {
+      "dominio": "Domínio 6 - Insegurança no Trabalho",
+      "classificacao": "favoravel",
+      "acoes": [
+        "Reconhecer estabilidade organizacional",
+        "Compartilhar planos de crescimento",
+        "Manter comunicação transparente"
+      ]
+    },
+    {
+      "dominio": "Domínio 7 - Esforço e Recompensa",
+      "classificacao": "critico",
+      "acoes": [
+        "Revisão de política de remuneração",
+        "Programa de reconhecimento",
+        "Workshop de equilíbrio vida-trabalho"
+      ]
+    },
+    {
+      "dominio": "Domínio 7 - Esforço e Recompensa",
+      "classificacao": "atencao",
+      "acoes": [
+        "Sistema de reconhecimento pontual",
+        "Programa de benefícios flexíveis",
+        "Treinamento em gestão de tempo"
+      ]
+    },
+    {
+      "dominio": "Domínio 7 - Esforço e Recompensa",
+      "classificacao": "favoravel",
+      "acoes": [
+        "Reconhecer políticas justas",
+        "Compartilhar casos de sucesso",
+        "Manter sistema de recompensas"
+      ]
+    },
+    {
+      "dominio": "Domínio 8 - Saúde Emocional",
+      "classificacao": "critico",
+      "acoes": [
+        "Workshop de regulação emocional",
+        "Sessão com liderança sobre pressão",
+        "Programa de mindfulness e meditação"
+      ]
+    },
+    {
+      "dominio": "Domínio 8 - Saúde Emocional",
+      "classificacao": "atencao",
+      "acoes": [
+        "Pausas cognitivas programadas",
+        "Gamificação com microdesafios",
+        "Treinamento em resiliência"
+      ]
+    },
+    {
+      "dominio": "Domínio 8 - Saúde Emocional",
+      "classificacao": "favoravel",
+      "acoes": [
+        "Reforçar boas práticas",
+        "Reconhecer equipes equilibradas",
+        "Manter programa de bem-estar"
+      ]
+    }
+  ]
+} 

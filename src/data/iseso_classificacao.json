@@ -1,0 +1,142 @@
+{
+  "faixas": [
+    {
+      "min": 0,
+      "max": 39,
+      "icone": "🔴",
+      "cor": "#FF0000",
+      "nome": "Ação imediata obrigatória",
+      "descricao_resumida": "Alto risco psicossocial com impacto em saúde, absenteísmo e performance.",
+      "descricao_expandida": "Alto risco psicossocial e impacto visível em saúde, absenteísmo, clima e performance. Não conformidade iminente com NR-1 e ISO 45003.",
+      "acoes_simples": [
+        "Ajustar pausas",
+        "Comunicação imediata com a equipe",
+        "Orientação pontual para líderes"
+      ],
+      "acoes_intermediarias": [
+        "Entrevistas qualitativas",
+        "Revisão de jornadas",
+        "Workshops emergenciais (stress, burnout, regulação emocional)"
+      ],
+      "acoes_complexas": [
+        "Reorganização estrutural",
+        "Revisão de processos críticos",
+        "Inclusão de medidas corretivas no PCMSO e PGR como prioridade nível 1"
+      ],
+      "pcmso_pgr": {
+        "integracao": "Registro como risco grave no PCMSO e prioridade 1 no PGR",
+        "prioridade": 1,
+        "frequencia_reavaliacao": "Mensal"
+      }
+    },
+    {
+      "min": 40,
+      "max": 54,
+      "icone": "🟠",
+      "cor": "#FFA500",
+      "nome": "Prevenção urgente",
+      "descricao_resumida": "Risco significativo com sinais iniciais de queda de engajamento e saúde.",
+      "descricao_expandida": "Risco significativo, sinais iniciais de queda de engajamento e saúde, potencial escalada.",
+      "acoes_simples": [
+        "Flexibilizar pausas",
+        "Campanha de saúde mental",
+        "DDS sobre gestão do stress"
+      ],
+      "acoes_intermediarias": [
+        "Oficinas de comunicação assertiva e prevenção de conflitos",
+        "Canal de apoio psicológico"
+      ],
+      "acoes_complexas": [
+        "Ajuste de metas e cargas de trabalho",
+        "Mentoring para líderes vulneráveis"
+      ],
+      "pcmso_pgr": {
+        "integracao": "Prioridade nível 2 no PGR; inclusão preventiva no PCMSO",
+        "prioridade": 2,
+        "frequencia_reavaliacao": "Trimestral"
+      }
+    },
+    {
+      "min": 55,
+      "max": 69,
+      "icone": "🟡",
+      "cor": "#FFD700",
+      "nome": "Manter atenção",
+      "descricao_resumida": "Nível aceitável com fatores pontuais de risco.",
+      "descricao_expandida": "Nível aceitável, mas com fatores pontuais de risco.",
+      "acoes_simples": [
+        "Reforço de pausas estratégicas",
+        "Reconhecimento simples",
+        "DDS sobre autocuidado"
+      ],
+      "acoes_intermediarias": [
+        "Workshops contínuos (saúde mental, liderança, cultura preventiva)",
+        "Integração com CIPA"
+      ],
+      "acoes_complexas": [
+        "Revisão de processos críticos isolados",
+        "Plano de melhoria focado"
+      ],
+      "pcmso_pgr": {
+        "integracao": "Monitoramento semestral no PGR; registro no PCMSO",
+        "prioridade": 3,
+        "frequencia_reavaliacao": "Semestral"
+      }
+    },
+    {
+      "min": 70,
+      "max": 84,
+      "icone": "🟢",
+      "cor": "#00FF00",
+      "nome": "Manter boas práticas",
+      "descricao_resumida": "Boa saúde emocional e clima positivo; riscos controlados.",
+      "descricao_expandida": "Boa saúde emocional e clima positivo, riscos controlados e equipe engajada.",
+      "acoes_simples": [
+        "Comunicação de reconhecimento",
+        "Campanhas de bem-estar",
+        "Práticas saudáveis no dia a dia"
+      ],
+      "acoes_intermediarias": [
+        "Trilha de liderança e performance sustentável",
+        "Cases internos de boas práticas"
+      ],
+      "acoes_complexas": [
+        "Expansão de iniciativas para outras áreas/unidades",
+        "Integração com indicadores estratégicos"
+      ],
+      "pcmso_pgr": {
+        "integracao": "Avaliação anual; manutenção no PCMSO/PGR como boas práticas",
+        "prioridade": 4,
+        "frequencia_reavaliacao": "Anual"
+      }
+    },
+    {
+      "min": 85,
+      "max": 100,
+      "icone": "🔵",
+      "cor": "#0000FF",
+      "nome": "Excelência consolidada",
+      "descricao_resumida": "Alto nível de saúde emocional e organizacional; práticas robustas.",
+      "descricao_expandida": "Alto nível de saúde emocional e organizacional, práticas preventivas robustas.",
+      "acoes_simples": [
+        "Divulgação de práticas existentes",
+        "Eventos de celebração"
+      ],
+      "acoes_intermediarias": [
+        "Benchmark interno e externo",
+        "Inovação em bem-estar e engajamento"
+      ],
+      "acoes_complexas": [
+        "Projetos-piloto de novas tecnologias e gamificação",
+        "Integração total ao ESG"
+      ],
+      "pcmso_pgr": {
+        "integracao": "Revisão anual no PCMSO/PGR para manutenção de excelência",
+        "prioridade": 5,
+        "frequencia_reavaliacao": "Anual"
+      }
+    }
+  ]
+}
+
+
