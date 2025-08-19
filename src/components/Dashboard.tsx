@@ -1,6 +1,8 @@
 import {
   Box, VStack, HStack, Text, useColorModeValue, Card, CardBody,
-  Badge, Button, Grid, Avatar, Tooltip, Divider, List, ListItem
+  Badge, Button, Grid, Avatar, Tooltip, Divider, List, ListItem,
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
+  useDisclosure
 } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { 
@@ -36,6 +38,8 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(5)
   const [allColaboradores, setAllColaboradores] = useState<any[]>([])
+  const [criticalColaboradores, setCriticalColaboradores] = useState<any[]>([])
+  const criticalModal = useDisclosure()
 
   useEffect(() => {
     const processData = () => {
@@ -59,7 +63,7 @@ const Dashboard = () => {
 
           // Setores críticos (exemplo: setores com ISESO > 60)
           const setores = [...new Set(filteredData.map(item => item.area_setor).filter(Boolean))]
-              const criticos = setores.filter(setor => {
+          const setoresCrit = setores.filter(setor => {
             const dadosSetor = filteredData.filter(item => item.area_setor === setor)
             const mediaSetor = dadosSetor.reduce((sum, item) => {
               // Usar ISESO se disponível, senão calcular a partir das médias
@@ -82,8 +86,8 @@ const Dashboard = () => {
             }, 0) / dadosSetor.length
             return mediaSetor > 60
           }).length
-          setSetoresCriticos(criticos)
-          console.log('⚠️ Setores críticos:', criticos)
+          setSetoresCriticos(setoresCrit)
+          console.log('⚠️ Setores críticos:', setoresCrit)
 
           // Última atualização
           const ultimaData = new Date(Math.max(...filteredData.map(item => new Date(item.created_at || Date.now()).getTime())))
@@ -103,6 +107,36 @@ const Dashboard = () => {
             }))
           setAllColaboradores(todosColaboradores)
           console.log('👥 Colaboradores processados:', todosColaboradores.length)
+
+          // Colaboradores críticos por ISESO (≤ 39)
+          const computeISESO = (item: any): number | null => {
+            const isesoRaw = (item as any).iseso
+            const isesoNum = isesoRaw ? parseFloat(isesoRaw) : NaN
+            if (!isNaN(isesoNum) && isesoNum > 0) return Math.round(isesoNum)
+            const medias = [
+              parseFloat((item as any).media_exigencias || '0'),
+              parseFloat((item as any).media_organizacao || '0'),
+              parseFloat((item as any).media_relacoes || '0'),
+              parseFloat((item as any).media_interface || '0'),
+              parseFloat((item as any).media_significado || '0'),
+              parseFloat((item as any).media_inseguranca || '0'),
+              parseFloat((item as any).media_bem_estar || '0')
+            ].filter(v => !isNaN(v) && v > 0)
+            if (medias.length === 0) return null
+            return Math.round(medias.reduce((a, b) => a + b, 0) / medias.length)
+          }
+
+          const criticosList = filteredData
+            .map(item => ({ item, iseso: computeISESO(item) }))
+            .filter(x => x.iseso !== null && (x.iseso as number) <= 39)
+            .map(x => ({
+              id: (x.item as any).id,
+              nome: (x.item as any).nome_completo || `Colaborador ${(x.item as any).id}`,
+              setor: (x.item as any).area_setor || 'N/A',
+              iseso: x.iseso as number,
+              data: new Date((x.item as any).created_at || Date.now()).toLocaleDateString('pt-BR')
+            }))
+          setCriticalColaboradores(criticosList)
 
           // Top 3 riscos
           const riscos = averages
@@ -221,6 +255,7 @@ const Dashboard = () => {
   const currentClass = classificarISESOCompleto(isesoGeral)
 
   return (
+    <>
     <MotionBox
       id="relatorio-senturi"
       initial={{ opacity: 0, y: 20 }}
@@ -322,8 +357,7 @@ const Dashboard = () => {
                   </CardBody>
                 </MotionCard>
 
-                {/* PSQI - Qualidade do Sono */}
-                <PSQICard />
+                {/* (removido) PSQI será exibido abaixo ao lado do EPS */}
 
                 {/* Estatísticas */}
                 <HStack spacing={4} flex={1}>
@@ -383,6 +417,8 @@ const Dashboard = () => {
                     boxShadow="0 2px 4px rgba(0, 0, 0, 0.05)"
                     position="relative"
                     overflow="hidden"
+                    cursor="pointer"
+                    onClick={criticalModal.onOpen}
                   >
                     <CardBody p={4}>
                       <VStack spacing={3} align="center">
@@ -452,8 +488,11 @@ const Dashboard = () => {
           </CardBody>
         </MotionCard>
 
-        {/* EPS-10 – Estresse Percebido (seção independente abaixo das Estatísticas Rápidas) */}
-        <EPS10Card />
+        {/* EPS-10 e PSQI (seção abaixo das Estatísticas Rápidas) */}
+        <Grid templateColumns="repeat(auto-fit, minmax(320px, 1fr))" gap={6}>
+          <EPS10Card />
+          <PSQICard />
+        </Grid>
 
         {/* Ações Recomendadas (premium) */}
         <Box w="100%" alignSelf="stretch">
@@ -893,6 +932,36 @@ const Dashboard = () => {
         </MotionCard>
       </VStack>
     </MotionBox>
+
+    {/* Modal de Colaboradores Críticos */}
+    <Modal isOpen={criticalModal.isOpen} onClose={criticalModal.onClose} size="xl">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Colaboradores com ISESO Crítico</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          {criticalColaboradores.length === 0 ? (
+            <Text color="gray.500">Nenhum colaborador crítico encontrado.</Text>
+          ) : (
+            <VStack align="stretch" spacing={3}>
+              {criticalColaboradores.map((c) => (
+                <HStack key={c.id} justify="space-between" border="1px solid" borderColor={borderColor} borderRadius="md" p={3}>
+                  <VStack align="start" spacing={0}>
+                    <Text fontWeight="bold">{c.nome}</Text>
+                    <Text fontSize="sm" color="gray.500">Setor: {c.setor}</Text>
+                  </VStack>
+                  <VStack align="end" spacing={0}>
+                    <Text fontWeight="bold" color="red.600">ISESO: {c.iseso}</Text>
+                    <Text fontSize="xs" color="gray.500">{c.data}</Text>
+                  </VStack>
+                </HStack>
+              ))}
+            </VStack>
+          )}
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+    </>
   )
 }
 
