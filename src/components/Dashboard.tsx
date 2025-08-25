@@ -2,7 +2,7 @@ import {
   Box, VStack, HStack, Text, useColorModeValue, Card, CardBody,
   Badge, Button, Grid, Avatar, Tooltip, Divider, List, ListItem,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
-  useDisclosure
+  useDisclosure, Table, Thead, Tbody, Tr, Th, Td, ModalFooter, Tag
 } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { 
@@ -29,7 +29,6 @@ const Dashboard = () => {
   
   const [isesoGeral, setIsesoGeral] = useState(0)
   const [totalColaboradores, setTotalColaboradores] = useState(0)
-  const [setoresCriticos, setSetoresCriticos] = useState(0)
   const [ultimaAtualizacao, setUltimaAtualizacao] = useState('')
   const [topRiscos, setTopRiscos] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -61,54 +60,14 @@ const Dashboard = () => {
           setTotalColaboradores(filteredData.length)
           console.log('👥 Total de colaboradores:', filteredData.length)
 
-          // Setores críticos (exemplo: setores com ISESO > 60)
-          const setores = [...new Set(filteredData.map(item => item.area_setor).filter(Boolean))]
-          const setoresCrit = setores.filter(setor => {
-            const dadosSetor = filteredData.filter(item => item.area_setor === setor)
-            const mediaSetor = dadosSetor.reduce((sum, item) => {
-              // Usar ISESO se disponível, senão calcular a partir das médias
-                  if ((item as any).iseso) {
-                    return sum + parseFloat((item as any).iseso)
-              }
-              
-              // Calcular a partir das médias dos domínios
-              const dominios = [
-                    parseFloat((item as any).media_exigencias || '0'),
-                    parseFloat((item as any).media_organizacao || '0'),
-                    parseFloat((item as any).media_relacoes || '0'),
-                    parseFloat((item as any).media_interface || '0'),
-                    parseFloat((item as any).media_significado || '0'),
-                    parseFloat((item as any).media_inseguranca || '0'),
-                    parseFloat((item as any).media_bem_estar || '0')
-              ].filter(val => !isNaN(val) && val > 0)
-              
-              return sum + (dominios.length > 0 ? dominios.reduce((a, b) => a + b, 0) / dominios.length : 0)
-            }, 0) / dadosSetor.length
-            return mediaSetor > 60
-          }).length
-          setSetoresCriticos(setoresCrit)
-          console.log('⚠️ Setores críticos:', setoresCrit)
+          // (removido) cálculo de setores críticos
 
           // Última atualização
           const ultimaData = new Date(Math.max(...filteredData.map(item => new Date(item.created_at || Date.now()).getTime())))
           setUltimaAtualizacao(ultimaData.toLocaleDateString('pt-BR'))
           console.log('📅 Última atualização:', ultimaData.toLocaleDateString('pt-BR'))
 
-          // Todos os colaboradores para paginação
-          const todosColaboradores = filteredData
-            .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
-            .map(item => ({
-              id: item.id,
-              nome: item.nome_completo || `Colaborador ${item.id}`,
-              dominioCritico: getDominioCritico(item),
-              dataAvaliacao: new Date(item.created_at || Date.now()).toLocaleDateString('pt-BR'),
-              setor: item.area_setor || 'N/A',
-              empresa: item.empresa_id || 'N/A'
-            }))
-          setAllColaboradores(todosColaboradores)
-          console.log('👥 Colaboradores processados:', todosColaboradores.length)
-
-          // Colaboradores críticos por ISESO (≤ 39)
+          // Utilitário: calcular ISESO de um item
           const computeISESO = (item: any): number | null => {
             const isesoRaw = (item as any).iseso
             const isesoNum = isesoRaw ? parseFloat(isesoRaw) : NaN
@@ -125,6 +84,23 @@ const Dashboard = () => {
             if (medias.length === 0) return null
             return Math.round(medias.reduce((a, b) => a + b, 0) / medias.length)
           }
+
+          // Todos os colaboradores para paginação
+          const todosColaboradores = filteredData
+            .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
+            .map(item => ({
+              id: item.id,
+              nome: item.nome_completo || `Colaborador ${item.id}`,
+              dominioCritico: getDominioCritico(item),
+              dataAvaliacao: new Date(item.created_at || Date.now()).toLocaleDateString('pt-BR'),
+              setor: item.area_setor || 'N/A',
+              empresa: item.empresa_id || 'N/A',
+              iseso: computeISESO(item)
+            }))
+          setAllColaboradores(todosColaboradores)
+          console.log('👥 Colaboradores processados:', todosColaboradores.length)
+
+          // Colaboradores críticos por ISESO (≤ 39)
 
           const criticosList = filteredData
             .map(item => ({ item, iseso: computeISESO(item) }))
@@ -155,7 +131,6 @@ const Dashboard = () => {
           // Resetar valores quando não há dados
           setIsesoGeral(0)
           setTotalColaboradores(0)
-          setSetoresCriticos(0)
           setUltimaAtualizacao('')
           setTopRiscos([])
           setAllColaboradores([])
@@ -431,13 +406,24 @@ const Dashboard = () => {
                           <FiAlertTriangle size={20} />
                         </Box>
                         <VStack spacing={1} align="center">
-                          <Text fontSize="2xl" fontWeight="black" color="red.700">
-                            {setoresCriticos}
-                          </Text>
+                          <Text fontSize="2xl" fontWeight="black" color="red.700">{criticalColaboradores.length}</Text>
                           <Text fontSize="sm" fontWeight="medium" color="red.600">
                             Críticos
                           </Text>
                         </VStack>
+                        <Button 
+                          size="xs"
+                          rounded="full"
+                          px={3}
+                          py={1}
+                          color="white"
+                          bg="red.600"
+                          _hover={{ bg: 'red.700' }}
+                          leftIcon={<FiAlertTriangle size={14} />}
+                          onClick={(e) => { e.stopPropagation(); criticalModal.onOpen(); }}
+                        >
+                          Ver críticos
+                        </Button>
 
                       </VStack>
                     </CardBody>
@@ -858,6 +844,25 @@ const Dashboard = () => {
                                 </HStack>
                               )}
                             </HStack>
+                            {colaborador.iseso !== null && (
+                              <HStack spacing={2}>
+                                <Text 
+                                  fontWeight="medium" 
+                                  color={`${getStatusColor(colaborador.iseso)}.600`}
+                                >
+                                  ISESO: {colaborador.iseso}
+                                </Text>
+                                <Badge
+                                  colorScheme={getStatusColor(colaborador.iseso)}
+                                  variant="subtle"
+                                  px={2}
+                                  py={1}
+                                  borderRadius="full"
+                                >
+                                  {getStatusText(colaborador.iseso).toUpperCase()}
+                                </Badge>
+                              </HStack>
+                            )}
                           </VStack>
                           
                           <VStack align="end" spacing={2}>
@@ -934,31 +939,76 @@ const Dashboard = () => {
     </MotionBox>
 
     {/* Modal de Colaboradores Críticos */}
-    <Modal isOpen={criticalModal.isOpen} onClose={criticalModal.onClose} size="xl">
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Colaboradores com ISESO Crítico</ModalHeader>
+    <Modal isOpen={criticalModal.isOpen} onClose={criticalModal.onClose} size="2xl" isCentered>
+      <ModalOverlay backdropFilter="blur(6px)" bg="blackAlpha.400" />
+      <ModalContent borderRadius="2xl" overflow="hidden" border="1px solid" borderColor={borderColor}>
+        <ModalHeader p={4} bg={useColorModeValue('red.50', 'red.900')} borderBottom="1px solid" borderColor={useColorModeValue('red.100', 'red.800')}>
+          <HStack justify="space-between">
+            <HStack spacing={3}>
+              <Box p={2} bg={useColorModeValue('red.100', 'red.800')} borderRadius="lg" color={useColorModeValue('red.700', 'red.200')}>
+                <FiAlertTriangle size={18} />
+              </Box>
+              <VStack align="start" spacing={0}>
+                <Text fontWeight="bold">Colaboradores com ISESO Crítico</Text>
+                <Text fontSize="xs" color={useColorModeValue('red.700', 'red.200')}>{criticalColaboradores.length} encontrados</Text>
+              </VStack>
+            </HStack>
+          </HStack>
+        </ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
+        <ModalBody p={0}>
           {criticalColaboradores.length === 0 ? (
-            <Text color="gray.500">Nenhum colaborador crítico encontrado.</Text>
+            <Box textAlign="center" py={10}>
+              <Text color="gray.500">Nenhum colaborador crítico encontrado.</Text>
+            </Box>
           ) : (
-            <VStack align="stretch" spacing={3}>
-              {criticalColaboradores.map((c) => (
-                <HStack key={c.id} justify="space-between" border="1px solid" borderColor={borderColor} borderRadius="md" p={3}>
-                  <VStack align="start" spacing={0}>
-                    <Text fontWeight="bold">{c.nome}</Text>
-                    <Text fontSize="sm" color="gray.500">Setor: {c.setor}</Text>
-                  </VStack>
-                  <VStack align="end" spacing={0}>
-                    <Text fontWeight="bold" color="red.600">ISESO: {c.iseso}</Text>
-                    <Text fontSize="xs" color="gray.500">{c.data}</Text>
-                  </VStack>
-                </HStack>
-              ))}
-            </VStack>
+            <Box overflowX="auto">
+              <Table size="sm" variant="simple">
+                <Thead bg={useColorModeValue('gray.50', 'gray.700')}>
+                  <Tr>
+                    <Th>Nome</Th>
+                    <Th>Setor</Th>
+                    <Th isNumeric>ISESO</Th>
+                    <Th>Data</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {criticalColaboradores.map((c) => (
+                    <Tr key={c.id} _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}>
+                      <Td>
+                        <HStack spacing={3}>
+                          <Avatar size="sm" name={c.nome} bg="red.100" color="red.700" />
+                          <VStack align="start" spacing={0}>
+                            <Text fontWeight="medium">{c.nome}</Text>
+                            <Text fontSize="xs" color="gray.500">ID: {c.id}</Text>
+                          </VStack>
+                        </HStack>
+                      </Td>
+                      <Td>
+                        <Tag colorScheme="red" variant="subtle">{c.setor}</Tag>
+                      </Td>
+                      <Td isNumeric>
+                        <Text fontWeight="bold" color="red.600">{c.iseso}</Text>
+                      </Td>
+                      <Td>
+                        <Text fontSize="sm" color="gray.600">{c.data}</Text>
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </Box>
           )}
         </ModalBody>
+        <ModalFooter borderTop="1px solid" borderColor={borderColor} bg={useColorModeValue('gray.50', 'gray.800')}>
+          <HStack w="100%" justify="space-between">
+            <Text fontSize="xs" color="gray.500">Dica: clique em um nome para ver mais detalhes (em breve)</Text>
+            <HStack>
+              <Button variant="ghost" onClick={criticalModal.onClose}>Fechar</Button>
+              <Button colorScheme="red" onClick={criticalModal.onClose}>Exportar</Button>
+            </HStack>
+          </HStack>
+        </ModalFooter>
       </ModalContent>
     </Modal>
     </>

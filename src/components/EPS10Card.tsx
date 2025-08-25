@@ -1,11 +1,10 @@
 import {
   Box, Card, CardBody, VStack, HStack, Text, useColorModeValue,
-  Badge, Circle
+  Badge, Circle, Select
 } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiActivity, FiAlertTriangle, FiCheckCircle, FiClock } from 'react-icons/fi'
 import { useState, useEffect } from 'react'
-import { useFilters } from '@/contexts/store'
 import { supabase } from '@/lib/supabase'
 import GaugeChart from 'react-gauge-chart'
 
@@ -92,16 +91,69 @@ const EPS10Card = () => {
   const textColor = useColorModeValue('gray.600', 'gray.300')
   const cardBg = useColorModeValue('white', 'gray.800')
   const borderColor = useColorModeValue('#E5E7EB', 'gray.600')
-  const { filters } = useFilters()
-  
   // Estado para dados do EPS-10
   const [eps10Score, setEps10Score] = useState(0)
   const [totalColaboradores, setTotalColaboradores] = useState(0)
   const [setoresData, setSetoresData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [meterProgress, setMeterProgress] = useState(0)
+  // Filtros locais
+  const [empresaId, setEmpresaId] = useState<string>('')
+  const [setor, setSetor] = useState<string>('')
+  const [empresaOptions, setEmpresaOptions] = useState<string[]>([])
+  const [setorOptions, setSetorOptions] = useState<string[]>([])
   
-  // Carregar dados reais do EPS a partir do Supabase usando filtros globais (empresa_id, datas)
+  // Carregar opções de filtros
+  useEffect(() => {
+    const loadOptions = async () => {
+      try {
+        if (!supabase) {
+          setEmpresaOptions([])
+          setSetorOptions([])
+          return
+        }
+        const client = supabase!
+        const { data, error } = await client
+          .from('EPS_respostas')
+          .select('empresa_id, area_setor')
+        if (error) throw error
+        const rows = Array.isArray(data) ? data : []
+        const empresas = Array.from(new Set(rows.map((r: any) => r.empresa_id).filter((v: any) => v != null))).map(String).sort()
+        const setores = Array.from(new Set(rows.map((r: any) => r.area_setor).filter((v: any) => v != null))).map(String).sort()
+        setEmpresaOptions(empresas)
+        setSetorOptions(setores)
+      } catch {
+        setEmpresaOptions([])
+        setSetorOptions([])
+      }
+    }
+    loadOptions()
+  }, [])
+
+  // Atualizar opções de setor quando empresa muda (opcional)
+  useEffect(() => {
+    const loadSetores = async () => {
+      try {
+        if (!supabase) {
+          setSetorOptions([])
+          return
+        }
+        const client = supabase!
+        let query = client.from('EPS_respostas').select('area_setor')
+        if (empresaId) query = query.eq('empresa_id', empresaId)
+        const { data, error } = await query
+        if (error) throw error
+        const rows = Array.isArray(data) ? data : []
+        const setores = Array.from(new Set(rows.map((r: any) => r.area_setor).filter((v: any) => v != null))).map(String).sort()
+        setSetorOptions(setores)
+      } catch {
+        setSetorOptions([])
+      }
+    }
+    loadSetores()
+  }, [empresaId])
+
+  // Carregar dados do EPS com filtros locais
   useEffect(() => {
     const loadEps = async () => {
       try {
@@ -113,15 +165,8 @@ const EPS10Card = () => {
           return
         }
         let query = supabase.from('EPS_respostas').select('*')
-        if (filters.empresa) {
-          query = query.eq('empresa_id', filters.empresa)
-        }
-        if (filters.dataInicio) {
-          query = query.gte('created_at', filters.dataInicio)
-        }
-        if (filters.dataFim) {
-          query = query.lte('created_at', filters.dataFim)
-        }
+        if (empresaId) query = query.eq('empresa_id', empresaId)
+        if (setor) query = query.eq('area_setor', setor)
         const { data, error } = await query
         if (error) throw error
         const rows = Array.isArray(data) ? data : []
@@ -135,7 +180,6 @@ const EPS10Card = () => {
           .filter((n): n is number => n !== null)
         const media = valores.length > 0 ? valores.reduce((a, b) => a + b, 0) / valores.length : 0
         setEps10Score(media)
-        // Placeholder: análise por itens não está consolidada no schema → limpar lista
         setSetoresData([])
       } catch {
         setTotalColaboradores(0)
@@ -146,7 +190,7 @@ const EPS10Card = () => {
       }
     }
     loadEps()
-  }, [filters])
+  }, [empresaId, setor])
 
   // Animar o medidor após o componente carregar
   useEffect(() => {
@@ -229,6 +273,7 @@ const EPS10Card = () => {
         border="1px solid"
         borderColor={borderColor}
         boxShadow="0 2px 4px rgba(0, 0, 0, 0.05)"
+        minH="360px"
       >
         <CardBody p={5}>
           <VStack spacing={4}>
@@ -264,8 +309,9 @@ const EPS10Card = () => {
         borderColor={borderColor}
         boxShadow="0 2px 4px rgba(0, 0, 0, 0.05)"
         overflow="hidden"
+        h="100%"
       >
-        <CardBody p={5}>
+        <CardBody p={5} h="100%">
           <VStack spacing={4} align="stretch">
             {/* Cabeçalho */}
             <MotionBox variants={itemVariants}>
@@ -301,7 +347,7 @@ const EPS10Card = () => {
                       fontSize="sm" 
                       color="gray.500"
                     >
-                      Escala validada de Estresse Percebido. Indicador Satélite e análise por itens respondidos.
+                      Escala de Estresse Percebido (EPS-10). Indicador Satélite.
                     </MotionText>
                     
                   </VStack>
@@ -354,6 +400,22 @@ const EPS10Card = () => {
               </HStack>
             </MotionBox>
 
+            {/* Filtros locais */}
+            <HStack spacing={3} flexWrap="wrap">
+              <Select size="sm" value={empresaId} onChange={(e) => setEmpresaId(e.target.value)} w={{ base: '100%', md: 'auto' }}>
+                <option value="">Todas as empresas</option>
+                {empresaOptions.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </Select>
+              <Select size="sm" value={setor} onChange={(e) => setSetor(e.target.value)} w={{ base: '100%', md: 'auto' }}>
+                <option value="">Todos os setores</option>
+                {setorOptions.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </Select>
+            </HStack>
+
             {/* Velocímetro central */}
             <MotionBox variants={meterVariants}>
               <HStack align="center" justify="center" spacing={8} flexWrap={{ base: 'wrap', md: 'nowrap' }}>
@@ -397,70 +459,72 @@ const EPS10Card = () => {
 
             {/* Removido bloco duplicado de classificação por níveis para manter legenda apenas ao lado do velocímetro */}
 
-            {/* Dados por setor */}
-            <MotionBox variants={itemVariants}>
-              <VStack spacing={3} align="stretch">
-                <MotionText
-                  variants={itemVariants}
-                  fontSize="sm" 
-                  fontWeight="semibold" 
-                  color={textColor}
-                >
-                  Análise por Itens Respondidos:
-                </MotionText>
-                <AnimatePresence>
-                  {setoresData.map((setor, index) => (
-                    <MotionBox
-                      key={index}
-                      custom={index}
-                      variants={sectorVariants}
-                      whileHover="hover"
-                      p={3} 
-                      bg="gray.50" 
-                      borderRadius="md"
-                      cursor="pointer"
-                      _hover={{
-                        bg: "gray.100",
-                        transform: "translateX(-2px)",
-                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)"
-                      }}
-                    >
-                      <HStack justify="space-between" align="center">
-                        <VStack align="start" spacing={1}>
-                          <Text fontSize="sm" fontWeight="medium" color={textColor}>
-                            {setor.setor}
-                          </Text>
-                          
-                        </VStack>
-                        <HStack spacing={2} align="center">
-                          <MotionText
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 2.0 + (index * 0.1), duration: 0.4 }}
-                            fontSize="lg" 
-                            fontWeight="bold" 
-                            color={getStressLevel(setor.score).iconColor}
-                          >
-                            {setor.score}
-                          </MotionText>
-                          <MotionBadge
-                            initial={{ opacity: 0, y: 5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 2.1 + (index * 0.1), duration: 0.4 }}
-                            whileHover={{ scale: 1.05 }}
-                            colorScheme={getStressLevel(setor.score).badgeColor}
-                            variant="subtle"
-                            fontSize="xs"
-                          >
-                            {getStressLevel(setor.score).status}
-                          </MotionBadge>
+            {/* Dados por setor (exibir apenas quando houver dados) */}
+            {setoresData.length > 0 && (
+              <MotionBox variants={itemVariants}>
+                <VStack spacing={3} align="stretch">
+                  <MotionText
+                    variants={itemVariants}
+                    fontSize="sm" 
+                    fontWeight="semibold" 
+                    color={textColor}
+                  >
+                    Análise por Itens Respondidos:
+                  </MotionText>
+                  <AnimatePresence>
+                    {setoresData.map((setor, index) => (
+                      <MotionBox
+                        key={index}
+                        custom={index}
+                        variants={sectorVariants}
+                        whileHover="hover"
+                        p={3} 
+                        bg="gray.50" 
+                        borderRadius="md"
+                        cursor="pointer"
+                        _hover={{
+                          bg: "gray.100",
+                          transform: "translateX(-2px)",
+                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)"
+                        }}
+                      >
+                        <HStack justify="space-between" align="center">
+                          <VStack align="start" spacing={1}>
+                            <Text fontSize="sm" fontWeight="medium" color={textColor}>
+                              {setor.setor}
+                            </Text>
+                            
+                          </VStack>
+                          <HStack spacing={2} align="center">
+                            <MotionText
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: 2.0 + (index * 0.1), duration: 0.4 }}
+                              fontSize="lg" 
+                              fontWeight="bold" 
+                              color={getStressLevel(setor.score).iconColor}
+                            >
+                              {setor.score}
+                            </MotionText>
+                            <MotionBadge
+                              initial={{ opacity: 0, y: 5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 2.1 + (index * 0.1), duration: 0.4 }}
+                              whileHover={{ scale: 1.05 }}
+                              colorScheme={getStressLevel(setor.score).badgeColor}
+                              variant="subtle"
+                              fontSize="xs"
+                            >
+                              {getStressLevel(setor.score).status}
+                            </MotionBadge>
+                          </HStack>
                         </HStack>
-                      </HStack>
-                    </MotionBox>
-                  ))}
-                </AnimatePresence>
-              </VStack>
-            </MotionBox>
+                      </MotionBox>
+                    ))}
+                  </AnimatePresence>
+                </VStack>
+              </MotionBox>
+            )}
 
             {/* Total de colaboradores */}
             <MotionText
