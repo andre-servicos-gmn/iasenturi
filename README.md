@@ -214,9 +214,10 @@ import ExportButton from '@/components/ExportButton'
 ### Domínios Psicossociais
 - **Demandas Psicológicas**: Concentração, memorização
 - **Demandas Físicas**: Esforço físico, postura
-- **Suporte Social**: Relacionamentos, liderança
-- **Interface Trabalho-Vida**: Equilíbrio pessoal/profissional
+- **Demandas de Trabalho**: Influência e desenvolvimento
+- **Suporte Social e Liderança**: Relacionamentos, liderança
 - **Esforço e Recompensa**: Reconhecimento, desenvolvimento
+- **Interface Trabalho-Vida**: Equilíbrio pessoal/profissional
 - **Saúde Emocional**: Bem-estar, satisfação
 
 ### Mapa de Calor

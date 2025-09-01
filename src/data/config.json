@@ -55,7 +55,7 @@
       ]
     },
     {
-      "dominio": "Domínio 3 - Influência e Possibilidades de Desenvolvimento",
+      "dominio": "Domínio 3 - Demandas de Trabalho",
       "classificacao": "critico",
       "acoes": [
         "Programa de empowerment e autonomia",
@@ -64,7 +64,7 @@
       ]
     },
     {
-      "dominio": "Domínio 3 - Influência e Possibilidades de Desenvolvimento",
+      "dominio": "Domínio 3 - Demandas de Trabalho",
       "classificacao": "atencao",
       "acoes": [
         "Treinamento em liderança participativa",
@@ -73,7 +73,7 @@
       ]
     },
     {
-      "dominio": "Domínio 3 - Influência e Possibilidades de Desenvolvimento",
+      "dominio": "Domínio 3 - Demandas de Trabalho",
       "classificacao": "favoravel",
       "acoes": [
         "Reconhecer lideranças exemplares",
@@ -109,7 +109,7 @@
       ]
     },
     {
-      "dominio": "Domínio 5 - Clima de Trabalho",
+      "dominio": "Domínio 5 - Esforço e Recompensa",
       "classificacao": "critico",
       "acoes": [
         "Programa de clima organizacional",
@@ -118,7 +118,7 @@
       ]
     },
     {
-      "dominio": "Domínio 5 - Clima de Trabalho",
+      "dominio": "Domínio 5 - Esforço e Recompensa",
       "classificacao": "atencao",
       "acoes": [
         "Treinamento em comunicação não-violenta",
@@ -127,7 +127,7 @@
       ]
     },
     {
-      "dominio": "Domínio 5 - Clima de Trabalho",
+      "dominio": "Domínio 5 - Esforço e Recompensa",
       "classificacao": "favoravel",
       "acoes": [
         "Reconhecer ambientes positivos",
@@ -136,7 +136,7 @@
       ]
     },
     {
-      "dominio": "Domínio 6 - Insegurança no Trabalho",
+      "dominio": "Domínio 6 - Interface Trabalho-Vida",
       "classificacao": "critico",
       "acoes": [
         "Programa de transparência organizacional",
@@ -145,7 +145,7 @@
       ]
     },
     {
-      "dominio": "Domínio 6 - Insegurança no Trabalho",
+      "dominio": "Domínio 6 - Interface Trabalho-Vida",
       "classificacao": "atencao",
       "acoes": [
         "Comunicação clara sobre mudanças",
@@ -154,7 +154,7 @@
       ]
     },
     {
-      "dominio": "Domínio 6 - Insegurança no Trabalho",
+      "dominio": "Domínio 6 - Interface Trabalho-Vida",
       "classificacao": "favoravel",
       "acoes": [
         "Reconhecer estabilidade organizacional",
@@ -163,7 +163,7 @@
       ]
     },
     {
-      "dominio": "Domínio 7 - Esforço e Recompensa",
+      "dominio": "Domínio 5 - Esforço e Recompensa",
       "classificacao": "critico",
       "acoes": [
         "Revisão de política de remuneração",
@@ -172,7 +172,7 @@
       ]
     },
     {
-      "dominio": "Domínio 7 - Esforço e Recompensa",
+      "dominio": "Domínio 5 - Esforço e Recompensa",
       "classificacao": "atencao",
       "acoes": [
         "Sistema de reconhecimento pontual",
@@ -181,7 +181,7 @@
       ]
     },
     {
-      "dominio": "Domínio 7 - Esforço e Recompensa",
+      "dominio": "Domínio 5 - Esforço e Recompensa",
       "classificacao": "favoravel",
       "acoes": [
         "Reconhecer políticas justas",
@@ -190,7 +190,7 @@
       ]
     },
     {
-      "dominio": "Domínio 8 - Saúde Emocional",
+      "dominio": "Domínio 7 - Saúde Emocional",
       "classificacao": "critico",
       "acoes": [
         "Workshop de regulação emocional",
@@ -199,7 +199,7 @@
       ]
     },
     {
-      "dominio": "Domínio 8 - Saúde Emocional",
+      "dominio": "Domínio 7 - Saúde Emocional",
       "classificacao": "atencao",
       "acoes": [
         "Pausas cognitivas programadas",
@@ -208,7 +208,7 @@
       ]
     },
     {
-      "dominio": "Domínio 8 - Saúde Emocional",
+      "dominio": "Domínio 7 - Saúde Emocional",
       "classificacao": "favoravel",
       "acoes": [
         "Reforçar boas práticas",

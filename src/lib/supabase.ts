@@ -254,10 +254,9 @@ export function calculateDomainAverages(data: COPSQResposta[]) {
     'Demandas Físicas': [],
     'Demandas de Trabalho': [],
     'Suporte Social e Liderança': [],
-    'Suporte Social': [],
     'Esforço e Recompensa': [],
-    'Saúde Emocional': [],
-    'Interface Trabalho-Vida': []
+    'Interface Trabalho-Vida': [],
+    'Saúde Emocional': []
   }
 
   data.forEach(resposta => {
@@ -269,16 +268,16 @@ export function calculateDomainAverages(data: COPSQResposta[]) {
       domains['Demandas Físicas'].push(parseFloat(resposta.media_organizacao))
     }
     if (resposta.media_relacoes) {
-      domains['Suporte Social e Liderança'].push(parseFloat(resposta.media_relacoes))
+      domains['Demandas de Trabalho'].push(parseFloat(resposta.media_relacoes))
     }
     if (resposta.media_interface) {
-      domains['Interface Trabalho-Vida'].push(parseFloat(resposta.media_interface))
+      domains['Suporte Social e Liderança'].push(parseFloat(resposta.media_interface))
     }
     if (resposta.media_significado) {
       domains['Esforço e Recompensa'].push(parseFloat(resposta.media_significado))
     }
     if (resposta.media_inseguranca) {
-      domains['Suporte Social'].push(parseFloat(resposta.media_inseguranca))
+      domains['Interface Trabalho-Vida'].push(parseFloat(resposta.media_inseguranca))
     }
     if (resposta.media_bem_estar) {
       domains['Saúde Emocional'].push(parseFloat(resposta.media_bem_estar))
@@ -620,10 +619,10 @@ function processarCiclosAvaliacao(
       const dominios = [
         { key: 'media_exigencias', nome: 'Demandas Psicológicas' },
         { key: 'media_organizacao', nome: 'Demandas Físicas' },
-        { key: 'media_relacoes', nome: 'Suporte Social e Liderança' },
-        { key: 'media_interface', nome: 'Interface Trabalho-Vida' },
+        { key: 'media_relacoes', nome: 'Demandas de Trabalho' },
+        { key: 'media_interface', nome: 'Suporte Social e Liderança' },
         { key: 'media_significado', nome: 'Esforço e Recompensa' },
-        { key: 'media_inseguranca', nome: 'Suporte Social' },
+        { key: 'media_inseguranca', nome: 'Interface Trabalho-Vida' },
         { key: 'media_bem_estar', nome: 'Saúde Emocional' }
       ]
 
@@ -709,10 +708,12 @@ export function calcularMetricasSaudeMental(ciclos: DadosHistoricoCompleto[]) {
   // Analisar domínios específicos
   const dominios = [
     'Demandas Psicológicas',
-    'Saúde Emocional', 
-    'Interface Trabalho-Vida',
+    'Demandas Físicas',
+    'Demandas de Trabalho',
     'Suporte Social e Liderança',
-    'Esforço e Recompensa'
+    'Esforço e Recompensa',
+    'Interface Trabalho-Vida',
+    'Saúde Emocional'
   ]
 
   dominios.forEach(dominio => {

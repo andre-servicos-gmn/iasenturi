@@ -33,13 +33,13 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
 
   // Definir nomes dos domínios
   const domainNames = [
-    'Exigências',
-    'Organização', 
-    'Relações',
-    'Interface',
-    'Significado',
-    'Insegurança',
-    'Bem-estar',
+    'Demandas Psicológicas',
+    'Demandas Físicas', 
+    'Demandas de Trabalho',
+    'Suporte Social e Liderança',
+    'Esforço e Recompensa',
+    'Interface Trabalho-Vida',
+    'Saúde Emocional',
     'ISESO'
   ]
 

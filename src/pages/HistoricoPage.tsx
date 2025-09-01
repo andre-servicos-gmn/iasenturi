@@ -138,10 +138,9 @@ const HistoricoPage = () => {
     'Demandas Físicas': '#4ECDC4',
     'Demandas de Trabalho': '#45B7D1',
     'Suporte Social e Liderança': '#96CEB4',
-    'Suporte Social': '#FFEAA7',
     'Esforço e Recompensa': '#DDA0DD',
-    'Saúde Emocional': '#98D8C8',
-    'Interface Trabalho-Vida': '#F7DC6F'
+    'Interface Trabalho-Vida': '#F7DC6F',
+    'Saúde Emocional': '#98D8C8'
   }
 
   // Dados de intervenções simuladas (em produção viriam do banco)
@@ -225,10 +224,9 @@ const HistoricoPage = () => {
               'Demandas Físicas': 0,
               'Demandas de Trabalho': 0,
               'Suporte Social e Liderança': 0,
-              'Suporte Social': 0,
               'Esforço e Recompensa': 0,
-              'Saúde Emocional': 0,
-              'Interface Trabalho-Vida': 0
+              'Interface Trabalho-Vida': 0,
+              'Saúde Emocional': 0
             }
 
             let totalValores = 0
@@ -260,13 +258,6 @@ const HistoricoPage = () => {
               if (item.suporte_social_lideranca) {
                 dominios['Suporte Social e Liderança'] += parseFloat(item.suporte_social_lideranca)
                 totalValores += parseFloat(item.suporte_social_lideranca)
-                countValores++
-              }
-
-              // Suporte Social
-              if (item.suporte_social) {
-                dominios['Suporte Social'] += parseFloat(item.suporte_social)
-                totalValores += parseFloat(item.suporte_social)
                 countValores++
               }
 

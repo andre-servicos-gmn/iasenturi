@@ -38,10 +38,9 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ data, onCellClick }) => {
     'Demandas Físicas', 
     'Demandas de Trabalho',
     'Suporte Social e Liderança',
-    'Suporte Social',
     'Esforço e Recompensa',
-    'Saúde Emocional',
-    'Interface Trabalho-Vida'
+    'Interface Trabalho-Vida',
+    'Saúde Emocional'
   ]
 
   // Verificar se há setor selecionado

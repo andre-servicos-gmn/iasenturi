@@ -44,10 +44,9 @@ const ColaboradoresCard = () => {
               'demandas_fisicas',
               'demandas_trabalho',
               'suporte_social_lideranca',
-              'suporte_social',
               'esforco_recompensa',
-              'saude_emocional',
-              'interface_trabalho_vida'
+              'interface_trabalho_vida',
+              'saude_emocional'
             ]
             
             let total = 0

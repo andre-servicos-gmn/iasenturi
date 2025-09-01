@@ -28,10 +28,9 @@ const MapaCalorPage = () => {
             'Demandas Físicas',
             'Demandas de Trabalho',
             'Suporte Social e Liderança',
-            'Suporte Social',
             'Esforço e Recompensa',
-            'Saúde Emocional',
-            'Interface Trabalho-Vida'
+            'Interface Trabalho-Vida',
+            'Saúde Emocional'
           ]
 
           // Mapear campos de dados para nomes dos domínios (usar médias calculadas)
@@ -40,10 +39,9 @@ const MapaCalorPage = () => {
             'media_organizacao',
             'media_relacoes',
             'media_interface',
-            'media_inseguranca',
             'media_significado',
-            'media_bem_estar',
-            'media_interface' // Interface Trabalho-Vida pode ser o mesmo campo
+            'media_inseguranca',
+            'media_bem_estar'
           ]
 
           // Obter setores únicos

@@ -189,10 +189,9 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           'Demandas Físicas': 'demandas_fisicas',
           'Demandas de Trabalho': 'demandas_trabalho',
           'Suporte Social e Liderança': 'suporte_social_lideranca',
-          'Suporte Social': 'suporte_social',
           'Esforço e Recompensa': 'esforco_recompensa',
-          'Saúde Emocional': 'saude_emocional',
-          'Interface Trabalho-Vida': 'interface_trabalho_vida'
+          'Interface Trabalho-Vida': 'interface_trabalho_vida',
+          'Saúde Emocional': 'saude_emocional'
         }
         const col = map[filters.dominio]
         if (col) {

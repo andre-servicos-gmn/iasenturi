@@ -1,12 +1,13 @@
 import {
   Box, Card, CardBody, VStack, HStack, Text, useColorModeValue,
-  Badge, Circle, Select
+  Badge, Circle
 } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiActivity, FiAlertTriangle, FiCheckCircle, FiClock } from 'react-icons/fi'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import GaugeChart from 'react-gauge-chart'
+import FiltrosEPSPSQI from './FiltrosEPSPSQI'
 
 const MotionBox = motion(Box)
 const MotionCard = motion(Card)
@@ -42,8 +43,6 @@ const itemVariants = {
     }
   }
 }
-
-
 
 const meterVariants = {
   hidden: { 
@@ -91,69 +90,24 @@ const EPS10Card = () => {
   const textColor = useColorModeValue('gray.600', 'gray.300')
   const cardBg = useColorModeValue('white', 'gray.800')
   const borderColor = useColorModeValue('#E5E7EB', 'gray.600')
+  
   // Estado para dados do EPS-10
   const [eps10Score, setEps10Score] = useState(0)
   const [totalColaboradores, setTotalColaboradores] = useState(0)
   const [setoresData, setSetoresData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [meterProgress, setMeterProgress] = useState(0)
-  // Filtros locais
-  const [empresaId, setEmpresaId] = useState<string>('')
-  const [setor, setSetor] = useState<string>('')
-  const [empresaOptions, setEmpresaOptions] = useState<string[]>([])
-  const [setorOptions, setSetorOptions] = useState<string[]>([])
   
-  // Carregar opções de filtros
-  useEffect(() => {
-    const loadOptions = async () => {
-      try {
-        if (!supabase) {
-          setEmpresaOptions([])
-          setSetorOptions([])
-          return
-        }
-        const client = supabase!
-        const { data, error } = await client
-          .from('EPS_respostas')
-          .select('empresa_id, area_setor')
-        if (error) throw error
-        const rows = Array.isArray(data) ? data : []
-        const empresas = Array.from(new Set(rows.map((r: any) => r.empresa_id).filter((v: any) => v != null))).map(String).sort()
-        const setores = Array.from(new Set(rows.map((r: any) => r.area_setor).filter((v: any) => v != null))).map(String).sort()
-        setEmpresaOptions(empresas)
-        setSetorOptions(setores)
-      } catch {
-        setEmpresaOptions([])
-        setSetorOptions([])
-      }
-    }
-    loadOptions()
+  // Filtros do componente de filtros
+  const [filtros, setFiltros] = useState({ empresa: '', setor: '' })
+  
+  // Callback estável para os filtros
+  const handleFiltrosChange = useCallback((novosFiltros: { empresa: string; setor: string }) => {
+    console.log('🔄 Filtros EPS mudaram:', novosFiltros)
+    setFiltros(novosFiltros)
   }, [])
-
-  // Atualizar opções de setor quando empresa muda (opcional)
-  useEffect(() => {
-    const loadSetores = async () => {
-      try {
-        if (!supabase) {
-          setSetorOptions([])
-          return
-        }
-        const client = supabase!
-        let query = client.from('EPS_respostas').select('area_setor')
-        if (empresaId) query = query.eq('empresa_id', empresaId)
-        const { data, error } = await query
-        if (error) throw error
-        const rows = Array.isArray(data) ? data : []
-        const setores = Array.from(new Set(rows.map((r: any) => r.area_setor).filter((v: any) => v != null))).map(String).sort()
-        setSetorOptions(setores)
-      } catch {
-        setSetorOptions([])
-      }
-    }
-    loadSetores()
-  }, [empresaId])
-
-  // Carregar dados do EPS com filtros locais
+  
+  // Carregar dados do EPS com filtros
   useEffect(() => {
     const loadEps = async () => {
       try {
@@ -164,13 +118,23 @@ const EPS10Card = () => {
           setSetoresData([])
           return
         }
+        
         let query = supabase.from('EPS_respostas').select('*')
-        if (empresaId) query = query.eq('empresa_id', empresaId)
-        if (setor) query = query.eq('area_setor', setor)
+        
+        // Aplicar filtros
+        if (filtros.empresa) {
+          query = query.eq('empresa_id', filtros.empresa)
+        }
+        if (filtros.setor) {
+          query = query.eq('area_setor', filtros.setor)
+        }
+        
         const { data, error } = await query
         if (error) throw error
+        
         const rows = Array.isArray(data) ? data : []
         setTotalColaboradores(rows.length)
+        
         const valores = rows
           .map((r: any) => {
             const v = r.eps_total
@@ -178,10 +142,14 @@ const EPS10Card = () => {
             return isNaN(num) ? null : num
           })
           .filter((n): n is number => n !== null)
+        
         const media = valores.length > 0 ? valores.reduce((a, b) => a + b, 0) / valores.length : 0
         setEps10Score(media)
         setSetoresData([])
-      } catch {
+        
+        console.log(`✅ EPS-10 carregado: ${rows.length} colaboradores, score médio: ${media.toFixed(2)}`)
+      } catch (error) {
+        console.error('❌ Erro ao carregar dados EPS-10:', error)
         setTotalColaboradores(0)
         setEps10Score(0)
         setSetoresData([])
@@ -189,8 +157,9 @@ const EPS10Card = () => {
         setLoading(false)
       }
     }
+    
     loadEps()
-  }, [empresaId, setor])
+  }, [filtros.empresa, filtros.setor])
 
   // Animar o medidor após o componente carregar
   useEffect(() => {
@@ -400,21 +369,11 @@ const EPS10Card = () => {
               </HStack>
             </MotionBox>
 
-            {/* Filtros locais */}
-            <HStack spacing={3} flexWrap="wrap">
-              <Select size="sm" value={empresaId} onChange={(e) => setEmpresaId(e.target.value)} w={{ base: '100%', md: 'auto' }}>
-                <option value="">Todas as empresas</option>
-                {empresaOptions.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </Select>
-              <Select size="sm" value={setor} onChange={(e) => setSetor(e.target.value)} w={{ base: '100%', md: 'auto' }}>
-                <option value="">Todos os setores</option>
-                {setorOptions.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </Select>
-            </HStack>
+            {/* Filtros EPS/PSQI */}
+            <FiltrosEPSPSQI 
+              tipo="EPS" 
+              onFiltrosChange={handleFiltrosChange} 
+            />
 
             {/* Velocímetro central */}
             <MotionBox variants={meterVariants}>

@@ -1,12 +1,13 @@
 import {
   Box, Card, CardBody, VStack, HStack, Text, useColorModeValue,
-  Badge, Circle, Select
+  Badge, Circle
 } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { FiMoon, FiAlertTriangle, FiCheckCircle } from 'react-icons/fi'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import GaugeChart from 'react-gauge-chart'
+import FiltrosEPSPSQI from './FiltrosEPSPSQI'
 
 const MotionBox = motion(Box)
 const MotionCard = motion(Card)
@@ -48,63 +49,17 @@ const PSQICard = () => {
   const [totalColaboradores, setTotalColaboradores] = useState(0)
   const [loading, setLoading] = useState(true)
   const [meterProgress, setMeterProgress] = useState(0)
-  // Filtros locais
-  const [empresaId, setEmpresaId] = useState<string>('')
-  const [setor, setSetor] = useState<string>('')
-  const [empresaOptions, setEmpresaOptions] = useState<string[]>([])
-  const [setorOptions, setSetorOptions] = useState<string[]>([])
+  
+  // Filtros do componente de filtros
+  const [filtros, setFiltros] = useState({ empresa: '', setor: '' })
 
-  // Carregar opções de filtros
-  useEffect(() => {
-    const loadOptions = async () => {
-      try {
-        if (!supabase) {
-          setEmpresaOptions([])
-          setSetorOptions([])
-          return
-        }
-        const client = supabase!
-        const { data, error } = await client
-          .from('PSQI_respostas')
-          .select('empresa_id, area_setor')
-        if (error) throw error
-        const rows = Array.isArray(data) ? data : []
-        const empresas = Array.from(new Set(rows.map((r: any) => r.empresa_id).filter((v: any) => v != null))).map(String).sort()
-        const setores = Array.from(new Set(rows.map((r: any) => r.area_setor).filter((v: any) => v != null))).map(String).sort()
-        setEmpresaOptions(empresas)
-        setSetorOptions(setores)
-      } catch {
-        setEmpresaOptions([])
-        setSetorOptions([])
-      }
-    }
-    loadOptions()
+  // Callback estável para os filtros
+  const handleFiltrosChange = useCallback((novosFiltros: { empresa: string; setor: string }) => {
+    console.log('🔄 Filtros PSQI mudaram:', novosFiltros)
+    setFiltros(novosFiltros)
   }, [])
 
-  // Atualizar opções de setor quando empresa muda (opcional)
-  useEffect(() => {
-    const loadSetores = async () => {
-      try {
-        if (!supabase) {
-          setSetorOptions([])
-          return
-        }
-        const client = supabase!
-        let query = client.from('PSQI_respostas').select('area_setor')
-        if (empresaId) query = query.eq('empresa_id', empresaId)
-        const { data, error } = await query
-        if (error) throw error
-        const rows = Array.isArray(data) ? data : []
-        const setores = Array.from(new Set(rows.map((r: any) => r.area_setor).filter((v: any) => v != null))).map(String).sort()
-        setSetorOptions(setores)
-      } catch {
-        setSetorOptions([])
-      }
-    }
-    loadSetores()
-  }, [empresaId])
-
-  // Carregar dados com filtros locais
+  // Carregar dados com filtros
   useEffect(() => {
     const loadPsqi = async () => {
       try {
@@ -114,13 +69,23 @@ const PSQICard = () => {
           setPsqiScore(0)
           return
         }
+        
         let query = supabase.from('PSQI_respostas').select('*')
-        if (empresaId) query = query.eq('empresa_id', empresaId)
-        if (setor) query = query.eq('area_setor', setor)
+        
+        // Aplicar filtros
+        if (filtros.empresa) {
+          query = query.eq('empresa_id', filtros.empresa)
+        }
+        if (filtros.setor) {
+          query = query.eq('area_setor', filtros.setor)
+        }
+        
         const { data, error } = await query
         if (error) throw error
+        
         const rows = Array.isArray(data) ? data : []
         setTotalColaboradores(rows.length)
+        
         const valores = rows
           .map((r: any) => {
             const v = r.psqi_total
@@ -128,17 +93,22 @@ const PSQICard = () => {
             return isNaN(num) ? null : num
           })
           .filter((n): n is number => n !== null)
+        
         const media = valores.length > 0 ? valores.reduce((a, b) => a + b, 0) / valores.length : 0
         setPsqiScore(media)
-      } catch {
+        
+        console.log(`✅ PSQI carregado: ${rows.length} colaboradores, score médio: ${media.toFixed(2)}`)
+      } catch (error) {
+        console.error('❌ Erro ao carregar dados PSQI:', error)
         setTotalColaboradores(0)
         setPsqiScore(0)
       } finally {
         setLoading(false)
       }
     }
+    
     loadPsqi()
-  }, [empresaId, setor])
+  }, [filtros.empresa, filtros.setor])
 
   // Animar o medidor após o carregamento
   useEffect(() => {
@@ -331,21 +301,11 @@ const PSQICard = () => {
               </HStack>
             </MotionBox>
 
-            {/* Filtros locais */}
-            <HStack spacing={3} flexWrap="wrap">
-              <Select size="sm" value={empresaId} onChange={(e) => setEmpresaId(e.target.value)} w={{ base: '100%', md: 'auto' }}>
-                <option value="">Todas as empresas</option>
-                {empresaOptions.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </Select>
-              <Select size="sm" value={setor} onChange={(e) => setSetor(e.target.value)} w={{ base: '100%', md: 'auto' }}>
-                <option value="">Todos os setores</option>
-                {setorOptions.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </Select>
-            </HStack>
+            {/* Filtros EPS/PSQI */}
+            <FiltrosEPSPSQI 
+              tipo="PSQI" 
+              onFiltrosChange={handleFiltrosChange} 
+            />
 
             {/* Velocímetro central */}
             <MotionBox variants={meterVariants}>
