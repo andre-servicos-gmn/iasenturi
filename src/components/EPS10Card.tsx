@@ -99,11 +99,11 @@ const EPS10Card = () => {
   const [meterProgress, setMeterProgress] = useState(0)
   
   // Filtros do componente de filtros
-  const [filtros, setFiltros] = useState({ empresa: '', setor: '' })
+  const [filtros, setFiltros] = useState({ empresa: '', setor: '', setorColumn: 'Área/Setor' })
   
-  // Callback estável para os filtros
-  const handleFiltrosChange = useCallback((novosFiltros: { empresa: string; setor: string }) => {
-    console.log('🔄 Filtros EPS mudaram:', novosFiltros)
+  // Callback que recebe os filtros, incluindo o nome da coluna do setor
+  const handleFiltrosChange = useCallback((novosFiltros: { empresa: string; setor: string; setorColumn: string }) => {
+    console.log('🔄 Filtros EPS recebidos:', novosFiltros)
     setFiltros(novosFiltros)
   }, [])
   
@@ -121,18 +121,51 @@ const EPS10Card = () => {
         
         let query = supabase.from('EPS_respostas').select('*')
         
+        console.log(`🔍 Aplicando filtros EPS:`, filtros)
+        
         // Aplicar filtros
         if (filtros.empresa) {
           query = query.eq('empresa_id', filtros.empresa)
+          console.log(`🏢 Filtro empresa aplicado: ${filtros.empresa}`)
         }
-        if (filtros.setor) {
-          query = query.eq('area_setor', filtros.setor)
+        if (filtros.setor && filtros.setorColumn) {
+          // Usa o nome da coluna de setor dinamicamente descoberto pelo componente de filtro
+          query = query.eq(filtros.setorColumn, filtros.setor)
+          console.log(`🏬 Filtro setor aplicado: [${filtros.setorColumn}] = "${filtros.setor}"`)
         }
         
+        console.log(`🔍 Query EPS final:`, query)
         const { data, error } = await query
-        if (error) throw error
+        if (error) {
+          console.error('❌ Erro na query EPS:', error)
+          throw error
+        }
         
         const rows = Array.isArray(data) ? data : []
+        console.log(`📊 Dados EPS encontrados: ${rows.length} registros`)
+        
+        if (rows.length > 0) {
+          console.log(`📊 Primeiro registro EPS:`, rows[0])
+          console.log(`📊 Campos disponíveis:`, Object.keys(rows[0]))
+          
+          // Verificar se os filtros estão sendo aplicados corretamente
+          if (filtros.empresa) {
+            const empresasEncontradas = [...new Set(rows.map(r => r.empresa_id))]
+            console.log(`🏢 Empresas encontradas nos dados:`, empresasEncontradas)
+            if (!empresasEncontradas.includes(filtros.empresa)) {
+              console.warn(`⚠️ Empresa "${filtros.empresa}" não encontrada nos dados!`)
+            }
+          }
+          
+          if (filtros.setor) {
+            const setoresEncontrados = [...new Set(rows.map(r => r['Área/Setor'] || r.area_setor || r.Area_Setor || r.setor || r.Setor || r.area || r.Area))]
+            console.log(`🏬 Setores encontrados nos dados:`, setoresEncontrados)
+            if (!setoresEncontrados.includes(filtros.setor)) {
+              console.warn(`⚠️ Setor "${filtros.setor}" não encontrado nos dados!`)
+            }
+          }
+        }
+        
         setTotalColaboradores(rows.length)
         
         const valores = rows
@@ -143,11 +176,15 @@ const EPS10Card = () => {
           })
           .filter((n): n is number => n !== null)
         
+        console.log(`📊 Valores EPS válidos: ${valores.length} de ${rows.length}`)
+        console.log(`📊 Valores EPS:`, valores)
+        
         const media = valores.length > 0 ? valores.reduce((a, b) => a + b, 0) / valores.length : 0
         setEps10Score(media)
         setSetoresData([])
         
         console.log(`✅ EPS-10 carregado: ${rows.length} colaboradores, score médio: ${media.toFixed(2)}`)
+        console.log(`✅ Filtros aplicados - Empresa: ${filtros.empresa || 'Todas'}, Setor: ${filtros.setor || 'Todos'}`)
       } catch (error) {
         console.error('❌ Erro ao carregar dados EPS-10:', error)
         setTotalColaboradores(0)
@@ -159,7 +196,7 @@ const EPS10Card = () => {
     }
     
     loadEps()
-  }, [filtros.empresa, filtros.setor])
+  }, [filtros])
 
   // Animar o medidor após o componente carregar
   useEffect(() => {
