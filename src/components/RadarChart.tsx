@@ -82,7 +82,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
 
   return (
     <Box position="relative" width={width} height={height} mx="auto">
-      <svg width={width} height={height}>
+      <svg width={width} height={height} style={{ overflow: 'visible' }}>
         <defs>
           {/* Gradiente para dados principais */}
           <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -162,20 +162,31 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
             />
           )}
 
-          {/* Pontos principais */}
+          {/* Pontos principais (com área de acerto maior para hover estável) */}
           {points.map((point, i) => (
-            <circle
-              key={i}
-              cx={point.x - centerX}
-              cy={point.y - centerY}
-              r={hoveredPoint === i ? 6 : 4}
-              fill={getColorByValue(point.value)}
-              stroke="white"
-              strokeWidth={2}
-              style={{ cursor: 'pointer' }}
-              onMouseEnter={() => setHoveredPoint(i)}
-              onMouseLeave={() => setHoveredPoint(null)}
-            />
+            <g key={i}>
+              {/* Área invisível para capturar o hover sem interferir no tooltip */}
+              <circle
+                cx={point.x - centerX}
+                cy={point.y - centerY}
+                r={16}
+                fill="transparent"
+                stroke="none"
+                style={{ cursor: 'pointer' }}
+                onMouseEnter={() => setHoveredPoint(i)}
+                onMouseLeave={() => setHoveredPoint(null)}
+              />
+              {/* Ponto visível */}
+              <circle
+                cx={point.x - centerX}
+                cy={point.y - centerY}
+                r={hoveredPoint === i ? 10 : 7}
+                fill={getColorByValue(point.value)}
+                stroke="white"
+                strokeWidth={2}
+                pointerEvents="none"
+              />
+            </g>
           ))}
 
           {/* Pontos do setor (apenas se setor selecionado) */}
@@ -184,11 +195,12 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
               key={`sector-${i}`}
               cx={point.x - centerX}
               cy={point.y - centerY}
-              r={3}
+              r={5}
               fill="#3B82F6"
               stroke="white"
               strokeWidth={1}
               strokeDasharray="2,2"
+              pointerEvents="none"
             />
           ))}
 
@@ -214,40 +226,57 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
             )
           })}
 
-          {/* Tooltip para valores */}
-          {hoveredPoint !== null && (
-            <foreignObject
-              x={points[hoveredPoint].x - centerX - 50}
-              y={points[hoveredPoint].y - centerY - 30}
-              width={100}
-              height={60}
-            >
-              <Box
-                bg="white"
-                border="1px solid"
-                borderColor="gray.200"
-                borderRadius="md"
-                p={2}
-                boxShadow="md"
-                fontSize="xs"
-                textAlign="center"
-              >
-                <Text fontWeight="bold" color={textColor}>
-                  {points[hoveredPoint].label}
-                </Text>
-                <Text color="blue.500" fontWeight="semibold">
-                  {points[hoveredPoint].value}%
-                </Text>
-                <Text fontSize="xs" color="gray.500">
-                  {getClassification(points[hoveredPoint].value)}
-                </Text>
-              </Box>
-            </foreignObject>
-          )}
         </Group>
       </svg>
 
-
+      {/* Tooltip posicionado fora do SVG para evitar cortes */}
+      {hoveredPoint !== null && (
+        <Box
+          position="absolute"
+          left={points[hoveredPoint].x - 70}
+          top={points[hoveredPoint].y - 60}
+          width="140px"
+          zIndex={10}
+          pointerEvents="none"
+        >
+          <Box
+            bg="white"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="lg"
+            p={3}
+            boxShadow="xl"
+            fontSize="xs"
+            textAlign="center"
+            _dark={{
+              bg: "gray.800",
+              borderColor: "gray.600"
+            }}
+          >
+            <Text fontWeight="bold" color={textColor} mb={1} noOfLines={2}>
+              {points[hoveredPoint].label}
+            </Text>
+            <Text color="blue.500" fontWeight="bold" fontSize="sm" mb={2}>
+              {points[hoveredPoint].value}%
+            </Text>
+            <Text 
+              fontSize="xs" 
+              color="gray.500" 
+              fontWeight="medium"
+              px={2}
+              py={1}
+              bg="gray.100"
+              borderRadius="md"
+              _dark={{
+                bg: "gray.700",
+                color: "gray.300"
+              }}
+            >
+              {getClassification(points[hoveredPoint].value)}
+            </Text>
+          </Box>
+        </Box>
+      )}
     </Box>
   )
 }

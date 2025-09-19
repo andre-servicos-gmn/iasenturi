@@ -50,6 +50,7 @@ const AdvancedReportModal: React.FC<AdvancedReportModalProps> = ({
   const [title, setTitle] = useState(defaultTitle)
   const [fileName, setFileName] = useState('Relatorio-Senturi.pdf')
   const [template, setTemplate] = useState<'executive'>('executive')
+  const [logoUrl, setLogoUrl] = useState('')
   const [sections, setSections] = useState({
     executiveSummary: true,
     domainsAnalysis: true,
@@ -71,7 +72,8 @@ const AdvancedReportModal: React.FC<AdvancedReportModalProps> = ({
         await generateExecutiveReport({
           rootElementId,
           data,
-          fileName
+          fileName,
+          logoUrl: logoUrl || undefined
         })
       }
       setProgress(100)
@@ -107,6 +109,11 @@ const AdvancedReportModal: React.FC<AdvancedReportModalProps> = ({
               <FormControl>
                 <FormLabel>Nome do arquivo</FormLabel>
                 <Input value={fileName} onChange={(e) => setFileName(e.target.value)} />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>Logo personalizado (URL opcional)</FormLabel>
+                <Input placeholder="/logo_senturi_modo_clarao.png" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
               </FormControl>
 
               <FormControl>

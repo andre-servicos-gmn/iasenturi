@@ -9,7 +9,7 @@ import { useFilters } from '@/contexts/store'
 const FiltrosGlobais = () => {
   const textColor = useColorModeValue('gray.600', 'gray.300')
   const borderColor = useColorModeValue('gray.200', 'gray.700')
-  const { filters, setFilters, empresas, setoresFiltrados } = useFilters()
+  const { filters, setFilters, empresas, setoresFiltrados, temposEmpresa, faixasEtarias } = useFilters()
   const [expanded, setExpanded] = useState(true)
 
   const handleFilterChange = (field: keyof typeof filters, value: string) => {
@@ -25,7 +25,8 @@ const FiltrosGlobais = () => {
       setor: '',
       dataInicio: '',
       dataFim: '',
-      dominio: ''
+      tempoEmpresa: '',
+      faixaEtaria: ''
     })
   }
 
@@ -34,7 +35,7 @@ const FiltrosGlobais = () => {
     console.log('Filtros aplicados:', filters)
   }
 
-  const hasActiveFilters = filters.empresa || filters.setor || filters.dataInicio || filters.dataFim
+  const hasActiveFilters = filters.empresa || filters.setor || filters.dataInicio || filters.dataFim || filters.tempoEmpresa || filters.faixaEtaria
 
   return (
     <Card 
@@ -158,36 +159,64 @@ const FiltrosGlobais = () => {
                 </InputGroup>
               </Box>
 
-              {/* Domínio Avaliado */}
+              
+
+              {/* Tempo de empresa */}
               <Box minW="220px" flex="1">
                 <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
-                  Domínio Avaliado
+                  Tempo de empresa
                 </Text>
-                <Select
-                  placeholder="Todos os domínios"
-                  value={filters.dominio || ''}
-                  onChange={(e) => handleFilterChange('dominio', e.target.value)}
-                  size="md"
-                  borderRadius="lg"
-                  borderColor={borderColor}
-                  _focus={{
-                    borderColor: 'gray.400',
-                    boxShadow: 'none',
-                  }}
-                >
-                  {[
-                    'Demandas Psicológicas',
-                    'Demandas Físicas',
-                    'Demandas de Trabalho',
-                    'Suporte Social e Liderança',
-                    'Suporte Social',
-                    'Esforço e Recompensa',
-                    'Saúde Emocional',
-                    'Interface Trabalho-Vida',
-                  ].map((d) => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </Select>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none">
+                    <FiFilter color="gray.400" />
+                  </InputLeftElement>
+                  <Select
+                    placeholder="Todos os tempos"
+                    value={filters.tempoEmpresa || ''}
+                    onChange={(e) => handleFilterChange('tempoEmpresa', e.target.value)}
+                    size="md"
+                    borderRadius="lg"
+                    borderColor={borderColor}
+                    _focus={{
+                      borderColor: 'gray.400',
+                      boxShadow: 'none',
+                    }}
+                    pl={10}
+                  >
+                    {temposEmpresa.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </Select>
+                </InputGroup>
+              </Box>
+
+              {/* Faixa etária */}
+              <Box minW="220px" flex="1">
+                <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
+                  Faixa etária
+                </Text>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none">
+                    <FiFilter color="gray.400" />
+                  </InputLeftElement>
+                  <Select
+                    placeholder="Todas as faixas"
+                    value={filters.faixaEtaria || ''}
+                    onChange={(e) => handleFilterChange('faixaEtaria', e.target.value)}
+                    size="md"
+                    borderRadius="lg"
+                    borderColor={borderColor}
+                    _focus={{
+                      borderColor: 'gray.400',
+                      boxShadow: 'none',
+                    }}
+                    pl={10}
+                  >
+                    {faixasEtarias.map((f) => (
+                      <option key={f} value={f}>{f}</option>
+                    ))}
+                  </Select>
+                </InputGroup>
               </Box>
 
               {/* Data Início */}
@@ -340,6 +369,36 @@ const FiltrosGlobais = () => {
                     📅 Até: {filters.dataFim}
                   </Box>
                 )}
+              {filters.tempoEmpresa && (
+                <Box
+                  bg="purple.50"
+                  color="purple.700"
+                  px={3}
+                  py={1}
+                  borderRadius="full"
+                  fontSize="xs"
+                  fontWeight="medium"
+                  border="1px solid"
+                  borderColor="purple.200"
+                >
+                  ⏳ {filters.tempoEmpresa}
+                </Box>
+              )}
+              {filters.faixaEtaria && (
+                <Box
+                  bg="pink.50"
+                  color="pink.700"
+                  px={3}
+                  py={1}
+                  borderRadius="full"
+                  fontSize="xs"
+                  fontWeight="medium"
+                  border="1px solid"
+                  borderColor="pink.200"
+                >
+                  👤 {filters.faixaEtaria}
+                </Box>
+              )}
               </HStack>
             </Box>
           )}

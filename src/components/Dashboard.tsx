@@ -7,11 +7,11 @@ import {
 import { motion } from 'framer-motion'
 import { 
   FiUsers, FiAlertTriangle, FiAlertOctagon, FiClock, FiAward,
-  FiActivity, FiTarget,
+  FiActivity,
   FiBarChart2, FiTrendingUp, FiCalendar, FiCheckCircle
 } from 'react-icons/fi'
 import { calculateDomainAverages } from '@/lib/supabase'
-import { classificarISESOCompleto, getChakraColorFromISESO, obterAcoesSugeridas, getTriClassificacaoFromISESO } from '@/lib/utils'
+import { classificarISESOCompleto, getChakraColorFromISESO } from '@/lib/utils'
 import { useFilters } from '@/contexts/store'
 import { useState, useEffect } from 'react'
 import PSQICard from './PSQICard'
@@ -25,12 +25,11 @@ const Dashboard = () => {
   const cardBg = useColorModeValue('white', 'gray.800')
   const borderColor = useColorModeValue('#E5E7EB', 'gray.600')
   const alternateBg = useColorModeValue('gray.50', 'gray.700')
-  const { filteredData, loading: filtersLoading, filters } = useFilters()
+  const { filteredData, loading: filtersLoading } = useFilters()
   
   const [isesoGeral, setIsesoGeral] = useState(0)
   const [totalColaboradores, setTotalColaboradores] = useState(0)
   const [ultimaAtualizacao, setUltimaAtualizacao] = useState('')
-  const [topRiscos, setTopRiscos] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   // Estados para paginação
@@ -98,6 +97,8 @@ const Dashboard = () => {
               iseso: computeISESO(item)
             }))
           setAllColaboradores(todosColaboradores)
+          // Resetar paginação ao atualizar lista filtrada
+          setCurrentPage(1)
           console.log('👥 Colaboradores processados:', todosColaboradores.length)
 
           // Colaboradores críticos por ISESO (≤ 39)
@@ -114,25 +115,14 @@ const Dashboard = () => {
             }))
           setCriticalColaboradores(criticosList)
 
-          // Top 3 riscos
-          const riscos = averages
-            .sort((a, b) => b.valor - a.valor)
-            .slice(0, 3)
-            .map((domain) => ({
-              nome: domain.nome,
-              valor: domain.valor,
-              nivel: domain.valor > 70 ? 'Alto' : domain.valor > 50 ? 'Médio' : 'Baixo',
-              acao: getAcaoSugerida(domain.valor)
-            }))
-          setTopRiscos(riscos)
-          console.log('🔥 Top 3 riscos:', riscos)
+          // (removido) cálculo de top 3 riscos
         } else {
           console.log('📭 Nenhum dado encontrado - resetando valores')
           // Resetar valores quando não há dados
           setIsesoGeral(0)
           setTotalColaboradores(0)
           setUltimaAtualizacao('')
-          setTopRiscos([])
+          
           setAllColaboradores([])
         }
       } catch (error) {
@@ -187,11 +177,7 @@ const Dashboard = () => {
     return dominioCritico.nome
   }
 
-  const getAcaoSugerida = (valor: number) => {
-    if (valor > 70) return 'Intervenção Imediata'
-    if (valor > 50) return 'Monitoramento'
-    return 'Manutenção'
-  }
+  // (removido) getAcaoSugerida
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -513,7 +499,7 @@ const Dashboard = () => {
                   </Box>
                     <VStack align="start" spacing={1}>
                       <Text fontSize="2xl" fontWeight="bold" color={useColorModeValue('gray.900', 'gray.100')}>
-                        Ações Recomendadas {filters.dominio ? `• ${filters.dominio}` : ''}
+                        Ações Recomendadas
                       </Text>
                       <HStack
                         as="span"
@@ -585,19 +571,7 @@ const Dashboard = () => {
                 </Box>
               </Grid>
 
-              {/* Recomendações específicas por domínio (opcional) */}
-              {filters.dominio && (
-                <VStack align="stretch" spacing={1}>
-                  <Text fontSize="sm" fontWeight="bold">Sugeridas para {filters.dominio}</Text>
-                  {(() => {
-                    const tri = getTriClassificacaoFromISESO(isesoGeral)
-                    const acoes = obterAcoesSugeridas(filters.dominio!, tri)
-                    return acoes.length > 0 ? acoes.map((a, i) => (<Text key={i} fontSize="sm">• {a}</Text>)) : (
-                      <Text fontSize="sm" color="gray.500">Sem recomendações específicas</Text>
-                    )
-                  })()}
-                </VStack>
-              )}
+              
 
               {/* Rodapé */}
                 <Divider borderColor={useColorModeValue('gray.200', 'gray.700')} mt={2} />
@@ -609,18 +583,20 @@ const Dashboard = () => {
           </MotionCard>
         </Box>
 
-        {/* Top 3 Riscos Críticos */}
-        <MotionCard
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-          boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
-          border="1px solid"
-          borderColor={borderColor}
-          borderRadius="xl"
-        >
-          <CardBody p={6}>
-            <VStack spacing={6} align="stretch">
+        {/* Domínios: piores e melhores (lado a lado) */}
+        <Grid templateColumns="repeat(auto-fit, minmax(320px, 1fr))" gap={6}>
+          {/* Piores dominios (abaixo de 55%) */}
+          <MotionCard
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+            border="1px solid"
+            borderColor={borderColor}
+            borderRadius="xl"
+          >
+            <CardBody p={6}>
+              <VStack spacing={6} align="stretch">
               <HStack justify="space-between" align="center">
                 <HStack spacing={3}>
                   <Box
@@ -632,7 +608,7 @@ const Dashboard = () => {
                     <FiTrendingUp size={20} />
                   </Box>
                   <Text fontSize="lg" fontWeight="bold" color={textColor}>
-                    Top 3 Riscos Críticos
+                    Domínios com Desempenho Crítico (ISESO &lt; 55%)
                   </Text>
                 </HStack>
                 <Badge 
@@ -644,9 +620,14 @@ const Dashboard = () => {
                 </Badge>
               </HStack>
 
-              {topRiscos.length > 0 ? (
+              {(() => {
+                const allDomainAverages = calculateDomainAverages(filteredData as any[])
+                const riskyDomains = allDomainAverages
+                  .filter(d => d.valor > 0 && d.valor < 55)
+                  .sort((a, b) => a.valor - b.valor)
+                return riskyDomains.length > 0 ? (
                 <VStack spacing={4} align="stretch">
-                  {topRiscos.map((risco, index) => (
+                  {riskyDomains.map((risco, index) => (
                     <MotionCard
                       key={index}
                       initial={{ opacity: 0, x: -20 }}
@@ -707,10 +688,7 @@ const Dashboard = () => {
                                 <FiActivity size={16} />
                                 <Text fontWeight="medium">ISESO: {risco.valor}</Text>
                               </HStack>
-                              <HStack spacing={2}>
-                                <FiTarget size={16} />
-                                <Text fontWeight="medium">{risco.acao}</Text>
-                              </HStack>
+                              
                             </HStack>
                           </VStack>
                           
@@ -741,10 +719,147 @@ const Dashboard = () => {
                 <Box textAlign="center" py={8}>
                   <Text color="gray.500">Nenhum risco encontrado</Text>
                 </Box>
-              )}
-            </VStack>
-          </CardBody>
-        </MotionCard>
+              )})()}
+              </VStack>
+            </CardBody>
+          </MotionCard>
+
+          {/* Melhores dominios (acima de 70%) */}
+          <MotionCard
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+            border="1px solid"
+            borderColor={borderColor}
+            borderRadius="xl"
+          >
+            <CardBody p={6}>
+              <VStack spacing={6} align="stretch">
+                <HStack justify="space-between" align="center">
+                  <HStack spacing={3}>
+                    <Box
+                      p={2}
+                      bg="#0D249B"
+                      borderRadius="lg"
+                      color="white"
+                    >
+                      <FiTrendingUp size={20} />
+                    </Box>
+                    <Text fontSize="lg" fontWeight="bold" color={textColor}>
+                      Domínios com Desempenho Favorável (ISESO ≥ 70%)
+                    </Text>
+                  </HStack>
+                  <Badge 
+                    variant="premium"
+                    bgGradient="linear(135deg, #0D249B 0%, #1A45FC 100%)"
+                    color="white"
+                  >
+                    ISESO
+                  </Badge>
+                </HStack>
+
+                {(() => {
+                  const allDomainAverages = calculateDomainAverages(filteredData as any[])
+                  const bestDomains = allDomainAverages
+                    .filter(d => d.valor >= 70)
+                    .sort((a, b) => b.valor - a.valor)
+                  return bestDomains.length > 0 ? (
+                  <VStack spacing={4} align="stretch">
+                    {bestDomains.map((dom, index) => (
+                      <MotionCard
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1, duration: 0.3 }}
+                        whileHover={{ 
+                          scale: 1.02,
+                          boxShadow: '0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04)'
+                        }}
+                        bg={cardBg}
+                        borderRadius="xl"
+                        border="1px solid"
+                        borderColor={borderColor}
+                        boxShadow="0 2px 4px rgba(0, 0, 0, 0.05)"
+                        overflow="hidden"
+                        position="relative"
+                        _before={{
+                          content: '""',
+                          position: 'absolute',
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: '4px',
+                          bg: `${getStatusColor(dom.valor)}.500`,
+                          borderRadius: '0 2px 2px 0'
+                        }}
+                      >
+                        <CardBody p={5}>
+                          <HStack justify="space-between" align="center" spacing={4}>
+                            <VStack align="start" spacing={3} flex={1}>
+                              <HStack spacing={3} align="center">
+                                <Avatar 
+                                  size="sm" 
+                                  name={dom.nome}
+                                  bg={`${getStatusColor(dom.valor)}.100`}
+                                  color={`${getStatusColor(dom.valor)}.700`}
+                                />
+                                <VStack align="start" spacing={1}>
+                                  <Text fontSize="md" fontWeight="bold" color={textColor}>
+                                    {dom.nome}
+                                  </Text>
+                                  <Badge
+                                    size="sm"
+                                    bgGradient={getStatusGradient(dom.valor)}
+                                    color={`${getStatusColor(dom.valor)}.800`}
+                                    fontWeight="semibold"
+                                    px={3}
+                                    py={1}
+                                    borderRadius="full"
+                                  >
+                                    {getStatusText(dom.valor).toUpperCase()}
+                                  </Badge>
+                                </VStack>
+                              </HStack>
+                              <HStack spacing={4} fontSize="sm" color="gray.500">
+                                <HStack spacing={2}>
+                                  <FiActivity size={16} />
+                                  <Text fontWeight="medium">ISESO: {dom.valor}</Text>
+                                </HStack>
+                              </HStack>
+                            </VStack>
+                            <VStack align="end" spacing={1}>
+                              <Text 
+                                fontSize="4xl" 
+                                fontWeight="black" 
+                                color={`${getStatusColor(dom.valor)}.600`}
+                                lineHeight="1"
+                              >
+                                {dom.valor}
+                              </Text>
+                              <Text 
+                                fontSize="xs" 
+                                color={`${getStatusColor(dom.valor)}.500`}
+                                fontWeight="medium"
+                                textTransform="uppercase"
+                              >
+                                Score
+                              </Text>
+                            </VStack>
+                          </HStack>
+                        </CardBody>
+                      </MotionCard>
+                    ))}
+                  </VStack>
+                ) : (
+                  <Box textAlign="center" py={8}>
+                    <Text color="gray.500">Nenhum domínio acima de 70%</Text>
+                  </Box>
+                )})()}
+              </VStack>
+            </CardBody>
+          </MotionCard>
+        </Grid>
 
         {/* Colaboradores */}
         <MotionCard

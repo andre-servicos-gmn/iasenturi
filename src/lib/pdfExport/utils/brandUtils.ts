@@ -3,6 +3,8 @@ export interface SenturiBrand {
   secondaryColor: string
   accentColor: string
   logoPath: string
+  // Optional decorative image for the report cover. Should live under public/branding
+  coverImagePath?: string
   fonts: {
     title: string
     body: string
@@ -14,6 +16,8 @@ export const SENTURI_BRAND: SenturiBrand = {
   secondaryColor: '#1A365D',
   accentColor: '#3182CE',
   logoPath: '/logo_senturi_modo_clarao.png',
+  // If you add a PNG at public/branding/report-cover.png it will be used automatically
+  coverImagePath: '/branding/report-cover.png',
   fonts: {
     title: 'helvetica',
     body: 'helvetica'

@@ -81,11 +81,27 @@ export const addCoverPage = async (
   const primary = hexToRgb(brand.primaryColor)
   const secondary = hexToRgb(brand.secondaryColor)
 
-  // Background gradient-like blocks
+  // Background block
   pdf.setFillColor(secondary.r, secondary.g, secondary.b)
   pdf.rect(0, 0, pageWidth, pageHeight * 0.35, 'F')
   pdf.setFillColor(primary.r, primary.g, primary.b)
   pdf.rect(0, pageHeight * 0.3, pageWidth, pageHeight * 0.05, 'F')
+
+  // Optional decorative cover image if provided by branding
+  if (brand.coverImagePath) {
+    try {
+      const resp = await fetch(brand.coverImagePath)
+      const blob = await resp.blob()
+      const dataUrl: string = await new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.readAsDataURL(blob)
+      })
+      const imgW = pageWidth
+      const imgH = pageHeight * 0.45
+      pdf.addImage(dataUrl, 'PNG', 0, pageHeight * 0.35, imgW, imgH, undefined, 'FAST')
+    } catch {}
+  }
 
   // Title
   pdf.setFont(brand.fonts.title, 'bold')
@@ -99,10 +115,24 @@ export const addCoverPage = async (
   pdf.text(`Período: ${params.period}`, 16, pageHeight * 0.29)
 
   // Logo
-  if (params.logoDataUrl) {
+  const logoDataUrl = params.logoDataUrl
+  if (logoDataUrl) {
     const logoW = 50
     const logoH = 18
-    pdf.addImage(params.logoDataUrl, 'PNG', pageWidth - logoW - 16, 16, logoW, logoH)
+    pdf.addImage(logoDataUrl, 'PNG', pageWidth - logoW - 16, 16, logoW, logoH)
+  } else if (brand.logoPath) {
+    try {
+      const resp = await fetch(brand.logoPath)
+      const blob = await resp.blob()
+      const dataUrl: string = await new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.readAsDataURL(blob)
+      })
+      const logoW = 50
+      const logoH = 18
+      pdf.addImage(dataUrl, 'PNG', pageWidth - logoW - 16, 16, logoW, logoH)
+    } catch {}
   }
 }
 

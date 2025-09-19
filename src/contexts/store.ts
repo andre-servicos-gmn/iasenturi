@@ -7,7 +7,8 @@ interface FilterState {
   setor: string
   dataInicio: string
   dataFim: string
-  dominio?: string // novo filtro por domínio avaliado
+  tempoEmpresa?: string
+  faixaEtaria?: string
 }
 
 // Tipos para sidebar
@@ -40,6 +41,8 @@ interface FilterContextType {
   empresas: string[]
   setores: string[]
   setoresFiltrados: string[]
+  temposEmpresa: string[]
+  faixasEtarias: string[]
   filteredData: FilteredData[]
   loading: boolean
   applyFilters: () => Promise<void>
@@ -71,13 +74,19 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setor: '',
     dataInicio: '',
     dataFim: '',
-    dominio: ''
+    tempoEmpresa: '',
+    faixaEtaria: ''
   })
   const [empresas, setEmpresas] = useState<string[]>([])
   const [setores, setSetores] = useState<string[]>([])
   const [setoresFiltrados, setSetoresFiltrados] = useState<string[]>([])
+  const [temposEmpresa, setTemposEmpresa] = useState<string[]>([])
+  const [faixasEtarias, setFaixasEtarias] = useState<string[]>([])
   const [filteredData, setFilteredData] = useState<FilteredData[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Coluna dinâmica para tempo de empresa (tempo_empresa ou tempo_organizacao)
+  const [tempoEmpresaColumn, setTempoEmpresaColumn] = useState<string>('tempo_empresa')
 
   // Estados para sidebar
   const [sidebar, setSidebar] = useState<SidebarState>({
@@ -138,6 +147,56 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       setSetoresFiltrados(setoresUnicos)
       console.log('🏬 Setores encontrados:', setoresUnicos)
 
+      // Detectar dinamicamente a coluna de tempo de empresa (tempo_empresa vs tempo_organizacao)
+      let detectedTempoColumn = 'tempo_empresa'
+      try {
+        const { data: sampleData } = await supabase
+          .from('COPSQ_respostas')
+          .select('*')
+          .limit(1)
+        const sample: any = sampleData && sampleData.length > 0 ? sampleData[0] : {}
+        if (!("tempo_empresa" in sample) && ("tempo_organizacao" in sample)) {
+          detectedTempoColumn = 'tempo_organizacao'
+        }
+      } catch (e) {
+        // mantém padrão
+      }
+      setTempoEmpresaColumn(detectedTempoColumn)
+
+      // Buscar opções de tempo de empresa
+      try {
+        const { data: temposData, error: temposError }: any = await supabase
+          .from('COPSQ_respostas')
+          .select(detectedTempoColumn)
+          .not(detectedTempoColumn, 'is', null)
+        if (temposError) {
+          console.error('❌ Erro ao buscar tempos de empresa:', temposError)
+        } else {
+          const valores = [...new Set(((temposData || []) as any[]).map((item: any) => String(item[detectedTempoColumn] ?? '')).filter(Boolean))]
+          setTemposEmpresa(valores as string[])
+          console.log('⏳ Tempos de empresa encontrados:', valores)
+        }
+      } catch (e) {
+        console.error('❌ Erro inesperado ao carregar tempos de empresa:', e)
+      }
+
+      // Buscar opções de faixa etária
+      try {
+        const { data: faixasData, error: faixasError }: any = await supabase
+          .from('COPSQ_respostas')
+          .select('faixa_etaria')
+          .not('faixa_etaria', 'is', null)
+        if (faixasError) {
+          console.error('❌ Erro ao buscar faixas etárias:', faixasError)
+        } else {
+          const valores = [...new Set(((faixasData || []) as any[]).map((item: any) => String(item.faixa_etaria ?? '')).filter(Boolean))]
+          setFaixasEtarias(valores as string[])
+          console.log('👤 Faixas etárias encontradas:', valores)
+        }
+      } catch (e) {
+        console.error('❌ Erro inesperado ao carregar faixas etárias:', e)
+      }
+
       // Carregar dados iniciais (sem filtros)
       console.log('📊 Carregando dados iniciais...')
       const { data: initialData, error: initialError } = await supabase
@@ -182,23 +241,15 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         console.log('🏬 Filtrando por setor:', filters.setor)
         query = query.eq('area_setor', filters.setor)
       }
-      // Filtragem por domínio (mapeia para colunas COPSOQ)
-      if (filters.dominio) {
-        const map: Record<string, string> = {
-          'Demandas Psicológicas': 'demandas_psicologicas',
-          'Demandas Físicas': 'demandas_fisicas',
-          'Demandas de Trabalho': 'demandas_trabalho',
-          'Suporte Social e Liderança': 'suporte_social_lideranca',
-          'Esforço e Recompensa': 'esforco_recompensa',
-          'Interface Trabalho-Vida': 'interface_trabalho_vida',
-          'Saúde Emocional': 'saude_emocional'
-        }
-        const col = map[filters.dominio]
-        if (col) {
-          console.log('🎯 Filtrando por domínio (pontuação > 0):', filters.dominio, '->', col)
-          // Mantém somente respostas com valor do domínio presente
-          query = query.gt(col, 0)
-        }
+      if (filters.tempoEmpresa) {
+        const pattern = `%${(filters.tempoEmpresa || '').trim()}%`
+        console.log('⏳ Filtrando por tempo de empresa (ILIKE):', pattern, `(${tempoEmpresaColumn})`)
+        query = (query as any).ilike(tempoEmpresaColumn, pattern)
+      }
+      if (filters.faixaEtaria) {
+        const pattern = `%${(filters.faixaEtaria || '').trim()}%`
+        console.log('👤 Filtrando por faixa etária (ILIKE):', pattern)
+        query = (query as any).ilike('faixa_etaria', pattern)
       }
       if (filters.dataInicio) {
         console.log('📅 Filtrando por data início:', filters.dataInicio)
@@ -289,6 +340,8 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     empresas,
     setores,
     setoresFiltrados,
+    temposEmpresa,
+    faixasEtarias,
     filteredData,
     loading,
     applyFilters,

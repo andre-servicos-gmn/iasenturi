@@ -96,7 +96,15 @@ export class PDFGenerator {
       const x = this.ctx.margins.left
       let y = this.ctx.margins.top + 10
       const lines = this.pdf.splitTextToSize(texts.executiveSummary, this.ctx.contentWidth)
-      this.pdf.text(lines, x, y)
+      const lineHeight = 6
+      for (const line of lines as string[]) {
+        if (y > this.ctx.pageHeight - this.ctx.margins.bottom - lineHeight) {
+          this.addNewPage('Sumário Executivo (cont.)')
+          y = this.ctx.margins.top + 10
+        }
+        this.pdf.text(line, x, y)
+        y += lineHeight
+      }
     }
 
     if (sections.domainsAnalysis) {
