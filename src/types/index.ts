@@ -112,6 +112,15 @@ export interface Empresa {
   updated_at: string
 }
 
+export interface Topico {
+  id: string
+  nome: string
+  descricao?: string
+  cor?: string
+  created_at: string
+  updated_at: string
+}
+
 export interface Intervencao {
   id: string
   empresa_id: string
@@ -129,6 +138,7 @@ export interface Intervencao {
   dominios_afetados: string[]
   responsavel: string
   custo?: number
+  topicos?: string[] // IDs dos tópicos associados
   created_at: string
   updated_at: string
 }

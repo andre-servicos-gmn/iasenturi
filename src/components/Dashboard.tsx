@@ -78,7 +78,7 @@ const Dashboard = () => {
               parseFloat((item as any).media_interface || '0'),
               parseFloat((item as any).media_significado || '0'),
               parseFloat((item as any).media_inseguranca || '0'),
-              parseFloat((item as any).media_bem_estar || '0')
+              parseFloat((item as any).saude_emocional || '0')
             ].filter(v => !isNaN(v) && v > 0)
             if (medias.length === 0) return null
             return Math.round(medias.reduce((a, b) => a + b, 0) / medias.length)
@@ -146,7 +146,7 @@ const Dashboard = () => {
       { nome: 'Suporte Social e Liderança', valor: parseFloat((item as any).media_interface || '0') },
       { nome: 'Esforço e Recompensa', valor: parseFloat((item as any).media_significado || '0') },
       { nome: 'Interface Trabalho-Vida', valor: parseFloat((item as any).media_inseguranca || '0') },
-      { nome: 'Saúde Emocional', valor: parseFloat((item as any).media_bem_estar || '0') }
+      { nome: 'Saúde Emocional', valor: parseFloat((item as any).saude_emocional || '0') }
     ]
     
     // Se não temos médias calculadas, usar campos individuais

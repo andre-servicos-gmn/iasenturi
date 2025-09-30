@@ -79,10 +79,10 @@ const PSQICard = () => {
           query = query.eq('empresa_id', filtros.empresa)
           console.log(`🏢 Filtro empresa aplicado: ${filtros.empresa}`)
         }
-        if (filtros.setor && filtros.setorColumn) {
-          // Usa o nome da coluna de setor dinamicamente descoberto pelo componente de filtro
-          query = query.eq(filtros.setorColumn, filtros.setor)
-          console.log(`🏬 Filtro setor aplicado: [${filtros.setorColumn}] = "${filtros.setor}"`)
+        if (filtros.setor) {
+          // Usar a coluna Área/Setor da tabela PSQI_respostas
+          query = query.eq('Área/Setor', filtros.setor)
+          console.log(`🏬 Filtro setor aplicado: Área/Setor = "${filtros.setor}"`)
         }
         
         console.log(`🔍 Query PSQI final:`, query)

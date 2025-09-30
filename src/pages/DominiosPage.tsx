@@ -3,7 +3,7 @@ import {
 } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { FiBarChart2, FiTrendingUp, FiUsers, FiTarget } from 'react-icons/fi'
-import { calculateDomainAverages, getDataBySector } from '@/lib/supabase'
+import { calculateDomainAverages, calculateDomainAveragesBySector, calculateDomainAveragesBySectorAverages, fetchAllSectorsForCompany } from '@/lib/supabase'
 import { useFilters } from '@/contexts/store'
 import { useState, useEffect } from 'react'
 import RadarChart from '../components/RadarChart'
@@ -18,13 +18,50 @@ const DominiosPage = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const processData = () => {
+    const processData = async () => {
       try {
         setLoading(true)
         
-        if (filteredData.length > 0) {
+        console.log('🔍 DominiosPage - filters:', filters)
+        
+        // Filtrar dados válidos (empresa_id não nulo)
+        const validData = filteredData.filter(item => item.empresa_id !== null && item.empresa_id !== undefined)
+        console.log('🔍 Dados válidos (empresa_id não nulo):', validData.length, 'de', filteredData.length)
+        
+        // Determinar quais dados usar para o radar
+        let radarData: any[] = []
+        
+        if (filters.setor) {
+          // Se setor está selecionado, usar apenas dados do setor selecionado
+          console.log('🏭 Setor selecionado - usando dados do setor:', filters.setor)
+          radarData = validData.filter(item => item.area_setor === filters.setor)
+          console.log('🔍 Dados do setor encontrados:', radarData.length, 'registros')
+        } else if (filters.empresa) {
+          // Se empresa está selecionada mas nenhum setor, usar dados de TODOS os setores da empresa
+          console.log('🏢 Empresa selecionada - buscando dados de todos os setores:', filters.empresa)
+          radarData = await fetchAllSectorsForCompany(filters.empresa) as any[]
+          console.log('🔍 Dados de todos os setores encontrados:', radarData.length, 'registros')
+        } else {
+          // Se nenhum filtro específico, usar validData
+          radarData = validData
+          console.log('🔍 Usando validData geral:', radarData.length, 'registros')
+        }
+        
+        console.log('🔍 DominiosPage - radarData length:', radarData.length)
+        
+        if (radarData.length > 0) {
           // Calcular médias por domínio
-          const averages = calculateDomainAverages(filteredData as any[])
+          let averages: any[]
+          
+          if (filters.empresa && !filters.setor) {
+            // Se empresa está selecionada mas nenhum setor, usar o mesmo método do mapa de calor
+            console.log('🏢 Usando método do mapa de calor (média das médias dos setores)')
+            averages = calculateDomainAveragesBySectorAverages(radarData as any[])
+          } else {
+            // Para setor específico ou dados gerais, usar método direto
+            console.log('🏭 Usando método direto (média de todos os colaboradores)')
+            averages = calculateDomainAverages(radarData as any[])
+          }
           
           // Adicionar classificação baseada no valor (5 categorias)
           const averagesWithClassification = averages.map(domain => ({
@@ -43,10 +80,11 @@ const DominiosPage = () => {
           
           setDomainAverages(averagesWithClassification)
 
-          // Calcular dados por setor apenas se houver setor selecionado
+          // Para dados por setor, sempre usar validData (que já está filtrado)
           if (filters.setor) {
-            const sector = getDataBySector(filteredData as any[])
-            setSectorData(sector)
+            console.log('🔍 Calculando médias do setor selecionado para comparação:', filters.setor)
+            const sectorAverages = calculateDomainAveragesBySector(validData as any[], filters.setor)
+            setSectorData(sectorAverages)
           } else {
             setSectorData([])
           }
@@ -62,7 +100,7 @@ const DominiosPage = () => {
     }
 
     processData()
-  }, [filteredData, filters.setor])
+  }, [filteredData, filters.setor, filters.empresa])
 
   if (loading || filtersLoading) {
     return (

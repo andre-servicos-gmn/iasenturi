@@ -41,7 +41,7 @@ const MapaCalorPage = () => {
             'media_interface',
             'media_significado',
             'media_inseguranca',
-            'media_bem_estar'
+            'saude_emocional'
           ]
 
           // Obter setores únicos

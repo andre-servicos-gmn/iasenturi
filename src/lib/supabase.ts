@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
-import { Empresa, Intervencao, DadosHistoricoCompleto, HistoricoISESO } from '@/types'
+import { Empresa, Intervencao, DadosHistoricoCompleto, HistoricoISESO, Topico } from '@/types'
 import { classificarISESOCompleto } from '@/lib/utils'
 
 function generateUUID(): string {
@@ -129,6 +129,8 @@ export interface COPSQResposta {
   Decidir_Velocidade: string | null
   Contribui_Positivamente: string | null
   empresa_id: string | null
+  saude_emocional: string | null
+  risco_saúde_emocional: string | null
 }
 
 // Função para buscar dados do COPSOQ
@@ -279,8 +281,8 @@ export function calculateDomainAverages(data: COPSQResposta[]) {
     if (resposta.media_inseguranca) {
       domains['Interface Trabalho-Vida'].push(parseFloat(resposta.media_inseguranca))
     }
-    if (resposta.media_bem_estar) {
-      domains['Saúde Emocional'].push(parseFloat(resposta.media_bem_estar))
+    if (resposta.saude_emocional) {
+      domains['Saúde Emocional'].push(parseFloat(resposta.saude_emocional))
     }
   })
 
@@ -312,6 +314,107 @@ export function getDataBySector(data: COPSQResposta[]) {
   })
 
   return Object.values(sectors).flat()
+}
+
+export function calculateDomainAveragesBySector(data: COPSQResposta[], targetSector: string) {
+  console.log('🔍 calculateDomainAveragesBySector - Setor:', targetSector)
+  
+  const sectorData = data.filter(item => item.area_setor === targetSector)
+  console.log('🔍 Dados do setor encontrados:', sectorData.length, 'registros')
+  
+  const averages = calculateDomainAverages(sectorData)
+  
+  console.log('📊 Médias do setor', targetSector, ':', averages)
+  return averages
+}
+
+// Função para calcular médias por domínio usando o mesmo método do mapa de calor (média das médias dos setores)
+export function calculateDomainAveragesBySectorAverages(data: COPSQResposta[]) {
+  console.log('🔍 calculateDomainAveragesBySectorAverages - Calculando média das médias dos setores')
+  
+  // Obter setores únicos
+  const setores = [...new Set(data.map(item => item.area_setor).filter(Boolean))]
+  console.log('🔍 Setores encontrados:', setores)
+  
+  const domains: Record<string, number[]> = {
+    'Demandas Psicológicas': [],
+    'Demandas Físicas': [],
+    'Demandas de Trabalho': [],
+    'Suporte Social e Liderança': [],
+    'Esforço e Recompensa': [],
+    'Interface Trabalho-Vida': [],
+    'Saúde Emocional': []
+  }
+
+  // Mapear campos para domínios
+  const domainFields = [
+    'media_exigencias',
+    'media_organizacao', 
+    'media_relacoes',
+    'media_interface',
+    'media_significado',
+    'media_inseguranca',
+    'saude_emocional'
+  ]
+
+  // Para cada setor, calcular a média e adicionar ao array do domínio
+  setores.forEach(setor => {
+    const dadosSetor = data.filter(item => item.area_setor === setor)
+    
+    domainFields.forEach((field, index) => {
+      const domainName = Object.keys(domains)[index]
+      const valores = dadosSetor
+        .map(item => {
+          const valor = (item as any)[field]
+          return parseFloat(valor || '0')
+        })
+        .filter(valor => valor > 0)
+      
+      if (valores.length > 0) {
+        const mediaSetor = Math.round(valores.reduce((a, b) => a + b, 0) / valores.length)
+        domains[domainName].push(mediaSetor)
+        console.log(`📊 Setor ${setor} - ${domainName}: ${mediaSetor} (${valores.length} colaboradores)`)
+      }
+    })
+  })
+
+  // Calcular médias finais (média das médias dos setores)
+  const averages = Object.entries(domains).map(([domain, values]) => ({
+    nome: domain,
+    valor: values.length > 0 ? Math.round(values.reduce((a, b) => a + b, 0) / values.length) : 0
+  }))
+
+  console.log('📊 Médias finais (média das médias dos setores):', averages)
+  return averages
+}
+
+export async function fetchAllSectorsForCompany(empresaId: string): Promise<COPSQResposta[]> {
+  try {
+    if (!supabase) {
+      console.error('Supabase client not initialized')
+      return []
+    }
+
+    console.log('🏢 Buscando dados de todos os setores da empresa para radar:', empresaId)
+    
+    const { data, error } = await supabase
+      .from('COPSQ_respostas')
+      .select('*')
+      .eq('empresa_id', empresaId)
+      .not('nome_completo', 'is', null)
+      .not('area_setor', 'is', null)
+
+    if (error) {
+      console.error('❌ Erro ao buscar dados da empresa:', error)
+      return []
+    }
+
+    console.log('✅ Dados de todos os setores encontrados:', data?.length || 0, 'registros')
+    return data || []
+  } catch (error) {
+    console.error('❌ Erro na conexão com Supabase:', error)
+    return []
+  }
 }
 
 // ===== NOVAS FUNÇÕES PARA HISTÓRICO =====
@@ -521,6 +624,189 @@ export async function updateIntervencaoResultado(
   }
 }
 
+// Atualizar uma intervenção completa
+export async function updateIntervencao(
+  id: string,
+  dados: Partial<Omit<Intervencao, 'id' | 'created_at' | 'updated_at'>>
+): Promise<boolean> {
+  try {
+    if (!supabase) {
+      console.error('Supabase client not initialized')
+      return false
+    }
+
+    const { error } = await supabase
+      .from('intervencoes')
+      .update({ ...dados, updated_at: new Date().toISOString() })
+      .eq('id', id)
+
+    if (error) {
+      console.error('Erro ao atualizar intervenção:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Erro na conexão com Supabase ao atualizar intervenção:', error)
+    return false
+  }
+}
+
+// Deletar uma intervenção
+export async function deleteIntervencao(id: string): Promise<boolean> {
+  try {
+    if (!supabase) {
+      console.error('Supabase client not initialized')
+      return false
+    }
+
+    const { error } = await supabase
+      .from('intervencoes')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      console.error('Erro ao deletar intervenção:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Erro na conexão com Supabase ao deletar intervenção:', error)
+    return false
+  }
+}
+
+// ===== FUNÇÕES PARA TÓPICOS =====
+
+// Buscar todos os tópicos
+export async function fetchTopicos(): Promise<Topico[]> {
+  try {
+    if (!supabase) {
+      console.error('Supabase client not initialized')
+      return []
+    }
+
+    const { data, error } = await supabase
+      .from('topicos')
+      .select('*')
+      .order('nome', { ascending: true })
+
+    if (error) {
+      console.error('Erro ao buscar tópicos:', error)
+      return []
+    }
+
+    return (data || []).map((row: any) => ({
+      id: row.id,
+      nome: row.nome,
+      descricao: row.descricao || undefined,
+      cor: row.cor || undefined,
+      created_at: row.created_at,
+      updated_at: row.updated_at
+    }))
+  } catch (error) {
+    console.error('Erro na conexão com Supabase ao buscar tópicos:', error)
+    return []
+  }
+}
+
+// Criar tópico
+export async function createTopico(
+  topico: Omit<Topico, 'id' | 'created_at' | 'updated_at'>
+): Promise<Topico | null> {
+  try {
+    if (!supabase) {
+      console.error('Supabase client not initialized')
+      return null
+    }
+
+    const nowIso = new Date().toISOString()
+    const dbInsert = {
+      id: generateUUID(),
+      nome: topico.nome,
+      descricao: topico.descricao || null,
+      cor: topico.cor || null,
+      created_at: nowIso,
+      updated_at: nowIso
+    }
+
+    const { error } = await supabase
+      .from('topicos')
+      .insert(dbInsert)
+
+    if (error) {
+      console.error('Erro ao criar tópico:', error)
+      return null
+    }
+
+    return {
+      id: dbInsert.id,
+      nome: dbInsert.nome,
+      descricao: dbInsert.descricao || undefined,
+      cor: dbInsert.cor || undefined,
+      created_at: nowIso,
+      updated_at: nowIso
+    }
+  } catch (error) {
+    console.error('Erro na conexão com Supabase ao criar tópico:', error)
+    return null
+  }
+}
+
+// Atualizar tópico
+export async function updateTopico(
+  id: string,
+  dados: Partial<Omit<Topico, 'id' | 'created_at' | 'updated_at'>>
+): Promise<boolean> {
+  try {
+    if (!supabase) {
+      console.error('Supabase client not initialized')
+      return false
+    }
+
+    const { error } = await supabase
+      .from('topicos')
+      .update({ ...dados, updated_at: new Date().toISOString() })
+      .eq('id', id)
+
+    if (error) {
+      console.error('Erro ao atualizar tópico:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Erro na conexão com Supabase ao atualizar tópico:', error)
+    return false
+  }
+}
+
+// Deletar tópico
+export async function deleteTopico(id: string): Promise<boolean> {
+  try {
+    if (!supabase) {
+      console.error('Supabase client not initialized')
+      return false
+    }
+
+    const { error } = await supabase
+      .from('topicos')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      console.error('Erro ao deletar tópico:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Erro na conexão com Supabase ao deletar tópico:', error)
+    return false
+  }
+}
+
 // Função para processar dados históricos por ciclos
 export async function fetchDadosHistoricos(filtros: {
   empresa_id?: string
@@ -623,7 +909,7 @@ function processarCiclosAvaliacao(
         { key: 'media_interface', nome: 'Suporte Social e Liderança' },
         { key: 'media_significado', nome: 'Esforço e Recompensa' },
         { key: 'media_inseguranca', nome: 'Interface Trabalho-Vida' },
-        { key: 'media_bem_estar', nome: 'Saúde Emocional' }
+        { key: 'saude_emocional', nome: 'Saúde Emocional' }
       ]
 
       dominios.forEach(dominio => {
