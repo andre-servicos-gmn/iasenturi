@@ -98,16 +98,15 @@ const Header = () => {
                 return 0
               }
             })()
-            const riskLevel = averageScore >= 70 ? 'low' : averageScore >= 50 ? 'medium' : 'high'
             const dominios: Array<{ name: string; score: number; risk: 'low' | 'medium' | 'high' }> = [
-              { name: 'Demandas Psicológicas', score: averageScore, risk: riskLevel },
-              { name: 'Demandas Físicas', score: averageScore, risk: riskLevel },
-              { name: 'Demandas de Trabalho', score: averageScore, risk: riskLevel },
-              { name: 'Suporte Social e Liderança', score: averageScore, risk: riskLevel },
-              { name: 'Suporte Social', score: averageScore, risk: riskLevel },
-              { name: 'Esforço e Recompensa', score: averageScore, risk: riskLevel },
-              { name: 'Saúde Emocional', score: averageScore, risk: riskLevel },
-              { name: 'Interface Trabalho-Vida', score: averageScore, risk: riskLevel }
+              { name: 'Demandas Psicológicas', score: averageScore, risk: 'medium' },
+              { name: 'Demandas Físicas', score: averageScore, risk: 'medium' },
+              { name: 'Demandas de Trabalho', score: averageScore, risk: 'medium' },
+              { name: 'Suporte Social e Liderança', score: averageScore, risk: 'medium' },
+              { name: 'Suporte Social', score: averageScore, risk: 'medium' },
+              { name: 'Esforço e Recompensa', score: averageScore, risk: 'medium' },
+              { name: 'Saúde Emocional', score: averageScore, risk: 'medium' },
+              { name: 'Interface Trabalho-Vida', score: averageScore, risk: 'medium' }
             ]
             return (
               <AdvancedReportModal
@@ -116,7 +115,6 @@ const Header = () => {
                 companyName={companyName}
                 period={period}
                 totalEmployees={totalEmployees}
-                riskLevel={riskLevel as 'low' | 'medium' | 'high'}
                 dominios={dominios}
               />
             )

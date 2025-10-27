@@ -25,7 +25,6 @@ import {
 import { FiDownload } from 'react-icons/fi'
 import { generateExecutiveReport } from '@/lib/pdfExport/templates/ExecutiveTemplate'
 import { useFilters } from '@/contexts/store'
-import { FiExternalLink } from 'react-icons/fi'
 
 type RiskLevel = 'low' | 'medium' | 'high'
 
@@ -35,7 +34,6 @@ export interface AdvancedReportModalProps {
   companyName: string
   period: string
   totalEmployees: number
-  riskLevel: RiskLevel
   dominios: Array<{ name: string; score: number; risk: RiskLevel; description?: string }>
 }
 
@@ -45,7 +43,6 @@ const AdvancedReportModal: React.FC<AdvancedReportModalProps> = ({
   companyName,
   period,
   totalEmployees,
-  riskLevel,
   dominios
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()

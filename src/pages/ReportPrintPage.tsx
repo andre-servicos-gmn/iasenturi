@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Box, VStack, HStack, Text, Divider, useColorModeValue, Grid, Card, CardBody } from '@chakra-ui/react'
+import { Box, VStack, HStack, Text, Divider, useColorModeValue, Card, CardBody } from '@chakra-ui/react'
 import { useSearchParams } from 'react-router-dom'
 import { useFilters } from '@/contexts/store'
 import RadarChart from '@/components/RadarChart'

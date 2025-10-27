@@ -3,7 +3,7 @@ import {
   Badge, Button, Table, Thead, Tbody, Tr, Th, Td,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
   ModalFooter, useDisclosure, FormControl, FormLabel, Input, Select,
-  Textarea, IconButton, Tooltip, Stack
+  Textarea, IconButton, Tooltip
 } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { 
@@ -26,25 +26,18 @@ interface Empresa {
   tipo_servico: string
   data_solicitacao: string
   data_entrega: string
-  status: 'ativa' | 'suspensa' | 'encerrada'
+  status: string
   observacoes: string
   created_at: string
   updated_at: string
 }
 
-interface TipoServico {
-  id: string
-  nome: string
-  descricao: string
-}
 
 const EmpresasPage = () => {
   const textColor = useColorModeValue('gray.600', 'gray.300')
-  const cardBg = useColorModeValue('white', 'gray.800')
   const borderColor = useColorModeValue('#E5E7EB', 'gray.600')
   
   const [empresas, setEmpresas] = useState<Empresa[]>([])
-  const [tiposServico, setTiposServico] = useState<TipoServico[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null)
   
@@ -60,13 +53,12 @@ const EmpresasPage = () => {
     tipo_servico: '',
     data_solicitacao: '',
     data_entrega: '',
-    status: 'ativa' as const,
+    status: 'ativa',
     observacoes: ''
   })
 
   useEffect(() => {
     loadEmpresas()
-    loadTiposServico()
   }, [])
 
   const loadEmpresas = async () => {
@@ -92,25 +84,6 @@ const EmpresasPage = () => {
     }
   }
 
-  const loadTiposServico = async () => {
-    try {
-      if (!supabase) return
-
-      const { data, error } = await supabase
-        .from('tipos_servico')
-        .select('*')
-        .order('nome')
-
-      if (error) {
-        console.error('Erro ao buscar tipos de serviço:', error)
-        return
-      }
-
-      setTiposServico(data || [])
-    } catch (error) {
-      console.error('Erro ao carregar tipos de serviço:', error)
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -202,7 +175,7 @@ const EmpresasPage = () => {
       tipo_servico: '',
       data_solicitacao: '',
       data_entrega: '',
-      status: 'ativa' as const,
+      status: 'ativa',
       observacoes: ''
     })
   }
