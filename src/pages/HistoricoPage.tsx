@@ -14,7 +14,7 @@ import {
 } from 'react-icons/fi'
 import { useFilters } from '@/contexts/store'
 import { useState, useEffect, useMemo } from 'react'
-import { fetchIntervencoes, createIntervencao, fetchEmpresas, updateIntervencaoResultado, updateIntervencao, deleteIntervencao, fetchTopicos, createTopico, deleteTopico } from '@/lib/supabase'
+import { createIntervencao, fetchEmpresas, updateIntervencaoResultado, updateIntervencao, deleteIntervencao, fetchTopicos, createTopico, deleteTopico, fetchDadosHistoricos } from '@/lib/supabase'
 import { Intervencao as IntervencaoDB, Empresa, Topico } from '@/types'
 import {
   Chart as ChartJS,
@@ -86,7 +86,7 @@ interface DadosGrafico {
 
 const HistoricoPage = () => {
   const textColor = useColorModeValue('gray.600', 'gray.300')
-  const { filteredData, loading: filtersLoading, filters } = useFilters()
+  const { loading: filtersLoading, filters } = useFilters()
   const [historicoData, setHistoricoData] = useState<HistoricoData[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedIntervencao, setSelectedIntervencao] = useState<(UIIntervencao & { id?: string }) | null>(null)
@@ -155,223 +155,56 @@ const HistoricoPage = () => {
     'Saúde Emocional': '#98D8C8'
   }
 
-  // Dados de intervenções simuladas (em produção viriam do banco)
-  const intervencoesSimuladas: { [key: string]: UIIntervencao[] } = {
-    '2024-T1': [
-      {
-        tipo: 'Workshop',
-        descricao: 'Workshop sobre propósito e significado no trabalho',
-        data: '15/01/2024',
-        resultadoEsperado: 'Aumento de 15 pts no domínio "Significado"',
-        resultadoObservado: 'Aumento de 18 pts no domínio "Significado"',
-        impacto: 'positivo'
-      },
-      {
-        tipo: 'Gamificação',
-        descricao: 'Gamificação com desafios semanais',
-        data: '22/01/2024',
-        resultadoEsperado: 'Melhoria na satisfação geral',
-        resultadoObservado: 'Aumento de 12 pts em satisfação',
-        impacto: 'positivo'
-      }
-    ],
-    '2024-T2': [
-      {
-        tipo: 'Sessão Liderança',
-        descricao: 'Sessão de coaching com lideranças',
-        data: '10/04/2024',
-        resultadoEsperado: 'Melhoria no suporte da liderança',
-        resultadoObservado: 'Aumento de 8 pts no suporte',
-        impacto: 'positivo'
-      },
-      {
-        tipo: 'Pausa Ativa',
-        descricao: 'Implementação de pausas ativas',
-        data: '18/04/2024',
-        resultadoEsperado: 'Redução do estresse físico',
-        resultadoObservado: 'Redução de 5 pts em demandas físicas',
-        impacto: 'positivo'
-      }
-    ],
-    '2024-T3': [
-      {
-        tipo: 'Programa Wellness',
-        descricao: 'Programa de bem-estar corporativo',
-        data: '05/07/2024',
-        resultadoEsperado: 'Melhoria geral na saúde emocional',
-        resultadoObservado: 'Aumento de 10 pts na saúde emocional',
-        impacto: 'positivo'
-      }
-    ]
-  }
+  // Intervenções simuladas removidas: agora usamos dados reais vindos do banco via fetchDadosHistoricos
 
   useEffect(() => {
     const processData = async () => {
       try {
         setLoading(true)
-        
-        if (filteredData.length > 0) {
-          // Agrupar dados por trimestre
-          const dadosPorTrimestre: { [key: string]: any[] } = {}
-          
-          filteredData.forEach(item => {
-            if (item.created_at) {
-              const data = new Date(item.created_at)
-              const ano = data.getFullYear()
-              const mes = data.getMonth()
-              const trimestre = Math.floor(mes / 3) + 1
-              const chave = `${ano}-T${trimestre}`
-              
-              if (!dadosPorTrimestre[chave]) {
-                dadosPorTrimestre[chave] = []
-              }
-              dadosPorTrimestre[chave].push(item)
-            }
-          })
+        // Buscar ciclos agregados por datas de avaliações (trimestres)
+        const ciclos = await fetchDadosHistoricos({
+          empresa_id: filters.empresa || undefined,
+          setor: filters.setor || undefined,
+          periodo_inicio: filters.dataInicio || undefined,
+          periodo_fim: filters.dataFim || undefined
+        })
 
-          // Processar dados históricos
-          let historico = Object.entries(dadosPorTrimestre).map(([periodo, items]) => {
-            const dominios: { [key: string]: number } = {
-              'Demandas Psicológicas': 0,
-              'Demandas Físicas': 0,
-              'Demandas de Trabalho': 0,
-              'Suporte Social e Liderança': 0,
-              'Esforço e Recompensa': 0,
-              'Interface Trabalho-Vida': 0,
-              'Saúde Emocional': 0
-            }
+        // Função utilitária para mapear intervenção do banco para UI
+        const toUI = (i: IntervencaoDB): UIIntervencao & { id?: string } => ({
+          id: i.id,
+          tipo: i.tipo,
+          titulo: i.titulo,
+          descricao: i.descricao,
+          data: new Date(i.data_inicio).toLocaleDateString('pt-BR'),
+          resultadoEsperado: i.resultado_esperado,
+          resultadoObservado: i.resultado_observado || '',
+          impacto: (i.impacto_qualitativo || 'neutro') as UIIntervencao['impacto'],
+          status: i.status,
+          empresa_id: i.empresa_id,
+          responsavel: i.responsavel,
+          dominios_afetados: i.dominios_afetados,
+          custo: i.custo,
+          setor: i.setor,
+          topicos: i.topicos
+        })
 
-            let totalValores = 0
-            let countValores = 0
+        // Transformar ciclos para o formato usado pelo gráfico
+        const historico = (ciclos || []).map((c) => ({
+          periodo: c.ciclo.id,
+          dataFormatada: c.ciclo.nome,
+          dominios: c.ciclo.dominios_medios as { [key: string]: number },
+          totalColaboradores: c.ciclo.total_colaboradores,
+          intervencoes: (c.intervencoes || []).map(toUI)
+        }))
 
-            items.forEach(item => {
-              // Demandas Psicológicas
-              if (item.demandas_psicologicas) {
-                dominios['Demandas Psicológicas'] += parseFloat(item.demandas_psicologicas)
-                totalValores += parseFloat(item.demandas_psicologicas)
-                countValores++
-              }
+        // Ordenar por período (id já reflete a ordem, mas garantimos)
+        historico.sort((a, b) => a.periodo.localeCompare(b.periodo))
 
-              // Demandas Físicas
-              if (item.demandas_fisicas) {
-                dominios['Demandas Físicas'] += parseFloat(item.demandas_fisicas)
-                totalValores += parseFloat(item.demandas_fisicas)
-                countValores++
-              }
+        // Lista plana de intervenções
+        const flatList = (ciclos || []).flatMap(c => (c.intervencoes || []).map(toUI))
+        setIntervencoesFlat(flatList)
 
-              // Demandas de Trabalho
-              if (item.demandas_trabalho) {
-                dominios['Demandas de Trabalho'] += parseFloat(item.demandas_trabalho)
-                totalValores += parseFloat(item.demandas_trabalho)
-                countValores++
-              }
-
-              // Suporte Social e Liderança
-              if (item.suporte_social_lideranca) {
-                dominios['Suporte Social e Liderança'] += parseFloat(item.suporte_social_lideranca)
-                totalValores += parseFloat(item.suporte_social_lideranca)
-                countValores++
-              }
-
-              // Esforço e Recompensa
-              if (item.esforco_recompensa) {
-                dominios['Esforço e Recompensa'] += parseFloat(item.esforco_recompensa)
-                totalValores += parseFloat(item.esforco_recompensa)
-                countValores++
-              }
-
-              // Saúde Emocional
-              if (item.saude_emocional) {
-                dominios['Saúde Emocional'] += parseFloat(item.saude_emocional)
-                totalValores += parseFloat(item.saude_emocional)
-                countValores++
-              }
-
-              // Interface Trabalho-Vida
-              if (item.media_inseguranca) {
-                dominios['Interface Trabalho-Vida'] += parseFloat(item.media_inseguranca)
-                totalValores += parseFloat(item.media_inseguranca)
-                countValores++
-              }
-            })
-
-            // Calcular médias
-            if (countValores > 0) {
-              Object.keys(dominios).forEach(dominio => {
-                dominios[dominio] = Math.round(dominios[dominio] / countValores)
-              })
-            }
-
-            // Formatar data para exibição
-            const [ano, trimestre] = periodo.split('-T')
-            const meses = ['Jan', 'Abr', 'Jul', 'Out']
-            const dataFormatada = `${meses[parseInt(trimestre) - 1]}/${ano}`
-
-            return {
-              periodo,
-              dataFormatada,
-              dominios,
-              totalColaboradores: items.length,
-              intervencoes: filters.empresa ? [] : (intervencoesSimuladas[periodo] || [])
-            }
-          })
-
-          // Ordenar por período
-          historico.sort((a, b) => a.periodo.localeCompare(b.periodo))
-
-          // Buscar intervenções reais e mesclar
-          try {
-            const intervencoesDB = await fetchIntervencoes({
-              empresa_id: filters.empresa || undefined,
-              setor: filters.setor || undefined,
-              data_inicio: filters.dataInicio || undefined,
-              data_fim: filters.dataFim || undefined
-            })
-
-            const toUI = (i: IntervencaoDB): UIIntervencao & { id?: string } => ({
-              id: i.id,
-              tipo: i.tipo,
-              titulo: i.titulo,
-              descricao: i.descricao,
-              data: new Date(i.data_inicio).toLocaleDateString('pt-BR'),
-              resultadoEsperado: i.resultado_esperado,
-              resultadoObservado: i.resultado_observado || '',
-              impacto: (i.impacto_qualitativo || 'neutro') as UIIntervencao['impacto'],
-              status: i.status,
-              empresa_id: i.empresa_id,
-              responsavel: i.responsavel,
-              dominios_afetados: i.dominios_afetados,
-              custo: i.custo,
-              setor: i.setor,
-              topicos: i.topicos
-            })
-
-            const byPeriod: Record<string, UIIntervencao[]> = {}
-            ;(intervencoesDB || []).forEach((i) => {
-              const d = new Date(i.data_inicio)
-              const y = d.getFullYear()
-              const q = Math.floor(d.getMonth() / 3) + 1
-              const key = `${y}-T${q}`
-              if (!byPeriod[key]) byPeriod[key] = []
-              byPeriod[key].push(toUI(i))
-            })
-
-            historico = historico.map(h => ({
-              ...h,
-              intervencoes: [ ...(h.intervencoes || []), ...(byPeriod[h.periodo] || []) ]
-            }))
-
-            // Lista plana de intervenções (sem agrupamento)
-            const flatList = (intervencoesDB || []).map(toUI)
-            setIntervencoesFlat(flatList)
-          } catch (e) {
-            console.error('Erro ao mesclar intervenções do banco:', e)
-          }
-
-          setHistoricoData(historico)
-        } else {
-          setHistoricoData([])
-        }
+        setHistoricoData(historico)
       } catch (error) {
         console.error('Erro ao processar dados históricos:', error)
       } finally {
@@ -380,18 +213,18 @@ const HistoricoPage = () => {
     }
 
     processData()
-  }, [filteredData, filters.empresa, filters.setor, filters.dataInicio, filters.dataFim, refreshKey])
+  }, [filters.empresa, filters.setor, filters.dataInicio, filters.dataFim, refreshKey])
 
   // Preparar dados para o gráfico
   const dadosGrafico: DadosGrafico = useMemo(() => {
     if (historicoData.length === 0) return { labels: [], datasets: [] }
 
     const labels = historicoData.map(item => item.dataFormatada)
-    const dominios = Object.keys(historicoData[0].dominios)
+    const dominios = Array.from(new Set(historicoData.flatMap(item => Object.keys(item.dominios))))
 
     const datasets = dominios.map(dominio => ({
       label: dominio,
-      data: historicoData.map(item => item.dominios[dominio]),
+      data: historicoData.map(item => (item.dominios[dominio] ?? 0)),
       borderColor: coresDominios[dominio as keyof typeof coresDominios] || '#666',
       backgroundColor: coresDominios[dominio as keyof typeof coresDominios] || '#666',
       tension: 0.4,
@@ -437,14 +270,14 @@ const HistoricoPage = () => {
             const dataset = context.dataset
             const value = context.parsed.y
             const previousValue = context.dataset.data[context.dataIndex - 1]
-            
+
             let trend = ''
-            if (previousValue !== undefined) {
+            if (previousValue !== undefined && previousValue !== 0) {
               const diff = value - previousValue
               const percent = ((diff / previousValue) * 100).toFixed(1)
               trend = diff > 0 ? ` (+${percent}%)` : ` (${percent}%)`
             }
-            
+
             return `${dataset.label}: ${value}${trend}`
           }
         }

@@ -7,8 +7,10 @@ import theme from './styles/theme'
 import Layout from './components/Layout.tsx'
 import Dashboard from './components/Dashboard.tsx'
 import DominiosPage from './pages/DominiosPage.tsx'
+import ReportPrintPage from './pages/ReportPrintPage.tsx'
 import MapaCalorPage from './pages/MapaCalorPage.tsx'
 import HistoricoPage from './pages/HistoricoPage.tsx'
+import EmpresasPage from './pages/EmpresasPage.tsx'
 import LoginPage from './pages/LoginPage.tsx'
 import ProtectedRoute from './components/ProtectedRoute.tsx'
 import { FilterProvider } from './contexts/store'
@@ -85,6 +87,22 @@ function AppRoutes() {
               <Layout>
                 <HistoricoPage />
               </Layout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/empresas" element={
+            <ProtectedRoute>
+              <Layout>
+                <EmpresasPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
+          {/* Página de impressão/servidor */}
+          <Route path="/report/print" element={
+            <ProtectedRoute>
+              {/* Página isolada, sem Layout com animações para reduzir ruído no PDF */}
+              <ReportPrintPage />
             </ProtectedRoute>
           } />
 

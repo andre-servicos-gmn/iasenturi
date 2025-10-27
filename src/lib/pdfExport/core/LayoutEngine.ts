@@ -56,6 +56,27 @@ export const drawHeader = (ctx: LayoutContext, info: HeaderFooterInfo) => {
     pdf.setTextColor(240, 240, 240)
     pdf.text(info.subtitle, margins.left, 12)
   }
+
+  // Add logo on header right if available
+  if (SENTURI_BRAND.logoPath) {
+    try {
+      // This will be fetched once per page; acceptable for now
+      const xhr = new XMLHttpRequest()
+      xhr.open('GET', SENTURI_BRAND.logoPath, false)
+      xhr.responseType = 'arraybuffer'
+      xhr.send()
+      if (xhr.status >= 200 && xhr.status < 400) {
+        const bytes = new Uint8Array(xhr.response as ArrayBuffer)
+        let binary = ''
+        for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i])
+        const base64 = btoa(binary)
+        const dataUrl = `data:image/png;base64,${base64}`
+        const logoW = 24
+        const logoH = 9
+        pdf.addImage(dataUrl, 'PNG', pageWidth - margins.right - logoW, 2, logoW, logoH)
+      }
+    } catch {}
+  }
 }
 
 export const drawFooter = (ctx: LayoutContext, info: HeaderFooterInfo, pageNumber: number, totalPages?: number) => {

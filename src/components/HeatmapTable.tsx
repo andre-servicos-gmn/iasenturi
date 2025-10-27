@@ -128,7 +128,7 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ data, onCellClick }) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Card variant="premium" w="full">
+        <Card id="heatmap-chart" variant="premium" w="full">
           <CardBody p={6}>
             <VStack spacing={6} align="stretch">
               {/* Header */}

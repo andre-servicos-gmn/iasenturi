@@ -131,15 +131,27 @@ export class PDFGenerator {
     if (sections.charts) {
       const chartIds = params.chartIds && params.chartIds.length > 0
         ? params.chartIds
-        : ['risk-distribution-chart', 'domain-scores-chart', 'timeline-chart', 'heatmap-chart', 'gauge-charts-container']
+        : [
+            // Elementos focados nos gráficos reais (menos bordas/padding)
+            'domain-scores-chart', // Radar
+            'heatmap-chart',       // Heatmap
+            'eps10-gauge',         // Gauge EPS
+            'psqi-gauge',          // Gauge PSQI
+            'relatorio-senturi'    // Fallback
+          ]
 
-      // Try capturing individual charts; fallback to root element
+      // Capturar gráficos individuais; fallback para o root quando necessário
       const charts: { id: string; dataUrl: string; width: number; height: number }[] = []
       for (const id of chartIds) {
         const el = document.getElementById(id)
         if (el) {
           const dataUrl = await captureElementAsPng({ element: el, scale: 2, backgroundColor: '#ffffff' })
-          charts.push({ id, dataUrl, width: el.scrollWidth, height: el.scrollHeight })
+          const dims = await new Promise<{ w: number; h: number }>((resolve) => {
+            const img = new Image()
+            img.onload = () => resolve({ w: img.naturalWidth || img.width, h: img.naturalHeight || img.height })
+            img.src = dataUrl
+          })
+          charts.push({ id, dataUrl, width: dims.w, height: dims.h })
         }
       }
 
@@ -147,32 +159,31 @@ export class PDFGenerator {
         const element = document.getElementById(rootElementId)
         if (element) {
           const dataUrl = await captureElementAsPng({ element, scale: 2, backgroundColor: '#ffffff' })
-          charts.push({ id: rootElementId, dataUrl, width: element.scrollWidth, height: element.scrollHeight })
+          const dims = await new Promise<{ w: number; h: number }>((resolve) => {
+            const img = new Image()
+            img.onload = () => resolve({ w: img.naturalWidth || img.width, h: img.naturalHeight || img.height })
+            img.src = dataUrl
+          })
+          charts.push({ id: rootElementId, dataUrl, width: dims.w, height: dims.h })
         }
       }
 
       if (charts.length > 0) {
-        this.addNewPage('Gráficos e Indicadores')
         const maxW = this.ctx.contentWidth
         const maxH = this.ctx.contentHeight
-        let y = this.ctx.margins.top + 8
-        const gap = 8
-        for (const c of charts) {
-          // Scale to fit two charts per page vertically if possible
+        for (let i = 0; i < charts.length; i++) {
+          const c = charts[i]
           const ratio = c.width / c.height
           let w = maxW
           let h = w / ratio
-          if (h > maxH / 2 - gap) {
-            h = maxH / 2 - gap
+          if (h > maxH) {
+            h = maxH
             w = h * ratio
           }
+          this.addNewPage(i === 0 ? 'Gráficos e Indicadores' : 'Gráficos e Indicadores (cont.)')
           const centeredX = this.ctx.margins.left + (maxW - w) / 2
-          if (y + h > this.ctx.pageHeight - this.ctx.margins.bottom) {
-            this.addNewPage('Gráficos e Indicadores (cont.)')
-            y = this.ctx.margins.top + 8
-          }
+          const y = this.ctx.margins.top + 8
           this.pdf.addImage(c.dataUrl, 'PNG', centeredX, y, w, h)
-          y += h + gap
         }
       }
     }

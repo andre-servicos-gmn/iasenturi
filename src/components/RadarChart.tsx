@@ -81,7 +81,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
   }
 
   return (
-    <Box position="relative" width={width} height={height} mx="auto">
+    <Box id="domain-scores-chart" position="relative" width={width} height={height} mx="auto">
       <svg width={width} height={height} style={{ overflow: 'visible' }}>
         <defs>
           {/* Gradiente para dados principais */}

@@ -5,7 +5,7 @@ import {
 import { motion } from 'framer-motion'
 import { 
   FiHome, FiBarChart2, FiGrid,
-  FiTrendingUp
+  FiTrendingUp, FiBriefcase
 } from 'react-icons/fi'
 import { Link, useLocation } from 'react-router-dom'
 import { IconType } from 'react-icons'
@@ -68,6 +68,12 @@ const Sidebar = () => {
         { icon: FiBarChart2, label: 'Domínios', path: '/dominios' },
         { icon: FiGrid, label: 'Mapa de Calor', path: '/mapa-calor' },
         { icon: FiTrendingUp, label: 'Histórico', path: '/historico' }
+      ]
+    },
+    {
+      title: 'Gestão',
+      items: [
+        { icon: FiBriefcase, label: 'Empresas', path: '/empresas' }
       ]
     }
   ]

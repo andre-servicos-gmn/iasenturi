@@ -167,7 +167,7 @@ const MapaCalorPage = () => {
             <ExportButton
               elementId="relatorio-senturi"
               title="Mapa de Calor Psicossocial"
-              subtitle="Análise de risco por setor e domínio"
+              subtitle={`Empresa: ${filters.empresa || 'Todas'}${filters.setor ? ` • Setor: ${filters.setor}` : ''}`}
               size="md"
               variant="solid"
             />

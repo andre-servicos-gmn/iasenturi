@@ -91,6 +91,7 @@ const Dashboard = () => {
               id: item.id,
               nome: item.nome_completo || `Colaborador ${item.id}`,
               dominioCritico: getDominioCritico(item),
+              dominioFavoravel: getDominioFavoravel(item),
               dataAvaliacao: new Date(item.created_at || Date.now()).toLocaleDateString('pt-BR'),
               setor: item.area_setor || 'N/A',
               empresa: item.empresa_id || 'N/A',
@@ -177,6 +178,56 @@ const Dashboard = () => {
     return dominioCritico.nome
   }
 
+  const getDominioFavoravel = (item: any) => {
+    console.log('🔍 getDominioFavoravel - Item:', item)
+    
+    // Primeiro, tentar usar os campos de média calculada
+    const dominios = [
+      { nome: 'Demandas Psicológicas', valor: parseFloat((item as any).media_exigencias || '0') },
+      { nome: 'Demandas Físicas', valor: parseFloat((item as any).media_organizacao || '0') },
+      { nome: 'Demandas de Trabalho', valor: parseFloat((item as any).media_relacoes || '0') },
+      { nome: 'Suporte Social e Liderança', valor: parseFloat((item as any).media_interface || '0') },
+      { nome: 'Esforço e Recompensa', valor: parseFloat((item as any).media_significado || '0') },
+      { nome: 'Interface Trabalho-Vida', valor: parseFloat((item as any).media_inseguranca || '0') },
+      { nome: 'Saúde Emocional', valor: parseFloat((item as any).saude_emocional || '0') }
+    ]
+    
+    // Se não temos médias calculadas, usar campos individuais
+    if (dominios.every(d => d.valor === 0)) {
+      console.log('⚠️ Usando campos individuais para domínio favorável')
+      const dominiosIndividuais = [
+        { nome: 'Demandas Psicológicas', valor: parseFloat(item.exige_concentracao || '0') },
+        { nome: 'Demandas Físicas', valor: parseFloat(item.influencia_no_trabalho || '0') },
+        { nome: 'Demandas de Trabalho', valor: parseFloat(item.colegas_ajudam || '0') },
+        { nome: 'Suporte Social e Liderança', valor: parseFloat(item.impacto_negativo_vida_pessoal || '0') },
+        { nome: 'Esforço e Recompensa', valor: parseFloat(item.trabalho_significativo || '0') },
+        { nome: 'Interface Trabalho-Vida', valor: parseFloat(item.esgotamento_ao_final_do_dia || '0') }
+      ]
+      
+      // Filtrar domínios com valores válidos e pegar o com menor valor (mais favorável)
+      const dominiosValidos = dominiosIndividuais.filter(d => d.valor > 0)
+      if (dominiosValidos.length === 0) return null
+      
+      const dominioFavoravel = dominiosValidos.reduce((min, dominio) => 
+        dominio.valor < min.valor ? dominio : min
+      )
+      
+      console.log('🎯 Domínio favorável (individual):', dominioFavoravel)
+      return dominioFavoravel.nome
+    }
+    
+    // Filtrar domínios com valores válidos e pegar o com menor valor (mais favorável)
+    const dominiosValidos = dominios.filter(d => d.valor > 0)
+    if (dominiosValidos.length === 0) return null
+    
+    const dominioFavoravel = dominiosValidos.reduce((min, dominio) => 
+      dominio.valor < min.valor ? dominio : min
+    )
+    
+    console.log('🎯 Domínio favorável (média):', dominioFavoravel)
+    return dominioFavoravel.nome
+  }
+
   // (removido) getAcaoSugerida
 
   const handlePageChange = (page: number) => {
@@ -224,7 +275,7 @@ const Dashboard = () => {
     >
       <VStack spacing={8} align="stretch">
         {/* Estatísticas Rápidas */}
-        <MotionCard
+        <MotionCard id="risk-distribution-chart"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.4 }}
@@ -320,7 +371,7 @@ const Dashboard = () => {
                 {/* (removido) PSQI será exibido abaixo ao lado do EPS */}
 
                 {/* Estatísticas */}
-                <HStack spacing={4} flex={1}>
+                <HStack id="timeline-chart" spacing={4} flex={1}>
                   <MotionCard
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -460,7 +511,7 @@ const Dashboard = () => {
         </MotionCard>
 
         {/* EPS-10 e PSQI (seção abaixo das Estatísticas Rápidas) */}
-        <Grid templateColumns="repeat(auto-fit, minmax(320px, 1fr))" gap={6}>
+        <Grid id="gauge-charts-container" templateColumns="repeat(auto-fit, minmax(320px, 1fr))" gap={6}>
           <EPS10Card />
           <PSQICard />
         </Grid>
@@ -955,6 +1006,12 @@ const Dashboard = () => {
                                 <HStack spacing={2}>
                                   <FiAlertTriangle size={16} />
                                   <Text fontWeight="medium">{colaborador.dominioCritico}</Text>
+                                </HStack>
+                              )}
+                              {colaborador.dominioFavoravel && (
+                                <HStack spacing={2} color="green.600">
+                                  <FiCheckCircle size={16} />
+                                  <Text fontWeight="medium">{colaborador.dominioFavoravel}</Text>
                                 </HStack>
                               )}
                             </HStack>

@@ -48,10 +48,15 @@ export const exportToPDF = async (options: ExportOptions): Promise<void> => {
     const contentWidth = pageWidth - (margin * 2)
     const contentHeight = pageHeight - (margin * 2)
     
-    // Calcular dimensões da imagem mantendo proporção
-    const imgAspectRatio = element.scrollWidth / element.scrollHeight
-    let imgWidth = contentWidth
-    let imgHeight = contentWidth / imgAspectRatio
+	// Calcular dimensões da imagem mantendo proporção usando tamanho intrínseco
+	const intrinsic = await new Promise<{ w: number; h: number }>((resolve) => {
+		const img = new Image()
+		img.onload = () => resolve({ w: img.naturalWidth || img.width, h: img.naturalHeight || img.height })
+		img.src = dataUrl
+	})
+	const imgAspectRatio = intrinsic.w > 0 && intrinsic.h > 0 ? intrinsic.w / intrinsic.h : (element.scrollWidth / Math.max(1, element.scrollHeight))
+	let imgWidth = contentWidth
+	let imgHeight = contentWidth / imgAspectRatio
     
     // Se a altura for maior que o espaço disponível, ajustar
     if (imgHeight > contentHeight) {

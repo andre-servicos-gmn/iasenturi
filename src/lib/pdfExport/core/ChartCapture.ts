@@ -23,23 +23,17 @@ export const captureElementAsPng = async ({
     return captureCache.get(element) as string
   }
 
-  // Compute target size
-  const rect = element.getBoundingClientRect()
-  const width = Math.max(element.scrollWidth, Math.ceil(rect.width))
-  const height = Math.max(element.scrollHeight, Math.ceil(rect.height))
+	// Compute target size (avoid double-scaling by not applying CSS transform)
+	const rect = element.getBoundingClientRect()
+	const width = Math.max(element.scrollWidth, Math.ceil(rect.width))
+	const height = Math.max(element.scrollHeight, Math.ceil(rect.height))
 
-  const style: Partial<CSSStyleDeclaration> = {
-    transform: `scale(${scale})`,
-    transformOrigin: 'top left'
-  }
-
-  const capturePromise = domtoimage.toPng(element, {
-    quality: 1,
-    bgcolor: backgroundColor,
-    width: width * scale,
-    height: height * scale,
-    style
-  }) as Promise<string>
+	const capturePromise = domtoimage.toPng(element, {
+		quality: 1,
+		bgcolor: backgroundColor,
+		width: width * scale,
+		height: height * scale
+	}) as Promise<string>
 
   const timeoutPromise = new Promise<string>((_, reject) => {
     const id = setTimeout(() => {

@@ -1,287 +1,73 @@
 import {
   Box, VStack, HStack, Text, useColorModeValue, Card, CardBody,
-  Select, Button, InputGroup, InputLeftElement, Collapse, Badge
+  Select, Input, Button, InputGroup, InputLeftElement, Collapse
 } from '@chakra-ui/react'
-import { FiFilter, FiRefreshCw, FiHome, FiGrid, FiChevronDown, FiChevronUp } from 'react-icons/fi'
-import { useState, useEffect, useCallback, useMemo, memo } from 'react'
-import { supabase } from '@/lib/supabase'
+import { FiFilter, FiSearch, FiRefreshCw, FiHome, FiGrid, FiCalendar, FiChevronDown, FiChevronUp } from 'react-icons/fi'
+import { useState } from 'react'
 
 interface FiltrosEPSPSQIProps {
-  tipo: 'EPS' | 'PSQI'
-  onFiltrosChange: (filtros: { empresa: string; setor: string; setorColumn: string }) => void
+  filters: {
+    empresa: string
+    setor: string
+    dataInicio: string
+    dataFim: string
+  }
+  onFiltersChange: (filters: any) => void
+  empresas: string[]
+  setoresFiltrados: string[]
 }
 
-
-const FiltrosEPSPSQI = ({ tipo, onFiltrosChange }: FiltrosEPSPSQIProps) => {
+const FiltrosEPSPSQI = ({ filters, onFiltersChange, empresas, setoresFiltrados }: FiltrosEPSPSQIProps) => {
   const textColor = useColorModeValue('gray.600', 'gray.300')
   const borderColor = useColorModeValue('gray.200', 'gray.700')
   const [expanded, setExpanded] = useState(true)
-  
-  // Estados dos filtros com persistência
-  const [empresa, setEmpresa] = useState(() => {
-    const saved = localStorage.getItem(`filtros_${tipo}_empresa`)
-    return saved || ''
-  })
-  const [setor, setSetor] = useState(() => {
-    const saved = localStorage.getItem(`filtros_${tipo}_setor`)
-    return saved || ''
-  })
-  
-  
 
-  
-  // Opções disponíveis
-  const [empresaOptions, setEmpresaOptions] = useState<string[]>([])
-  const [setoresFiltrados, setSetoresFiltrados] = useState<string[]>([])
-  const [setorColumnName, setSetorColumnName] = useState<string>('Área/Setor')
+  const handleFilterChange = (field: keyof typeof filters, value: string) => {
+    onFiltersChange({
+      ...filters,
+      [field]: value
+    })
+  }
 
-  
-  // Loading states
-  const [loadingEmpresas, setLoadingEmpresas] = useState(false)
-  const [loadingSetores, setLoadingSetores] = useState(false)
+  const clearFilters = () => {
+    onFiltersChange({
+      empresa: '',
+      setor: '',
+      dataInicio: '',
+      dataFim: ''
+    })
+  }
 
-  // Determinar a tabela baseada no tipo
-  const tabela = tipo === 'EPS' ? 'EPS_respostas' : 'PSQI_respostas'
+  const applyFilters = () => {
+    // Os filtros são aplicados automaticamente pelo componente pai
+    console.log('Filtros EPS/PSQI aplicados:', filters)
+  }
 
-  // Carregar opções de empresas
-  useEffect(() => {
-    const loadEmpresas = async () => {
-      try {
-        setLoadingEmpresas(true)
-        if (!supabase) {
-          console.log(`❌ Supabase não inicializado para carregar empresas ${tipo}`)
-          return
-        }
-
-        console.log(`🔄 Carregando empresas para ${tipo} da tabela ${tabela}`)
-
-        const { data, error } = await supabase
-          .from(tabela)
-          .select('empresa_id')
-          .not('empresa_id', 'is', null)
-
-        if (error) {
-          console.error(`❌ Erro ao carregar empresas para ${tipo}:`, error)
-          console.error(`📋 Detalhes do erro:`, {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
-          })
-          return
-        }
-
-        console.log(`📊 Dados brutos de empresas para ${tipo}:`, data)
-        console.log(`📊 Total de registros de empresas: ${data?.length || 0}`)
-
-        const empresas = Array.from(
-          new Set(data?.map(item => item.empresa_id).filter(Boolean) || [])
-        ).sort()
-        
-        setEmpresaOptions(empresas)
-        console.log(`✅ Empresas carregadas para ${tipo}:`, empresas)
-        console.log(`✅ Total de empresas únicas: ${empresas.length}`)
-      } catch (error) {
-        console.error(`❌ Erro ao carregar empresas para ${tipo}:`, error)
-        if (error instanceof Error) {
-          console.error(`📋 Mensagem de erro:`, error.message)
-          console.error(`📋 Stack trace:`, error.stack)
-        }
-      } finally {
-        setLoadingEmpresas(false)
-      }
-    }
-
-    loadEmpresas()
-  }, [tipo, tabela])
-
-  // Carregar opções de setores
-  useEffect(() => {
-    const loadSetores = async () => {
-      try {
-        setLoadingSetores(true)
-        if (!supabase) {
-          console.log(`❌ Supabase não inicializado para ${tipo}`)
-          return
-        }
-
-        console.log(`🔄 Carregando setores para ${tipo}, empresa: ${empresa || 'todas'}`)
-        console.log(`📋 Usando tabela: ${tabela}`)
-
-        // Primeiro, vamos tentar buscar todos os campos para ver a estrutura
-        const { data: sampleData, error: sampleError } = await supabase
-          .from(tabela)
-          .select('*')
-          .limit(1)
-
-        if (sampleError) {
-          console.error(`❌ Erro ao buscar dados de exemplo da tabela ${tabela}:`, sampleError)
-          return
-        }
-
-        console.log(`📊 Estrutura da tabela ${tabela}:`, sampleData?.[0])
-
-        // Agora buscar setores
-        let query = supabase
-          .from(tabela)
-          .select('*') // Buscar todos os campos para debug
-
-        // Filtrar por empresa se selecionada
-        if (empresa) {
-          query = query.eq('empresa_id', empresa)
-          console.log(`🔍 Aplicando filtro de empresa para setores: ${empresa}`)
-        } else {
-          console.log(`🔍 Buscando setores de todas as empresas`)
-        }
-        
-        // Limitar resultados para performance
-        query = query.limit(1000)
-
-        const { data, error } = await query
-
-        if (error) {
-          console.error(`❌ Erro ao carregar setores para ${tipo}:`, error)
-          console.error(`📋 Detalhes do erro:`, {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
-          })
-          return
-        }
-
-        console.log(`📊 Dados brutos de setores para ${tipo}:`, data)
-        console.log(`📊 Total de registros encontrados: ${data?.length || 0}`)
-
-        if (data && data.length > 0) {
-          console.log(`📊 Primeiro registro:`, data[0])
-          console.log(`📊 Campos disponíveis:`, Object.keys(data[0]))
-        }
-
-        // Detectar o nome da coluna de setor e armazená-lo
-        let foundColumn = 'Área/Setor' // Default
-        if (data && data.length > 0) {
-          const firstItem = data[0]
-          const possibleColumns = ['Área/Setor', 'area_setor', 'Area_Setor', 'setor', 'Setor', 'area', 'Area']
-          const validColumn = possibleColumns.find(col => firstItem[col] !== null && firstItem[col] !== undefined)
-          if (validColumn) {
-            foundColumn = validColumn
-          }
-        }
-        setSetorColumnName(foundColumn)
-        console.log(`✅ Nome da coluna de setor detectado: ${foundColumn}`)
-        
-        // Usar a coluna detectada para extrair os nomes dos setores
-        const setores = Array.from(
-          new Set(data?.map((item: any) => item[foundColumn]).filter(Boolean) || [])
-        ).sort()
-        
-        setSetoresFiltrados(setores)
-
-        console.log(`✅ Setores carregados para ${tipo}:`, setores)
-        console.log(`✅ Total de setores únicos: ${setores.length}`)
-        
-        // Verificar se o setor atualmente selecionado ainda está disponível
-        if (setor && !setores.includes(setor)) {
-          console.log(`⚠️ Setor selecionado "${setor}" não está mais disponível, mantendo seleção`)
-          console.log(`📋 Setores disponíveis:`, setores)
-          // Não resetar automaticamente, deixar o usuário decidir
-        } else if (setor && setores.includes(setor)) {
-          console.log(`✅ Setor selecionado "${setor}" ainda está disponível`)
-        }
-        
-        // Log adicional para debug
-        console.log(`📋 Empresa atual: "${empresa}"`)
-        console.log(`📋 Setor atual: "${setor}"`)
-        console.log(`📋 Setores carregados:`, setores)
-      } catch (error) {
-        console.error(`❌ Erro ao carregar setores para ${tipo}:`, error)
-        if (error instanceof Error) {
-          console.error(`📋 Mensagem de erro:`, error.message)
-          console.error(`📋 Stack trace:`, error.stack)
-        }
-      } finally {
-        setLoadingSetores(false)
-      }
-    }
-
-    loadSetores()
-  }, [tipo, tabela, empresa])
-
-  // Salvar filtros no localStorage quando mudarem
-  useEffect(() => {
-    localStorage.setItem(`filtros_${tipo}_empresa`, empresa)
-  }, [empresa, tipo])
-
-  useEffect(() => {
-    localStorage.setItem(`filtros_${tipo}_setor`, setor)
-  }, [setor, tipo])
-
-  // Removido useEffect conflitante - agora é controlado diretamente nas funções
-
-  // Limpar filtros
-  const clearFilters = useCallback(() => {
-    console.log(`🧹 Limpando filtros para ${tipo}`)
-    setEmpresa('')
-    setSetor('')
-    localStorage.removeItem(`filtros_${tipo}_empresa`)
-    localStorage.removeItem(`filtros_${tipo}_setor`)
-    onFiltrosChange({ empresa: '', setor: '', setorColumn: 'Área/Setor' })
-    console.log(`✅ Filtros limpos para ${tipo}`)
-  }, [tipo, onFiltrosChange])
-
-
-  // Funções para mudança de filtros
-  const handleEmpresaChange = useCallback((value: string) => {
-    console.log(`🏢 Mudando empresa para: ${value}`)
-    setEmpresa(value)
-    setSetor('') // Limpar setor quando empresa muda
-    // O nome da coluna será re-detectado pelo useEffect de setores
-    onFiltrosChange({ empresa: value, setor: '', setorColumn: setorColumnName })
-  }, [onFiltrosChange, setorColumnName])
-
-
-  const handleSetorChange = useCallback((value: string) => {
-    console.log(`🏬 Mudando setor para: ${value}`)
-    setSetor(value)
-    onFiltrosChange({ empresa, setor: value, setorColumn: setorColumnName })
-  }, [onFiltrosChange, empresa, setorColumnName])
-
-
-
-
-  // Verificar se há filtros ativos
-  const hasActiveFilters = useMemo(() => empresa || setor, [empresa, setor])
+  const hasActiveFilters = filters.empresa || filters.setor || filters.dataInicio || filters.dataFim
 
   return (
-    <Card 
-      variant="outline" 
+    <Card
+      variant="outline"
       w="full"
-      boxShadow="0 2px 4px rgba(0, 0, 0, 0.05)"
-      borderRadius="lg"
-      borderColor={borderColor}
+      boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+      borderRadius="xl"
     >
-      <CardBody p={4}>
-        <VStack spacing={4} align="stretch">
+      <CardBody p={6}>
+        <VStack spacing={6} align="stretch">
           {/* Header */}
           <HStack justify="space-between" align="center">
             <HStack spacing={3}>
               <Box
                 p={2}
-                bg={tipo === 'EPS' ? 'orange.500' : 'blue.500'}
+                bg="#0D249B"
                 borderRadius="lg"
                 color="white"
               >
-                <FiFilter size={16} />
+                <FiFilter size={20} />
               </Box>
-              <VStack align="start" spacing={0}>
-                <Text fontSize="md" fontWeight="bold" color={textColor}>
-                  Filtros {tipo}
-                </Text>
-                <Text fontSize="xs" color="gray.500">
-                  Filtrar dados por empresa e setor
-                </Text>
-              </VStack>
+              <Text fontSize="lg" fontWeight="bold" color={textColor}>
+                Filtros EPS/PSQI
+              </Text>
             </HStack>
             <HStack spacing={2}>
               {hasActiveFilters && (
@@ -309,126 +95,235 @@ const FiltrosEPSPSQI = ({ tipo, onFiltrosChange }: FiltrosEPSPSQIProps) => {
             </HStack>
           </HStack>
 
-          <Collapse 
-            in={expanded} 
+          <Collapse
+            in={expanded}
             animateOpacity={false}
             transition={{ enter: { duration: 0.2, ease: "easeOut" }, exit: { duration: 0.15, ease: "easeIn" } }}
+            style={{ willChange: 'height', overflow: 'hidden' }}
           >
-            {/* Filtros */}
-            <VStack spacing={4} align="stretch">
-              <HStack spacing={4} wrap="wrap" gap={4}>
-                {/* Empresa */}
-                <Box minW="180px" flex="1">
-                  <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
-                    Empresa
-                  </Text>
-                  <InputGroup>
+          {/* Filtros em Grid */}
+          <Box>
+            <HStack spacing={4} wrap="wrap" gap={4}>
+              {/* Empresa */}
+              <Box minW="200px" flex="1">
+                <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
+                  Empresa
+                </Text>
+                                  <InputGroup>
                     <InputLeftElement pointerEvents="none">
                       <FiHome color="gray.400" />
                     </InputLeftElement>
                     <Select
                       placeholder="Todas as empresas"
-                      value={empresa}
-                      onChange={(e) => handleEmpresaChange(e.target.value)}
+                      value={filters.empresa}
+                      onChange={(e) => handleFilterChange('empresa', e.target.value)}
                       size="md"
                       borderRadius="lg"
                       borderColor={borderColor}
-                      _focus={{
-                        borderColor: 'gray.400',
-                        boxShadow: 'none',
-                      }}
+                       _focus={{
+                         borderColor: 'gray.400',
+                         boxShadow: 'none',
+                       }}
                       pl={10}
-                      isDisabled={loadingEmpresas}
                     >
-                      {empresaOptions.map((emp) => (
-                        <option key={emp} value={emp}>
-                          {emp}
-                        </option>
-                      ))}
-                    </Select>
-                  </InputGroup>
-                </Box>
+                     {empresas.map((empresa) => (
+                       <option key={empresa} value={empresa}>
+                         {empresa}
+                       </option>
+                     ))}
+                   </Select>
+                 </InputGroup>
+               </Box>
 
-                {/* Setor */}
-                <Box minW="180px" flex="1">
-                  <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
-                    Setor
-                  </Text>
-                  <InputGroup>
+              {/* Setor */}
+              <Box minW="200px" flex="1">
+                <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
+                  Setor
+                </Text>
+                                  <InputGroup>
                     <InputLeftElement pointerEvents="none">
                       <FiGrid color="gray.400" />
                     </InputLeftElement>
                     <Select
                       placeholder="Todos os setores"
-                      value={setor}
-                      onChange={(e) => handleSetorChange(e.target.value)}
+                      value={filters.setor}
+                      onChange={(e) => handleFilterChange('setor', e.target.value)}
                       size="md"
                       borderRadius="lg"
                       borderColor={borderColor}
-                      _focus={{
-                        borderColor: 'gray.400',
-                        boxShadow: 'none',
-                      }}
+                       _focus={{
+                         borderColor: 'gray.400',
+                         boxShadow: 'none',
+                       }}
+                      isDisabled={!filters.empresa}
                       pl={10}
-                      isDisabled={loadingSetores || !empresa}
                     >
-                      {setoresFiltrados.map((set) => (
-                        <option key={set} value={set}>
-                          {set}
-                        </option>
-                      ))}
-                    </Select>
-                  </InputGroup>
-                </Box>
-              </HStack>
+                     {setoresFiltrados.map((setor) => (
+                       <option key={setor} value={setor}>
+                         {setor}
+                       </option>
+                     ))}
+                   </Select>
+                 </InputGroup>
+               </Box>
 
-              {/* Filtros Ativos */}
-              {hasActiveFilters && (
-                <Box>
-                  <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
-                    Filtros ativos:
-                  </Text>
-                  <HStack spacing={2} wrap="wrap">
-                    {empresa && (
-                      <Badge
-                        colorScheme="blue"
-                        variant="subtle"
-                        px={3}
-                        py={1}
-                        borderRadius="full"
-                        fontSize="xs"
-                      >
-                        🏢 {empresa}
-                      </Badge>
-                    )}
-                    {setor && (
-                      <Badge
-                        colorScheme="green"
-                        variant="subtle"
-                        px={3}
-                        py={1}
-                        borderRadius="full"
-                        fontSize="xs"
-                      >
-                        🏬 {setor}
-                      </Badge>
-                    )}
-                  </HStack>
-                </Box>
-              )}
-
-              {/* Status de carregamento */}
-              {(loadingEmpresas || loadingSetores) && (
-                <Text fontSize="xs" color="gray.500" textAlign="center">
-                  Carregando opções...
+              {/* Data Início */}
+              <Box minW="200px" flex="1">
+                <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
+                  Data Início
                 </Text>
-              )}
-            </VStack>
+                                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <FiCalendar color="gray.400" />
+                    </InputLeftElement>
+                    <Input
+                      type="date"
+                      value={filters.dataInicio}
+                      onChange={(e) => handleFilterChange('dataInicio', e.target.value)}
+                      size="md"
+                      borderRadius="lg"
+                      borderColor={borderColor}
+                       _focus={{
+                         borderColor: 'gray.400',
+                         boxShadow: 'none',
+                       }}
+                      placeholder="De: dd/mm/aaaa"
+                      pl={10}
+                    />
+                 </InputGroup>
+               </Box>
+
+              {/* Data Fim */}
+              <Box minW="200px" flex="1">
+                <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
+                  Data Fim
+                </Text>
+                                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <FiCalendar color="gray.400" />
+                    </InputLeftElement>
+                    <Input
+                      type="date"
+                      value={filters.dataFim}
+                      onChange={(e) => handleFilterChange('dataFim', e.target.value)}
+                      size="md"
+                      borderRadius="lg"
+                      borderColor={borderColor}
+                       _focus={{
+                         borderColor: 'gray.400',
+                         boxShadow: 'none',
+                       }}
+                      placeholder="Até: dd/mm/aaaa"
+                      pl={10}
+                    />
+                 </InputGroup>
+               </Box>
+
+              {/* Botão Aplicar */}
+              <Box minW="150px">
+                <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
+                  &nbsp;
+                </Text>
+                                  <Button
+                    leftIcon={<FiSearch />}
+                    bgGradient="linear(135deg, #0D249B 0%, #1A45FC 100%)"
+                    _hover={{
+                      bgGradient: "linear(135deg, #1A45FC 0%, #0D249B 100%)",
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 4px 12px rgba(26, 69, 252, 0.4)'
+                    }}
+                    _active={{
+                      transform: 'translateY(0)',
+                      boxShadow: '0 2px 8px rgba(26, 69, 252, 0.3)'
+                    }}
+                    color="white"
+                    size="md"
+                    w="full"
+                    borderRadius="lg"
+                    fontWeight="medium"
+                    onClick={applyFilters}
+                  >
+                    Aplicar
+                  </Button>
+               </Box>
+            </HStack>
+          </Box>
           </Collapse>
+
+          {/* Filtros Ativos */}
+          {hasActiveFilters && (
+            <Box>
+              <Text fontSize="sm" fontWeight="medium" color={textColor} mb={3}>
+                Filtros ativos:
+              </Text>
+              <HStack spacing={2} wrap="wrap">
+                {filters.empresa && (
+                  <Box
+                    bg="blue.50"
+                    color="blue.700"
+                    px={3}
+                    py={1}
+                    borderRadius="full"
+                    fontSize="xs"
+                    fontWeight="medium"
+                    border="1px solid"
+                    borderColor="blue.200"
+                  >
+                    🏢 {filters.empresa}
+                  </Box>
+                )}
+                {filters.setor && (
+                  <Box
+                    bg="green.50"
+                    color="green.700"
+                    px={3}
+                    py={1}
+                    borderRadius="full"
+                    fontSize="xs"
+                    fontWeight="medium"
+                    border="1px solid"
+                    borderColor="green.200"
+                  >
+                    🏬 {filters.setor}
+                  </Box>
+                )}
+                {filters.dataInicio && (
+                  <Box
+                    bg="orange.50"
+                    color="orange.700"
+                    px={3}
+                    py={1}
+                    borderRadius="full"
+                    fontSize="xs"
+                    fontWeight="medium"
+                    border="1px solid"
+                    borderColor="orange.200"
+                  >
+                    📅 De: {filters.dataInicio}
+                  </Box>
+                )}
+                {filters.dataFim && (
+                  <Box
+                    bg="orange.50"
+                    color="orange.700"
+                    px={3}
+                    py={1}
+                    borderRadius="full"
+                    fontSize="xs"
+                    fontWeight="medium"
+                    border="1px solid"
+                    borderColor="orange.200"
+                  >
+                    📅 Até: {filters.dataFim}
+                  </Box>
+                )}
+              </HStack>
+            </Box>
+          )}
         </VStack>
       </CardBody>
     </Card>
   )
 }
 
-export default memo(FiltrosEPSPSQI)
+export default FiltrosEPSPSQI
