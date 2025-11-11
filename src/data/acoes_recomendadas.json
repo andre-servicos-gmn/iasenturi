@@ -1,0 +1,165 @@
+{
+  "Dimensões": [
+    {
+      "nome": "Demandas Psicológicas",
+      "ações": [
+        {
+          "nível": "Crítico",
+          "simples": "Pausas respiratórias 5 min/h",
+          "moderada": "Treinamento gestão atenção, priorização e regulação emocional",
+          "complexa": "Revisão fluxo trabalho e redistribuição usando Toyota Kata e Lean + micro-checkpoints"
+        },
+        {
+          "nível": "Vulnerável",
+          "simples": "Checklist diário de prioridades + Kanban (To do / Doing / Done)",
+          "moderada": "Sessões microplanejamento e mentoria eficiência cognitiva",
+          "complexa": "Workshop resolução de problemas complexos e gestão emocional + micro-checkpoints"
+        },
+        {
+          "nível": "Moderado",
+          "simples": "Auto-monitoramento de carga mental, Lista de tarefas",
+          "moderada": "Mentoria + workshop para eficiência cognitiva",
+          "complexa": "Sistema de feedback contínuo de demandas sobre carga (programa Start) + micro-checkpoints"
+        }
+      ]
+    },
+    {
+      "nome": "Demandas Físicas",
+      "ações": [
+        {
+          "nível": "Crítico",
+          "simples": "Pausas alongamento 50 min",
+          "moderada": "Treinamento ergonômico e postura correta",
+          "complexa": "Reorganização completa de postos, processos e layout"
+        },
+        {
+          "nível": "Vulnerável",
+          "simples": "Avisos de postura durante o dia",
+          "moderada": "Revisão rotativa de tarefas físicas",
+          "complexa": "Avaliação ergonômica completa com ajustes de layout e equipamentos"
+        },
+        {
+          "nível": "Moderado",
+          "simples": "Orientação sobre postura e ergonomia",
+          "moderada": "Sessões de alongamento coletivo",
+          "complexa": "Integração de exercícios preventivos no fluxo de trabalho"
+        }
+      ]
+    },
+    {
+      "nome": "Demandas de Trabalho",
+      "ações": [
+        {
+          "nível": "Crítico",
+          "simples": "Checklist diário de tarefas, Kanban (To do / Doing / Done)",
+          "moderada": "Revisão semanal de carga e distribuição",
+          "complexa": "Reengenharia de processos usando Toyota Kata e Lean"
+        },
+        {
+          "nível": "Vulnerável",
+          "simples": "Comunicação clara das prioridades, Kanban (To do / Doing / Done)",
+          "moderada": "Alinhamento de expectativas via micro-reuniões",
+          "complexa": "Integração de sistema de planejamento e acompanhamento de metas"
+        },
+        {
+          "nível": "Moderado",
+          "simples": "Orientação sobre gestão pessoal de tempo, Kanban (To do / Doing / Done)",
+          "moderada": "Pequenas reuniões de alinhamento",
+          "complexa": "Rotina contínua de monitoramento de workload"
+        }
+      ]
+    },
+    {
+      "nome": "Suporte Social e Liderança",
+      "ações": [
+        {
+          "nível": "Crítico",
+          "simples": "Reconhecimento diário de esforço",
+          "moderada": "Treinamento liderança e feedback construtivo, CNV/DBT",
+          "complexa": "Revisão processos liderança e cultura organizacional (programa Start) + micro-checkpoints"
+        },
+        {
+          "nível": "Vulnerável",
+          "simples": "Check-ins semanais estruturados",
+          "moderada": "Mentoria comunicação assertiva e resolução de conflitos",
+          "complexa": "Implementação programa estruturado de liderança e engajamento + micro-checkpoints"
+        },
+        {
+          "nível": "Moderado",
+          "simples": "Comunicação positiva de metas e conquistas",
+          "moderada": "Treinamento resolução de conflitos, DBT/CNV",
+          "complexa": "Programa de coaching contínuo para líderes + micro-checkpoints"
+        }
+      ]
+    },
+    {
+      "nome": "Esforço e Recompensa",
+      "ações": [
+        {
+          "nível": "Crítico",
+          "simples": "Feedback imediato sobre entregas",
+          "moderada": "Revisão critérios de reconhecimento",
+          "complexa": "Redesenho políticas de recompensa e promoções"
+        },
+        {
+          "nível": "Vulnerável",
+          "simples": "Pequenos reconhecimentos diários",
+          "moderada": "Workshops alinhamento esforço e recompensa",
+          "complexa": "Implantação programa formal de reconhecimento contínuo"
+        },
+        {
+          "nível": "Moderado",
+          "simples": "Elogios e incentivos informais",
+          "moderada": "Sessões valorização do trabalho, reforço positivo",
+          "complexa": "Revisão anual políticas benefícios e premiações líderes"
+        }
+      ]
+    },
+    {
+      "nome": "Interface Trabalho-Vida",
+      "ações": [
+        {
+          "nível": "Crítico",
+          "simples": "Orientação sobre limites de horários",
+          "moderada": "Políticas de pausas e flexibilização",
+          "complexa": "Revisão jornada e integração home office"
+        },
+        {
+          "nível": "Vulnerável",
+          "simples": "Incentivo a desligar notificações fora do expediente",
+          "moderada": "Limites pelo líder + workshops balanceamento carga",
+          "complexa": "Programa conciliação vida-trabalho com suporte psicológico"
+        },
+        {
+          "nível": "Moderado",
+          "simples": "Sugestão pequenas pausas e hobbies",
+          "moderada": "Workshops gestão tempo pessoal, qualidade de vida",
+          "complexa": "Avaliação políticas e implantação horários flexíveis"
+        }
+      ]
+    },
+    {
+      "nome": "Saúde Emocional (Senturi)",
+      "ações": [
+        {
+          "nível": "Crítico",
+          "simples": "Check-ins emocionais diários / monitoramento emocional",
+          "moderada": "Sessões curtas de técnicas de gestão emocional/stress (DBT/ACT)",
+          "complexa": "Programa bem-estar estruturado contínuo (programa Start) + micro-checkpoints"
+        },
+        {
+          "nível": "Vulnerável",
+          "simples": "Microtreinamentos de resiliência e tolerância ao estresse",
+          "moderada": "Desafios semanais + workshops regulação e gestão emocional",
+          "complexa": "Integração indicadores saúde emocional ao PGR + micro-checkpoints"
+        },
+        {
+          "nível": "Moderado",
+          "simples": "Orientações sobre autocuidado",
+          "moderada": "Sessões mindfulness e atenção plena",
+          "complexa": "Programas desenvolvimento emocional e motivacional"
+        }
+      ]
+    }
+  ]
+}

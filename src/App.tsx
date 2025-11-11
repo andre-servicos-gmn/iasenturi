@@ -7,6 +7,7 @@ import theme from './styles/theme'
 import Layout from './components/Layout.tsx'
 import Dashboard from './components/Dashboard.tsx'
 import DominiosPage from './pages/DominiosPage.tsx'
+import AcoesRecomendadasPage from './pages/AcoesRecomendadasPage.tsx'
 import ReportPrintPage from './pages/ReportPrintPage.tsx'
 import MapaCalorPage from './pages/MapaCalorPage.tsx'
 import HistoricoPage from './pages/HistoricoPage.tsx'
@@ -73,7 +74,15 @@ function AppRoutes() {
               </Layout>
             </ProtectedRoute>
           } />
-          
+
+          <Route path="/acoes-recomendadas" element={
+            <ProtectedRoute>
+              <Layout>
+                <AcoesRecomendadasPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
           <Route path="/mapa-calor" element={
             <ProtectedRoute>
               <Layout>
