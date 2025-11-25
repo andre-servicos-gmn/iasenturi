@@ -6,7 +6,7 @@ import { FiGrid, FiTrendingUp, FiBarChart2 } from 'react-icons/fi'
 import { useFilters } from '@/contexts/store'
 import { useState, useEffect } from 'react'
 import HeatmapTable from '../components/HeatmapTable'
-import ExportButton from '../components/ExportButton'
+
 
 const MotionBox = motion(Box)
 
@@ -20,7 +20,7 @@ const MapaCalorPage = () => {
     const processData = () => {
       try {
         setLoading(true)
-        
+
         if (filteredData.length > 0) {
           // Definir nomes dos domínios alinhados com o HeatmapTable
           const domainNames = [
@@ -46,13 +46,13 @@ const MapaCalorPage = () => {
 
           // Obter setores únicos
           const setores = [...new Set(filteredData.map(item => item.area_setor).filter(Boolean))]
-          
+
           // Processar dados para o heatmap
           const heatmapCells: any[] = []
-          
+
           setores.forEach(setor => {
             const dadosSetor = filteredData.filter(item => item.area_setor === setor)
-            
+
             domainNames.forEach((dominio, index) => {
               const field = domainFields[index]
               const valores = dadosSetor
@@ -61,18 +61,18 @@ const MapaCalorPage = () => {
                   return parseFloat(valor || '0')
                 })
                 .filter(valor => valor > 0)
-              
-              const media = valores.length > 0 
+
+              const media = valores.length > 0
                 ? Math.round(valores.reduce((a, b) => a + b, 0) / valores.length)
                 : 0
-              
+
               // Encontrar a data mais recente de avaliação
               const ultimaAvaliacao = dadosSetor
                 .map(item => (item as any).data_avaliacao)
                 .filter(Boolean)
                 .sort()
                 .pop()
-              
+
               heatmapCells.push({
                 setor,
                 dominio,
@@ -86,21 +86,21 @@ const MapaCalorPage = () => {
           // Calcular médias comparativas se houver setor selecionado
           if (filters.setor) {
             const setorSelecionado = filters.setor
-            
+
             heatmapCells.forEach(cell => {
               // Calcular média da organização (todos os setores exceto o selecionado)
-              const outrosSetores = heatmapCells.filter(item => 
+              const outrosSetores = heatmapCells.filter(item =>
                 item.dominio === cell.dominio && item.setor !== setorSelecionado
               )
-              const mediaOrganizacao = outrosSetores.length > 0 
+              const mediaOrganizacao = outrosSetores.length > 0
                 ? Math.round(outrosSetores.reduce((acc, item) => acc + item.valor, 0) / outrosSetores.length)
                 : cell.valor
 
               // Calcular média do setor selecionado
-              const dadosSetor = heatmapCells.filter(item => 
+              const dadosSetor = heatmapCells.filter(item =>
                 item.dominio === cell.dominio && item.setor === setorSelecionado
               )
-              const mediaSetor = dadosSetor.length > 0 
+              const mediaSetor = dadosSetor.length > 0
                 ? Math.round(dadosSetor.reduce((acc, item) => acc + item.valor, 0) / dadosSetor.length)
                 : cell.valor
 
@@ -138,7 +138,7 @@ const MapaCalorPage = () => {
 
   return (
     <MotionBox
-      id="relatorio-senturi"
+      id="heatmap-relatorio"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -163,29 +163,23 @@ const MapaCalorPage = () => {
                 Visualização por setor e domínio com análise de risco
               </Text>
             </VStack>
-            
-            <ExportButton
-              elementId="relatorio-senturi"
-              title="Mapa de Calor Psicossocial"
-              subtitle={`Empresa: ${filters.empresa || 'Todas'}${filters.setor ? ` • Setor: ${filters.setor}` : ''}`}
-              size="md"
-              variant="solid"
-            />
+
+
           </HStack>
         </Box>
 
         {/* Grid Principal */}
-        <Grid 
+        <Grid
           templateColumns={{ base: "1fr", lg: "3fr 1fr" }}
-          gap={6} 
-          w="full" 
-          h="full" 
+          gap={6}
+          w="full"
+          h="full"
           flex={1}
           minH="calc(100vh - 200px)"
         >
           {/* Coluna Principal - Heatmap */}
           <VStack spacing={6} align="stretch" h="full">
-            <HeatmapTable 
+            <HeatmapTable
               data={heatmapData}
               onCellClick={handleCellClick}
             />
@@ -382,10 +376,10 @@ const MapaCalorPage = () => {
                             acc[cell.setor] = (acc[cell.setor] || 0) + 1
                             return acc
                           }, {} as Record<string, number>)
-                        
+
                         const setorMaisCritico = Object.entries(setoresCriticos)
-                          .sort(([,a], [,b]) => (b as number) - (a as number))[0]
-                        
+                          .sort(([, a], [, b]) => (b as number) - (a as number))[0]
+
                         return setorMaisCritico ? (
                           <Box
                             p={3}
@@ -418,10 +412,10 @@ const MapaCalorPage = () => {
                             acc[cell.dominio] = (acc[cell.dominio] || 0) + 1
                             return acc
                           }, {} as Record<string, number>)
-                        
+
                         const dominioMaisCritico = Object.entries(dominiosCriticos)
-                          .sort(([,a], [,b]) => (b as number) - (a as number))[0]
-                        
+                          .sort(([, a], [, b]) => (b as number) - (a as number))[0]
+
                         return dominioMaisCritico ? (
                           <Box
                             p={3}
@@ -454,10 +448,10 @@ const MapaCalorPage = () => {
                             acc[cell.setor] = (acc[cell.setor] || 0) + 1
                             return acc
                           }, {} as Record<string, number>)
-                        
+
                         const melhorSetor = Object.entries(setoresFavoraveis)
-                          .sort(([,a], [,b]) => (b as number) - (a as number))[0]
-                        
+                          .sort(([, a], [, b]) => (b as number) - (a as number))[0]
+
                         return melhorSetor ? (
                           <Box
                             p={3}

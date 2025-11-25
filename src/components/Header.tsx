@@ -15,14 +15,14 @@ import { FiBell, FiSettings, FiLogOut, FiUser, FiMenu } from 'react-icons/fi'
 import { useAuth } from '@/contexts/auth'
 import { useNavigate } from 'react-router-dom'
 import { useFilters } from '@/contexts/store'
-// import ExportButton from './ExportButton'
-import AdvancedReportModal from './ReportExport/AdvancedReportModal'
+import { ExportButton } from './ExportButton'
+
 const Header = () => {
   const { signOut } = useAuth()
   const navigate = useNavigate()
   const toast = useToast()
-  const { toggleSidebar, filteredData, filters } = useFilters()
-  
+  const { toggleSidebar } = useFilters()
+
   const bgColor = useColorModeValue('white', 'gray.800')
   const borderColor = useColorModeValue('gray.200', 'gray.700')
   const textColor = useColorModeValue('gray.600', 'gray.300')
@@ -32,7 +32,7 @@ const Header = () => {
       await signOut()
       toast({
         title: 'Logout realizado',
-        description: 'Você foi desconectado com sucesso',
+        description: 'VocǦ foi desconectado com sucesso',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -75,7 +75,7 @@ const Header = () => {
           <Text
             fontSize="xl"
             fontWeight="bold"
-            bgGradient="linear(135deg, #0D249B 0%, #1A45FC 100%)"
+            bgGradient="linear(135deg, senturi.primaria 0%, senturi.destaqueClaro 100%)"
             bgClip="text"
           >
             Senturi
@@ -83,56 +83,20 @@ const Header = () => {
         </HStack>
 
         <HStack spacing={4}>
-          {(() => {
-            const companyName = filters.empresa || 'Empresa'
-            const period = filters.dataInicio && filters.dataFim ? `${filters.dataInicio} a ${filters.dataFim}` : 'Período atual'
-            const totalEmployees = filteredData.length
-            const averageScore = (() => {
-              try {
-                const values = filteredData
-                  .map((r: any) => (r.iseso ? parseFloat(r.iseso) : NaN))
-                  .filter((v: number) => !isNaN(v))
-                if (values.length === 0) return 0
-                return Math.round(values.reduce((a: number, b: number) => a + b, 0) / values.length)
-              } catch {
-                return 0
-              }
-            })()
-            const dominios: Array<{ name: string; score: number; risk: 'low' | 'medium' | 'high' }> = [
-              { name: 'Demandas Psicológicas', score: averageScore, risk: 'medium' },
-              { name: 'Demandas Físicas', score: averageScore, risk: 'medium' },
-              { name: 'Demandas de Trabalho', score: averageScore, risk: 'medium' },
-              { name: 'Suporte Social e Liderança', score: averageScore, risk: 'medium' },
-              { name: 'Suporte Social', score: averageScore, risk: 'medium' },
-              { name: 'Esforço e Recompensa', score: averageScore, risk: 'medium' },
-              { name: 'Saúde Emocional', score: averageScore, risk: 'medium' },
-              { name: 'Interface Trabalho-Vida', score: averageScore, risk: 'medium' }
-            ]
-            return (
-              <AdvancedReportModal
-                rootElementId="relatorio-senturi"
-                defaultTitle="Dashboard Senturi"
-                companyName={companyName}
-                period={period}
-                totalEmployees={totalEmployees}
-                dominios={dominios}
-              />
-            )
-          })()}
-          
+          <ExportButton />
           <IconButton
-            aria-label="Notificações"
+            aria-label="Notifica����es"
             icon={<FiBell />}
             variant="ghost"
             size="md"
             color={textColor}
             _hover={{ bg: 'gray.100', _dark: { bg: 'gray.700' } }}
           />
-          
+
           <Menu>
             <MenuButton
               as={IconButton}
-              aria-label="Menu do usuário"
+              aria-label="Menu do usuǭrio"
               icon={<FiUser />}
               variant="ghost"
               size="md"
@@ -144,10 +108,10 @@ const Header = () => {
                 Perfil
               </MenuItem>
               <MenuItem icon={<FiSettings />}>
-                Configurações
+                Configura����es
               </MenuItem>
               <MenuDivider />
-              <MenuItem 
+              <MenuItem
                 icon={<FiLogOut />}
                 onClick={handleLogout}
                 color="red.500"

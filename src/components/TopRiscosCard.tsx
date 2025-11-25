@@ -30,11 +30,11 @@ const TopRiscosCard = () => {
       try {
         setLoading(true)
         const data = await fetchCOPSQData()
-        
+
         if (data.length > 0) {
           // Agrupar dados por setor
           const riscosPorSetor: { [key: string]: any } = {}
-          
+
           data.forEach(item => {
             if (item.area_setor) {
               if (!riscosPorSetor[item.area_setor]) {
@@ -44,7 +44,7 @@ const TopRiscosCard = () => {
                   colaboradores: 0
                 }
               }
-              
+
               // Calcular ISESO para este item
               const isesoValue = calculateISESO(item)
               riscosPorSetor[item.area_setor].isesoValues.push(isesoValue)
@@ -55,7 +55,7 @@ const TopRiscosCard = () => {
           // Converter para array e calcular médias
           const riscosArray = Object.values(riscosPorSetor).map((setorData: any) => {
             const mediaISESO = Math.round(setorData.isesoValues.reduce((a: number, b: number) => a + b, 0) / setorData.isesoValues.length)
-            
+
             return {
               dominio: `ISESO - ${setorData.setor}`,
               setor: setorData.setor,
@@ -96,10 +96,10 @@ const TopRiscosCard = () => {
       'saude_emocional',
       'interface_trabalho_vida'
     ]
-    
+
     let total = 0
     let count = 0
-    
+
     dominios.forEach(dominio => {
       const valor = parseFloat(item[dominio] || '0')
       if (valor > 0) {
@@ -107,7 +107,7 @@ const TopRiscosCard = () => {
         count++
       }
     })
-    
+
     return count > 0 ? Math.round(total / count) : 0
   }
 
@@ -122,10 +122,10 @@ const TopRiscosCard = () => {
 
   const getNivelGradient = (nivel: string) => {
     switch (nivel) {
-      case 'alto': return 'linear(to-r, #FEE2E2, #FECACA)'
-      case 'medio': return 'linear(to-r, #FEF3C7, #FDE68A)'
-      case 'baixo': return 'linear(to-r, #D1FAE5, #A7F3D0)'
-      default: return 'linear(to-r, #F3F4F6, #E5E7EB)'
+      case 'alto': return 'linear(to-r, #E53935, #C62828)'     // Vermelho técnico
+      case 'medio': return 'linear(to-r, #FDCB6E, #F39C12)'   // Amarelo claro
+      case 'baixo': return 'linear(to-r, #00C4A7, #00A085)'   // Verde turquesa
+      default: return 'linear(to-r, #B6BEC6, #9CA3AF)'       // Cinza gelo
     }
   }
 
@@ -147,7 +147,7 @@ const TopRiscosCard = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card 
+      <Card
         variant="premium"
         boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
         border="1px solid"
@@ -159,7 +159,7 @@ const TopRiscosCard = () => {
               <HStack spacing={3}>
                 <Box
                   p={2}
-                  bg="#0D249B"
+                  bg="senturi.azulProfundo"
                   borderRadius="lg"
                   color="white"
                 >
@@ -169,9 +169,9 @@ const TopRiscosCard = () => {
                   Top 3 Riscos Críticos
                 </Text>
               </HStack>
-              <Badge 
+              <Badge
                 variant="premium"
-                bgGradient="linear(135deg, #0D249B 0%, #1A45FC 100%)"
+                bgGradient="linear(135deg, senturi.azulProfundo 0%, senturi.azulMedio 100%)"
                 color="white"
               >
                 ISESO
@@ -186,7 +186,7 @@ const TopRiscosCard = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1, duration: 0.3 }}
-                    whileHover={{ 
+                    whileHover={{
                       scale: 1.02,
                       boxShadow: '0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04)'
                     }}
@@ -212,8 +212,8 @@ const TopRiscosCard = () => {
                       <HStack justify="space-between" align="center" spacing={4}>
                         <VStack align="start" spacing={3} flex={1}>
                           <HStack spacing={3} align="center">
-                            <Avatar 
-                              size="sm" 
+                            <Avatar
+                              size="sm"
                               name={risco.setor}
                               bg={`${getNivelColor(risco.nivel)}.100`}
                               color={`${getNivelColor(risco.nivel)}.700`}
@@ -235,7 +235,7 @@ const TopRiscosCard = () => {
                               </Badge>
                             </VStack>
                           </HStack>
-                          
+
                           <HStack spacing={4} fontSize="sm" color="gray.500">
                             <HStack spacing={2}>
                               <FiUsers size={16} />
@@ -247,18 +247,18 @@ const TopRiscosCard = () => {
                             </HStack>
                           </HStack>
                         </VStack>
-                        
+
                         <VStack align="end" spacing={1}>
-                          <Text 
-                            fontSize="4xl" 
-                            fontWeight="black" 
+                          <Text
+                            fontSize="4xl"
+                            fontWeight="black"
                             color={`${getNivelColor(risco.nivel)}.600`}
                             lineHeight="1"
                           >
                             {risco.valor}
                           </Text>
-                          <Text 
-                            fontSize="xs" 
+                          <Text
+                            fontSize="xs"
                             color={`${getNivelColor(risco.nivel)}.500`}
                             fontWeight="medium"
                             textTransform="uppercase"

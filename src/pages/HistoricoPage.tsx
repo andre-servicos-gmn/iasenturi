@@ -144,15 +144,15 @@ const HistoricoPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.empresa, filters.setor])
 
-  // Cores da paleta Senturi para os domínios
+  // Cores da nova paleta Senturi para os domínios
   const coresDominios = {
-    'Demandas Psicológicas': '#FF6B6B',
-    'Demandas Físicas': '#4ECDC4',
-    'Demandas de Trabalho': '#45B7D1',
-    'Suporte Social e Liderança': '#96CEB4',
-    'Esforço e Recompensa': '#DDA0DD',
-    'Interface Trabalho-Vida': '#F7DC6F',
-    'Saúde Emocional': '#98D8C8'
+    'Demandas Psicológicas': '#E53935',    // Vermelho técnico
+    'Demandas Físicas': '#00C4A7',        // Verde turquesa
+    'Demandas de Trabalho': '#1A45FC',    // Azul vibrante
+    'Suporte Social e Liderança': '#169DEF', // Azul claro
+    'Esforço e Recompensa': '#FDCB6E',    // Amarelo claro
+    'Interface Trabalho-Vida': '#E17055', // Laranja forte
+    'Saúde Emocional': '#0D249B'          // Azul escuro
   }
 
   // Intervenções simuladas removidas: agora usamos dados reais vindos do banco via fetchDadosHistoricos
@@ -1084,7 +1084,7 @@ const HistoricoPage = () => {
                           </HStack>
                           <HStack spacing={2} align="center">
                             <Text fontSize="xs" color="gray.600">Cor:</Text>
-                            {['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#DDA0DD', '#F7DC6F', '#98D8C8', '#FFA07A', '#20B2AA', '#87CEEB'].map((cor) => (
+                            {['#E53935', '#E17055', '#FDCB6E', '#00C4A7', '#1A45FC', '#0D249B', '#169DEF', '#B6BEC6', '#FFA07A', '#20B2AA'].map((cor) => (
                               <Box
                                 key={cor}
                                 w={4}
@@ -1576,7 +1576,7 @@ const HistoricoPage = () => {
                               </HStack>
                               <HStack spacing={2} align="center">
                                 <Text fontSize="xs" color="gray.600">Cor:</Text>
-                                {['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#DDA0DD', '#F7DC6F', '#98D8C8', '#FFA07A', '#20B2AA', '#87CEEB'].map((cor) => (
+                                {['#E53935', '#E17055', '#FDCB6E', '#00C4A7', '#1A45FC', '#0D249B', '#169DEF', '#B6BEC6', '#FFA07A', '#20B2AA'].map((cor) => (
                                   <Box
                                     key={cor}
                                     w={4}

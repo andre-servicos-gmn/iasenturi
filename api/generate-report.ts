@@ -1,50 +1,212 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { createClient } from '@supabase/supabase-js';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import PDFDocument from 'pdfkit';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const { empresa = '', setor = '', dataInicio = '', dataFim = '', title = 'Relatório Senturi' } = (req.query || {}) as Record<string, string>
+    try {
+        const supabaseUrl = process.env.VITE_SUPABASE_URL;
+        const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
-  try {
-    // Lazy import to reduce cold start and handle ESM default
-    const chromiumMod = await import('@sparticuz/chromium')
-    const chromium: any = (chromiumMod as any).default || chromiumMod
-    const puppeteerMod = await import('puppeteer-core')
-    const puppeteer: any = (puppeteerMod as any).default || puppeteerMod
+        if (!supabaseUrl || !supabaseKey) {
+            return res.status(500).json({ error: 'Supabase credentials not configured' });
+        }
 
-    const host = (req.headers['x-forwarded-host'] as string) || (req.headers.host as string)
-    const proto = (req.headers['x-forwarded-proto'] as string) || 'https'
-    const baseUrl = `${proto}://${host}`
-    const params = new URLSearchParams({ empresa, setor, dataInicio, dataFim, title })
-    const targetUrl = `${baseUrl}/report/print?${params.toString()}`
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const executablePath = await chromium.executablePath()
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: { width: 1280, height: 900 },
-      executablePath,
-      headless: 'new'
-    })
-    const page = await browser.newPage()
-    await page.goto(targetUrl, { waitUntil: 'networkidle0', timeout: 120000 })
+        // Get query parameters
+        const { companyId, sector, startDate, endDate } = req.query;
 
-    // wait for page to signal it's ready
-    await page.waitForFunction('window.__REPORT_READY__ === true', { timeout: 60000 })
+        console.log('Generating PDF report with filters:', { companyId, sector, startDate, endDate });
 
-    const pdf = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: { top: '10mm', bottom: '10mm', left: '10mm', right: '10mm' }
-    })
+        let query = supabase
+            .from('COPSQ_respostas')
+            .select('*');
 
-    await browser.close()
+        // Apply filters
+        if (companyId) {
+            query = query.eq('empresa_id', companyId);
+        }
+        if (sector) {
+            query = query.eq('area_setor', sector);
+        }
+        if (startDate) {
+            query = query.gte('created_at', startDate);
+        }
+        if (endDate) {
+            query = query.lte('created_at', endDate);
+        }
 
-    const filename = `Relatorio-Senturi-${Date.now()}.pdf`
-    res.setHeader('Content-Type', 'application/pdf')
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)
-    res.status(200).send(Buffer.from(pdf))
-  } catch (err: any) {
-    console.error('Failed to generate report:', err)
-    res.status(500).json({ error: 'Falha ao gerar relatório no servidor.' })
-  }
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('Supabase error:', error);
+            return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({ error: 'No data found for the given filters' });
+        }
+
+        // Create PDF document
+        const doc = new PDFDocument({ margin: 50, size: 'A4' });
+
+        // Set response headers
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="relatorio-${new Date().toISOString().split('T')[0]}.pdf"`);
+
+        // Pipe the PDF to the response
+        doc.pipe(res);
+
+        // Add header
+        doc.fontSize(20)
+            .font('Helvetica-Bold')
+            .text('Relatório COPSQ', { align: 'center' });
+
+        doc.moveDown(0.5);
+        doc.fontSize(10)
+            .font('Helvetica')
+            .text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, { align: 'center' });
+
+        doc.moveDown(1);
+
+        // Add filter information
+        doc.fontSize(12)
+            .font('Helvetica-Bold')
+            .text('Filtros Aplicados:', { underline: true });
+
+        doc.moveDown(0.5);
+        doc.fontSize(10)
+            .font('Helvetica');
+
+        if (companyId) {
+            doc.text(`Empresa ID: ${companyId}`);
+        }
+        if (sector) {
+            doc.text(`Setor: ${sector}`);
+        }
+        if (startDate) {
+            doc.text(`Data Início: ${new Date(startDate as string).toLocaleDateString('pt-BR')}`);
+        }
+        if (endDate) {
+            doc.text(`Data Fim: ${new Date(endDate as string).toLocaleDateString('pt-BR')}`);
+        }
+
+        doc.moveDown(1);
+
+        // Add summary statistics
+        doc.fontSize(12)
+            .font('Helvetica-Bold')
+            .text('Resumo:', { underline: true });
+
+        doc.moveDown(0.5);
+        doc.fontSize(10)
+            .font('Helvetica')
+            .text(`Total de Respostas: ${data.length}`);
+
+        doc.moveDown(1);
+
+        // Add data table header
+        doc.fontSize(12)
+            .font('Helvetica-Bold')
+            .text('Dados:', { underline: true });
+
+        doc.moveDown(0.5);
+
+        // Table configuration
+        const tableTop = doc.y;
+        const itemHeight = 25;
+        const pageHeight = doc.page.height - doc.page.margins.bottom;
+
+        // Define columns (adjust based on your data structure)
+        const columns = [
+            { key: 'id', label: 'ID', width: 50 },
+            { key: 'nome_completo', label: 'Nome', width: 150 },
+            { key: 'area_setor', label: 'Setor', width: 100 },
+            { key: 'created_at', label: 'Data', width: 100 }
+        ];
+
+        // Draw table header
+        let currentY = doc.y;
+        let currentX = 50;
+
+        doc.fontSize(9)
+            .font('Helvetica-Bold');
+
+        columns.forEach(col => {
+            doc.text(col.label, currentX, currentY, { width: col.width, align: 'left' });
+            currentX += col.width;
+        });
+
+        currentY += itemHeight;
+        doc.moveTo(50, currentY - 5)
+            .lineTo(550, currentY - 5)
+            .stroke();
+
+        // Draw table rows
+        doc.font('Helvetica')
+            .fontSize(8);
+
+        data.forEach((row, index) => {
+            // Check if we need a new page
+            if (currentY + itemHeight > pageHeight) {
+                doc.addPage();
+                currentY = 50;
+
+                // Redraw header on new page
+                currentX = 50;
+                doc.fontSize(9).font('Helvetica-Bold');
+                columns.forEach(col => {
+                    doc.text(col.label, currentX, currentY, { width: col.width, align: 'left' });
+                    currentX += col.width;
+                });
+                currentY += itemHeight;
+                doc.moveTo(50, currentY - 5)
+                    .lineTo(550, currentY - 5)
+                    .stroke();
+                doc.font('Helvetica').fontSize(8);
+            }
+
+            currentX = 50;
+            columns.forEach(col => {
+                let value = row[col.key];
+
+                // Format date if it's a date field
+                if (col.key === 'created_at' && value) {
+                    value = new Date(value).toLocaleDateString('pt-BR');
+                }
+
+                // Handle null/undefined values
+                const displayValue = value !== null && value !== undefined ? String(value) : '-';
+
+                doc.text(displayValue, currentX, currentY, {
+                    width: col.width,
+                    align: 'left',
+                    ellipsis: true
+                });
+                currentX += col.width;
+            });
+
+            currentY += itemHeight;
+
+            // Draw row separator
+            if (index < data.length - 1) {
+                doc.moveTo(50, currentY - 5)
+                    .lineTo(550, currentY - 5)
+                    .strokeOpacity(0.3)
+                    .stroke()
+                    .strokeOpacity(1);
+            }
+        });
+
+        // Finalize PDF
+        doc.end();
+
+    } catch (error: any) {
+        console.error('Handler error:', error);
+
+        // If headers haven't been sent yet, send error response
+        if (!res.headersSent) {
+            return res.status(500).json({ error: error.message || 'Internal Server Error' });
+        }
+    }
 }
-
-

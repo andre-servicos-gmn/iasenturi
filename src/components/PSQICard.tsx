@@ -217,10 +217,18 @@ const PSQICard = () => {
 
   // Converter score para percentual do gauge (0-100)
   const scoreToPercent = (score: number) => {
-    // PSQI vai de 0 a 21, mas normalmente até 21
+    // PSQI vai de 0 a 21
     // Vamos mapear para 0-100% onde 0 = 0%, 21 = 100%
     return Math.min(score / 21, 1)
   }
+
+  const [gaugePercent, setGaugePercent] = useState(0)
+
+  useEffect(() => {
+    const target = totalResponses > 0 ? scoreToPercent(averagePSQI) : 0
+    const timeout = window.setTimeout(() => setGaugePercent(target), 120)
+    return () => window.clearTimeout(timeout)
+  }, [averagePSQI, totalResponses])
 
   return (
     <MotionCard
@@ -239,7 +247,7 @@ const PSQICard = () => {
             <HStack spacing={3}>
               <Box
                 p={2}
-                bg="#0D249B"
+                bg="senturi.azulProfundo"
                 borderRadius="lg"
                 color="white"
               >
@@ -257,7 +265,7 @@ const PSQICard = () => {
             <HStack spacing={2}>
               <Badge
                 variant="premium"
-                bgGradient="linear(135deg, #0D249B 0%, #1A45FC 100%)"
+                bgGradient="linear(135deg, senturi.azulProfundo 0%, senturi.azulMedio 100%)"
                 color="white"
               >
                 PSQI
@@ -293,11 +301,16 @@ const PSQICard = () => {
                   id="psqi-gauge"
                   nrOfLevels={3}
                   colors={['#38A169', '#D69E2E', '#E53E3E']}
-                  percent={scoreToPercent(averagePSQI)}
-                  arcWidth={0.3}
+                  percent={gaugePercent}
+                  arcWidth={0.2}
+                  animate
+                  needleTransition="easeQuadInOut"
+                  needleTransitionDuration={1500}
+                  needleColor="#1A202C"
+                  needleBaseColor="#1A202C"
                   textColor={textColor}
                   formatTextValue={() => `${averagePSQI}`}
-                  style={{ width: '200px' }}
+                  style={{ width: '240px', maxWidth: '100%' }}
                 />
               </Box>
               <VStack spacing={1} align="center">

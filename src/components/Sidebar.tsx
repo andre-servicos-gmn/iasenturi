@@ -93,11 +93,11 @@ const Sidebar = () => {
       borderColor="gray.700"
       zIndex={1000}
       initial={{ x: -280 }}
-      animate={{ 
+      animate={{
         x: sidebar.isOpen ? 0 : -280,
         opacity: sidebar.isOpen ? 1 : 0.8
       }}
-      transition={{ 
+      transition={{
         type: "spring",
         stiffness: 300,
         damping: 30,
@@ -157,55 +157,55 @@ const Sidebar = () => {
               key={groupIndex}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ 
-                delay: 0.3 + (groupIndex * 0.1), 
+              transition={{
+                delay: 0.3 + (groupIndex * 0.1),
                 duration: 0.5,
                 type: "spring",
                 stiffness: 200
               }}
             >
               {/* Group Title */}
-              <Text 
-                fontSize="xs" 
-                fontWeight="bold" 
-                color="gray.500" 
-                textTransform="uppercase" 
+              <Text
+                fontSize="xs"
+                fontWeight="bold"
+                color="gray.500"
+                textTransform="uppercase"
                 letterSpacing="wider"
-                px={3} 
+                px={3}
                 py={2}
                 mt={groupIndex > 0 ? 4 : 2}
                 mb={1}
               >
                 {group.title}
               </Text>
-              
+
               {/* Group Items */}
               <VStack spacing={1} align="stretch">
                 {group.items.map((item, index) => {
                   const IconComponent = item.icon
                   const active = isActive(item.path)
-                  
+
                   return (
                     <MotionBox
                       key={index}
                       initial={{ opacity: 0, x: -30 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ 
-                        delay: 0.4 + (groupIndex * 0.1) + (index * 0.05), 
+                      transition={{
+                        delay: 0.4 + (groupIndex * 0.1) + (index * 0.05),
                         duration: 0.4,
                         type: "spring",
                         stiffness: 250
                       }}
-                      whileHover={{ 
+                      whileHover={{
                         scale: 1.02,
                         x: 4,
-                        transition: { 
+                        transition: {
                           type: "spring",
                           stiffness: 400,
                           damping: 25
                         }
                       }}
-                      whileTap={{ 
+                      whileTap={{
                         scale: 0.98,
                         transition: { duration: 0.1 }
                       }}
@@ -260,34 +260,34 @@ const Sidebar = () => {
                               borderRadius="0 2px 2px 0"
                               initial={{ scaleY: 0 }}
                               animate={{ scaleY: 1 }}
-                              transition={{ 
+                              transition={{
                                 type: "spring",
                                 stiffness: 300,
                                 damping: 20
                               }}
                             />
                           )}
-                          
+
                           {/* Icon */}
                           <MotionBox
-                            whileHover={{ 
+                            whileHover={{
                               scale: 1.1,
                               rotate: 5,
-                              transition: { 
+                              transition: {
                                 type: "spring",
                                 stiffness: 400
                               }
                             }}
                           >
-                            <IconComponent 
-                              size={16} 
+                            <IconComponent
+                              size={16}
                               color={active ? 'white' : 'gray.400'}
                             />
                           </MotionBox>
-                          
-                          <Text 
-                            fontSize="sm" 
-                            fontWeight={active ? 'semibold' : 'normal'} 
+
+                          <Text
+                            fontSize="sm"
+                            fontWeight={active ? 'semibold' : 'normal'}
                             flex={1}
                             color={active ? 'white' : 'gray.300'}
                           >
@@ -299,15 +299,15 @@ const Sidebar = () => {
                             <MotionBox
                               initial={{ scale: 0, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
-                              transition={{ 
+                              transition={{
                                 type: "spring",
                                 stiffness: 300,
                                 delay: 0.5
                               }}
                             >
-                              <Badge 
-                                colorScheme="blue" 
-                                variant="solid" 
+                              <Badge
+                                colorScheme="blue"
+                                variant="solid"
                                 fontSize="xs"
                                 px={2}
                                 py={0.5}

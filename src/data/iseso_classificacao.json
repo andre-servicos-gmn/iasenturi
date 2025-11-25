@@ -2,9 +2,9 @@
   "faixas": [
     {
       "min": 0,
-      "max": 39,
+      "max": 35,
       "icone": "🔴",
-      "cor": "#FF0000",
+      "cor": "#E53935",
       "nome": "Ação imediata obrigatória",
       "descricao_resumida": "Alto risco psicossocial com impacto em saúde, absenteísmo e performance.",
       "descricao_expandida": "Alto risco psicossocial e impacto visível em saúde, absenteísmo, clima e performance. Não conformidade iminente com NR-1 e ISO 45003.",
@@ -30,10 +30,10 @@
       }
     },
     {
-      "min": 40,
+      "min": 36,
       "max": 54,
       "icone": "🟠",
-      "cor": "#FFA500",
+      "cor": "#E17055",
       "nome": "Prevenção urgente",
       "descricao_resumida": "Risco significativo com sinais iniciais de queda de engajamento e saúde.",
       "descricao_expandida": "Risco significativo, sinais iniciais de queda de engajamento e saúde, potencial escalada.",
@@ -60,7 +60,7 @@
       "min": 55,
       "max": 69,
       "icone": "🟡",
-      "cor": "#FFD700",
+      "cor": "#FDCB6E",
       "nome": "Manter atenção",
       "descricao_resumida": "Nível aceitável com fatores pontuais de risco.",
       "descricao_expandida": "Nível aceitável, mas com fatores pontuais de risco.",
@@ -87,7 +87,7 @@
       "min": 70,
       "max": 84,
       "icone": "🟢",
-      "cor": "#00FF00",
+      "cor": "#00C4A7",
       "nome": "Manter boas práticas",
       "descricao_resumida": "Boa saúde emocional e clima positivo; riscos controlados.",
       "descricao_expandida": "Boa saúde emocional e clima positivo, riscos controlados e equipe engajada.",
@@ -114,7 +114,7 @@
       "min": 85,
       "max": 100,
       "icone": "🔵",
-      "cor": "#0000FF",
+      "cor": "#1A45FC",
       "nome": "Excelência consolidada",
       "descricao_resumida": "Alto nível de saúde emocional e organizacional; práticas robustas.",
       "descricao_expandida": "Alto nível de saúde emocional e organizacional, práticas preventivas robustas.",
@@ -138,5 +138,3 @@
     }
   ]
 }
-
-

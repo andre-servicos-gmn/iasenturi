@@ -25,12 +25,12 @@ const ISESOCard = () => {
       try {
         setLoading(true)
         const data = await fetchCOPSQData()
-        
+
         if (data.length > 0) {
           // Calcular ISESO geral
           let totalISESO = 0
           let count = 0
-          
+
           data.forEach(item => {
             const dominios = [
               'demandas_psicologicas',
@@ -42,10 +42,10 @@ const ISESOCard = () => {
               'saude_emocional',
               'interface_trabalho_vida'
             ]
-            
+
             let itemTotal = 0
             let itemCount = 0
-            
+
             dominios.forEach(dominio => {
               const valor = parseFloat(item[dominio] || '0')
               if (valor > 0) {
@@ -53,17 +53,17 @@ const ISESOCard = () => {
                 itemCount++
               }
             })
-            
+
             if (itemCount > 0) {
               totalISESO += Math.round(itemTotal / itemCount)
               count++
             }
           })
-          
+
           const mediaISESO = count > 0 ? Math.round(totalISESO / count) : 0
           setIsesoGeral(mediaISESO)
           setTotalColaboradores(data.length)
-          
+
           // Calcular setores críticos (ISESO > 70)
           const setoresCriticosCount = data.filter(item => {
             const dominios = [
@@ -76,10 +76,10 @@ const ISESOCard = () => {
               'saude_emocional',
               'interface_trabalho_vida'
             ]
-            
+
             let itemTotal = 0
             let itemCount = 0
-            
+
             dominios.forEach(dominio => {
               const valor = parseFloat(item[dominio] || '0')
               if (valor > 0) {
@@ -87,19 +87,19 @@ const ISESOCard = () => {
                 itemCount++
               }
             })
-            
+
             const itemISESO = itemCount > 0 ? Math.round(itemTotal / itemCount) : 0
             return itemISESO > 70
           }).length
-          
+
           setSetoresCriticos(setoresCriticosCount)
-          
+
           // Última atualização
           const ultimaData = data.reduce((latest, item) => {
             const itemDate = new Date(item.created_at || '')
             return itemDate > latest ? itemDate : latest
           }, new Date(0))
-          
+
           setUltimaAtualizacao(ultimaData.toLocaleDateString('pt-BR'))
         }
       } catch (error) {
@@ -127,12 +127,12 @@ const ISESOCard = () => {
   }
 
   return (
-    <MotionBox 
-      initial={{ opacity: 0, y: 20 }} 
-      animate={{ opacity: 1, y: 0 }} 
+    <MotionBox
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card 
+      <Card
         variant="premium"
         boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
         border="1px solid"
@@ -144,7 +144,7 @@ const ISESOCard = () => {
               <HStack spacing={3}>
                 <Box
                   p={2}
-                  bg="#0D249B"
+                  bg="senturi.iseso"
                   borderRadius="lg"
                   color="white"
                 >
@@ -154,9 +154,9 @@ const ISESOCard = () => {
                   Estatísticas Rápidas
                 </Text>
               </HStack>
-              <Badge 
+              <Badge
                 variant="premium"
-                bgGradient="linear(135deg, #0D249B 0%, #1A45FC 100%)"
+                bgGradient="linear(135deg, senturi.primaria 0%, senturi.destaqueClaro 100%)"
                 color="white"
               >
                 Métrica
@@ -169,7 +169,7 @@ const ISESOCard = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.4 }}
-                whileHover={{ 
+                whileHover={{
                   scale: 1.02,
                   boxShadow: '0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04)'
                 }}
@@ -213,18 +213,18 @@ const ISESOCard = () => {
                         </VStack>
                       </HStack>
                     </VStack>
-                    
+
                     <VStack align="end" spacing={1}>
-                      <Text 
-                        fontSize="5xl" 
-                        fontWeight="black" 
+                      <Text
+                        fontSize="5xl"
+                        fontWeight="black"
                         color={`${getISESOColor(isesoGeral)}.600`}
                         lineHeight="1"
                       >
                         {isesoGeral}
                       </Text>
-                      <Text 
-                        fontSize="xs" 
+                      <Text
+                        fontSize="xs"
                         color={`${getISESOColor(isesoGeral)}.500`}
                         fontWeight="medium"
                         textTransform="uppercase"
@@ -242,7 +242,7 @@ const ISESOCard = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2, duration: 0.4 }}
-                  whileHover={{ 
+                  whileHover={{
                     scale: 1.05,
                     boxShadow: '0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04)'
                   }}
@@ -290,7 +290,7 @@ const ISESOCard = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.4 }}
-                  whileHover={{ 
+                  whileHover={{
                     scale: 1.05,
                     boxShadow: '0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04)'
                   }}
@@ -338,7 +338,7 @@ const ISESOCard = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.4 }}
-                  whileHover={{ 
+                  whileHover={{
                     scale: 1.05,
                     boxShadow: '0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04)'
                   }}

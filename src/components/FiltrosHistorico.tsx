@@ -1,5 +1,5 @@
 import {
-  Box, VStack, HStack, Text, Select, Input, Button, 
+  Box, VStack, HStack, Text, Select, Input, Button,
   useColorModeValue, Card, CardBody, Icon, Tooltip,
   RadioGroup, Radio, Stack, Checkbox, CheckboxGroup
 } from '@chakra-ui/react'
@@ -84,7 +84,7 @@ const FiltrosHistorico = ({ filtros, onFiltrosChange, setores }: FiltrosHistoric
   const aplicarPeriodoPredefinido = (periodo: string) => {
     const hoje = new Date()
     let dataInicio = new Date()
-    
+
     switch (periodo) {
       case 'trimestral':
         dataInicio.setMonth(hoje.getMonth() - 3)
@@ -129,7 +129,7 @@ const FiltrosHistorico = ({ filtros, onFiltrosChange, setores }: FiltrosHistoric
               <Text fontSize="md" fontWeight="semibold" color={textColor}>
                 📊 Filtros Primários
               </Text>
-              
+
               <HStack spacing={4} wrap="wrap">
                 {/* Empresa */}
                 <VStack align="start" spacing={1} minW="200px">
@@ -187,9 +187,9 @@ const FiltrosHistorico = ({ filtros, onFiltrosChange, setores }: FiltrosHistoric
               <Text fontSize="md" fontWeight="semibold" color={textColor}>
                 📅 Período de Análise
               </Text>
-              
-              <RadioGroup 
-                value={filtros.periodo_analise} 
+
+              <RadioGroup
+                value={filtros.periodo_analise}
                 onChange={(value) => {
                   handleFiltroChange('periodo_analise', value)
                   if (value !== 'customizado') {
@@ -254,8 +254,8 @@ const FiltrosHistorico = ({ filtros, onFiltrosChange, setores }: FiltrosHistoric
               <Text fontSize="md" fontWeight="semibold" color={textColor}>
                 🎯 Domínios de Saúde Mental
               </Text>
-              
-              <CheckboxGroup 
+
+              <CheckboxGroup
                 value={filtros.dominios_especificos}
                 onChange={(values) => handleFiltroChange('dominios_especificos', values)}
               >
@@ -277,7 +277,7 @@ const FiltrosHistorico = ({ filtros, onFiltrosChange, setores }: FiltrosHistoric
               <Text fontSize="md" fontWeight="semibold" color={textColor}>
                 ⚙️ Opções de Análise
               </Text>
-              
+
               <HStack spacing={6} wrap="wrap">
                 <Checkbox
                   isChecked={filtros.incluir_intervencoes}

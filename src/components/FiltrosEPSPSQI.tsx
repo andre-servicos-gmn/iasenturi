@@ -59,7 +59,7 @@ const FiltrosEPSPSQI = ({ filters, onFiltersChange, empresas, setoresFiltrados }
             <HStack spacing={3}>
               <Box
                 p={2}
-                bg="#0D249B"
+                bg="senturi.azulProfundo"
                 borderRadius="lg"
                 color="white"
               >
@@ -101,15 +101,15 @@ const FiltrosEPSPSQI = ({ filters, onFiltersChange, empresas, setoresFiltrados }
             transition={{ enter: { duration: 0.2, ease: "easeOut" }, exit: { duration: 0.15, ease: "easeIn" } }}
             style={{ willChange: 'height', overflow: 'hidden' }}
           >
-          {/* Filtros em Grid */}
-          <Box>
-            <HStack spacing={4} wrap="wrap" gap={4}>
-              {/* Empresa */}
-              <Box minW="200px" flex="1">
-                <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
-                  Empresa
-                </Text>
-                                  <InputGroup>
+            {/* Filtros em Grid */}
+            <Box>
+              <HStack spacing={4} wrap="wrap" gap={4}>
+                {/* Empresa */}
+                <Box minW="200px" flex="1">
+                  <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
+                    Empresa
+                  </Text>
+                  <InputGroup>
                     <InputLeftElement pointerEvents="none">
                       <FiHome color="gray.400" />
                     </InputLeftElement>
@@ -120,27 +120,27 @@ const FiltrosEPSPSQI = ({ filters, onFiltersChange, empresas, setoresFiltrados }
                       size="md"
                       borderRadius="lg"
                       borderColor={borderColor}
-                       _focus={{
-                         borderColor: 'gray.400',
-                         boxShadow: 'none',
-                       }}
+                      _focus={{
+                        borderColor: 'gray.400',
+                        boxShadow: 'none',
+                      }}
                       pl={10}
                     >
-                     {empresas.map((empresa) => (
-                       <option key={empresa} value={empresa}>
-                         {empresa}
-                       </option>
-                     ))}
-                   </Select>
-                 </InputGroup>
-               </Box>
+                      {empresas.map((empresa) => (
+                        <option key={empresa} value={empresa}>
+                          {empresa}
+                        </option>
+                      ))}
+                    </Select>
+                  </InputGroup>
+                </Box>
 
-              {/* Setor */}
-              <Box minW="200px" flex="1">
-                <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
-                  Setor
-                </Text>
-                                  <InputGroup>
+                {/* Setor */}
+                <Box minW="200px" flex="1">
+                  <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
+                    Setor
+                  </Text>
+                  <InputGroup>
                     <InputLeftElement pointerEvents="none">
                       <FiGrid color="gray.400" />
                     </InputLeftElement>
@@ -151,28 +151,28 @@ const FiltrosEPSPSQI = ({ filters, onFiltersChange, empresas, setoresFiltrados }
                       size="md"
                       borderRadius="lg"
                       borderColor={borderColor}
-                       _focus={{
-                         borderColor: 'gray.400',
-                         boxShadow: 'none',
-                       }}
+                      _focus={{
+                        borderColor: 'gray.400',
+                        boxShadow: 'none',
+                      }}
                       isDisabled={!filters.empresa}
                       pl={10}
                     >
-                     {setoresFiltrados.map((setor) => (
-                       <option key={setor} value={setor}>
-                         {setor}
-                       </option>
-                     ))}
-                   </Select>
-                 </InputGroup>
-               </Box>
+                      {setoresFiltrados.map((setor) => (
+                        <option key={setor} value={setor}>
+                          {setor}
+                        </option>
+                      ))}
+                    </Select>
+                  </InputGroup>
+                </Box>
 
-              {/* Data Início */}
-              <Box minW="200px" flex="1">
-                <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
-                  Data Início
-                </Text>
-                                  <InputGroup>
+                {/* Data Início */}
+                <Box minW="200px" flex="1">
+                  <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
+                    Data Início
+                  </Text>
+                  <InputGroup>
                     <InputLeftElement pointerEvents="none">
                       <FiCalendar color="gray.400" />
                     </InputLeftElement>
@@ -183,22 +183,22 @@ const FiltrosEPSPSQI = ({ filters, onFiltersChange, empresas, setoresFiltrados }
                       size="md"
                       borderRadius="lg"
                       borderColor={borderColor}
-                       _focus={{
-                         borderColor: 'gray.400',
-                         boxShadow: 'none',
-                       }}
+                      _focus={{
+                        borderColor: 'gray.400',
+                        boxShadow: 'none',
+                      }}
                       placeholder="De: dd/mm/aaaa"
                       pl={10}
                     />
-                 </InputGroup>
-               </Box>
+                  </InputGroup>
+                </Box>
 
-              {/* Data Fim */}
-              <Box minW="200px" flex="1">
-                <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
-                  Data Fim
-                </Text>
-                                  <InputGroup>
+                {/* Data Fim */}
+                <Box minW="200px" flex="1">
+                  <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
+                    Data Fim
+                  </Text>
+                  <InputGroup>
                     <InputLeftElement pointerEvents="none">
                       <FiCalendar color="gray.400" />
                     </InputLeftElement>
@@ -209,26 +209,26 @@ const FiltrosEPSPSQI = ({ filters, onFiltersChange, empresas, setoresFiltrados }
                       size="md"
                       borderRadius="lg"
                       borderColor={borderColor}
-                       _focus={{
-                         borderColor: 'gray.400',
-                         boxShadow: 'none',
-                       }}
+                      _focus={{
+                        borderColor: 'gray.400',
+                        boxShadow: 'none',
+                      }}
                       placeholder="Até: dd/mm/aaaa"
                       pl={10}
                     />
-                 </InputGroup>
-               </Box>
+                  </InputGroup>
+                </Box>
 
-              {/* Botão Aplicar */}
-              <Box minW="150px">
-                <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
-                  &nbsp;
-                </Text>
-                                  <Button
+                {/* Botão Aplicar */}
+                <Box minW="150px">
+                  <Text fontSize="sm" fontWeight="medium" color={textColor} mb={2}>
+                    &nbsp;
+                  </Text>
+                  <Button
                     leftIcon={<FiSearch />}
-                    bgGradient="linear(135deg, #0D249B 0%, #1A45FC 100%)"
+                    bgGradient="linear(135deg, senturi.azulProfundo 0%, senturi.azulMedio 100%)"
                     _hover={{
-                      bgGradient: "linear(135deg, #1A45FC 0%, #0D249B 100%)",
+                      bgGradient: "linear(135deg, senturi.azulMedio 0%, senturi.azulProfundo 100%)",
                       transform: 'translateY(-1px)',
                       boxShadow: '0 4px 12px rgba(26, 69, 252, 0.4)'
                     }}
@@ -245,9 +245,9 @@ const FiltrosEPSPSQI = ({ filters, onFiltersChange, empresas, setoresFiltrados }
                   >
                     Aplicar
                   </Button>
-               </Box>
-            </HStack>
-          </Box>
+                </Box>
+              </HStack>
+            </Box>
           </Collapse>
 
           {/* Filtros Ativos */}

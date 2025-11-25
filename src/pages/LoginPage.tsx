@@ -188,7 +188,7 @@ const LoginPage = () => {
                       borderColor={borderColor}
                       _focus={{
                         borderColor: 'brand.500',
-                        boxShadow: '0 0 0 1px #1A45FC',
+                        boxShadow: '0 0 0 1px senturi.destaqueClaro',
                       }}
                     />
                     <InputRightElement>
@@ -213,7 +213,7 @@ const LoginPage = () => {
                       borderColor={borderColor}
                       _focus={{
                         borderColor: 'brand.500',
-                        boxShadow: '0 0 0 1px #1A45FC',
+                        boxShadow: '0 0 0 1px senturi.destaqueClaro',
                       }}
                     />
                     <InputRightElement>

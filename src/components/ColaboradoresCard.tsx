@@ -34,7 +34,7 @@ const ColaboradoresCard = () => {
       try {
         setLoading(true)
         const data = await fetchCOPSQData()
-        
+
         if (data.length > 0) {
           // Processar dados dos colaboradores
           const colaboradoresProcessados: Colaborador[] = data.map((item, index) => {
@@ -48,12 +48,12 @@ const ColaboradoresCard = () => {
               'interface_trabalho_vida',
               'saude_emocional'
             ]
-            
+
             let total = 0
             let count = 0
             let dominioCritico = ''
             let valorCritico = 0
-            
+
             dominios.forEach(dominio => {
               const valor = parseFloat(item[dominio] || '0')
               if (valor > 0) {
@@ -65,10 +65,10 @@ const ColaboradoresCard = () => {
                 }
               }
             })
-            
+
             const isesoGeral = count > 0 ? Math.round(total / count) : 0
             const status = isesoGeral > 70 ? 'critico' : isesoGeral > 50 ? 'atencao' : 'adequado'
-            
+
             return {
               id: item.id || `colaborador-${index}`,
               nome: `Colaborador ${index + 1}`,
@@ -102,10 +102,10 @@ const ColaboradoresCard = () => {
 
   const getStatusGradient = (status: string) => {
     switch (status) {
-      case 'critico': return 'linear(to-r, #FEE2E2, #FECACA)'
-      case 'atencao': return 'linear(to-r, #FEF3C7, #FDE68A)'
-      case 'adequado': return 'linear(to-r, #D1FAE5, #A7F3D0)'
-      default: return 'linear(to-r, #F3F4F6, #E5E7EB)'
+      case 'critico': return 'linear(to-r, #E53935, #C62828)'   // Vermelho técnico
+      case 'atencao': return 'linear(to-r, #FDCB6E, #F39C12)'  // Amarelo claro
+      case 'adequado': return 'linear(to-r, #00C4A7, #00A085)' // Verde turquesa
+      default: return 'linear(to-r, #B6BEC6, #9CA3AF)'        // Cinza gelo
     }
   }
 
@@ -132,7 +132,7 @@ const ColaboradoresCard = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card 
+      <Card
         variant="premium"
         boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
         border="1px solid"
@@ -154,7 +154,7 @@ const ColaboradoresCard = () => {
                   Colaboradores
                 </Text>
               </HStack>
-              <Badge 
+              <Badge
                 variant="premium"
                 bgGradient="linear(135deg, #0D249B 0%, #1A45FC 100%)"
                 color="white"
@@ -171,7 +171,7 @@ const ColaboradoresCard = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05, duration: 0.3 }}
-                    whileHover={{ 
+                    whileHover={{
                       scale: 1.02,
                       boxShadow: '0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04)'
                     }}
@@ -197,8 +197,8 @@ const ColaboradoresCard = () => {
                       <HStack justify="space-between" align="center" spacing={4}>
                         <VStack align="start" spacing={3} flex={1}>
                           <HStack spacing={3} align="center">
-                            <Avatar 
-                              size="md" 
+                            <Avatar
+                              size="md"
                               name={colaborador.nome}
                               bg={`${getStatusColor(colaborador.status)}.100`}
                               color={`${getStatusColor(colaborador.status)}.700`}
@@ -212,7 +212,7 @@ const ColaboradoresCard = () => {
                               </Text>
                             </VStack>
                           </HStack>
-                          
+
                           <HStack spacing={4} fontSize="sm" color="gray.500">
                             <HStack spacing={2}>
                               <FiTrendingUp size={16} />
@@ -226,7 +226,7 @@ const ColaboradoresCard = () => {
                             )}
                           </HStack>
                         </VStack>
-                        
+
                         <VStack align="end" spacing={2}>
                           <Badge
                             size="sm"
@@ -239,18 +239,18 @@ const ColaboradoresCard = () => {
                           >
                             {colaborador.status.toUpperCase()}
                           </Badge>
-                          
+
                           <VStack align="end" spacing={1}>
-                            <Text 
-                              fontSize="3xl" 
-                              fontWeight="black" 
+                            <Text
+                              fontSize="3xl"
+                              fontWeight="black"
                               color={`${getStatusColor(colaborador.status)}.600`}
                               lineHeight="1"
                             >
                               {colaborador.isesoGeral}
                             </Text>
-                            <Text 
-                              fontSize="xs" 
+                            <Text
+                              fontSize="xs"
                               color={`${getStatusColor(colaborador.status)}.500`}
                               fontWeight="medium"
                               textTransform="uppercase"

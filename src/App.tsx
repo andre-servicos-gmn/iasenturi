@@ -8,7 +8,7 @@ import Layout from './components/Layout.tsx'
 import Dashboard from './components/Dashboard.tsx'
 import DominiosPage from './pages/DominiosPage.tsx'
 import AcoesRecomendadasPage from './pages/AcoesRecomendadasPage.tsx'
-import ReportPrintPage from './pages/ReportPrintPage.tsx'
+
 import MapaCalorPage from './pages/MapaCalorPage.tsx'
 import HistoricoPage from './pages/HistoricoPage.tsx'
 import EmpresasPage from './pages/EmpresasPage.tsx'
@@ -22,19 +22,19 @@ const MotionBox = motion.div
 // Componente para redirecionar usuários logados
 const RedirectIfAuthenticated = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth()
-  
+
   console.log('🔄 RedirectIfAuthenticated - User:', !!user, 'Loading:', loading)
-  
+
   if (loading) {
     console.log('⏳ RedirectIfAuthenticated - Loading...')
     return null
   }
-  
+
   if (user) {
     console.log('🔄 RedirectIfAuthenticated - User logged in, redirecting to /')
     return <Navigate to="/" replace />
   }
-  
+
   console.log('✅ RedirectIfAuthenticated - Showing login page')
   return <>{children}</>
 }
@@ -49,15 +49,15 @@ function AppRoutes() {
       >
         <Routes>
           {/* Rota pública */}
-          <Route 
-            path="/login" 
+          <Route
+            path="/login"
             element={
               <RedirectIfAuthenticated>
                 <LoginPage />
               </RedirectIfAuthenticated>
-            } 
+            }
           />
-          
+
           {/* Rotas protegidas */}
           <Route path="/" element={
             <ProtectedRoute>
@@ -66,7 +66,7 @@ function AppRoutes() {
               </Layout>
             </ProtectedRoute>
           } />
-          
+
           <Route path="/dominios" element={
             <ProtectedRoute>
               <Layout>
@@ -90,7 +90,7 @@ function AppRoutes() {
               </Layout>
             </ProtectedRoute>
           } />
-          
+
           <Route path="/historico" element={
             <ProtectedRoute>
               <Layout>
@@ -104,14 +104,6 @@ function AppRoutes() {
               <Layout>
                 <EmpresasPage />
               </Layout>
-            </ProtectedRoute>
-          } />
-
-          {/* Página de impressão/servidor */}
-          <Route path="/report/print" element={
-            <ProtectedRoute>
-              {/* Página isolada, sem Layout com animações para reduzir ruído no PDF */}
-              <ReportPrintPage />
             </ProtectedRoute>
           } />
 
@@ -136,4 +128,4 @@ function App() {
   )
 }
 
-export default App 
+export default App

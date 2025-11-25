@@ -12,7 +12,7 @@ export const classificarRisco = (valor: number): 'critico' | 'atencao' | 'favora
 // Cálculo do ISESO Geral (média ponderada dos 8 domínios)
 export const calcularISESO = (dominios: Dominio[]): number => {
   if (dominios.length === 0) return 0
-  
+
   const soma = dominios.reduce((acc, dominio) => acc + dominio.valor, 0)
   return Math.round(soma / dominios.length)
 }
@@ -21,8 +21,8 @@ export const calcularISESO = (dominios: Dominio[]): number => {
 export const obterAcoesSugeridas = (nomeDominio: string, classificacao: string): string[] => {
   const lista = (configAcoes as any).dominios || []
   const acao = lista.find(
-    (item: any) => 
-      (item.dominio === nomeDominio || item.dominio?.includes(nomeDominio) || nomeDominio?.includes(item.dominio)) && 
+    (item: any) =>
+      (item.dominio === nomeDominio || item.dominio?.includes(nomeDominio) || nomeDominio?.includes(item.dominio)) &&
       item.classificacao === classificacao
   )
   return acao?.acoes || []
@@ -62,7 +62,7 @@ export const classificarISESOCompleto = (valor: number) => {
 
 // Determinar cor Chakra baseada na faixa completa
 export const getChakraColorFromISESO = (valor: number): 'red' | 'orange' | 'yellow' | 'green' | 'blue' => {
-  if (valor <= 39) return 'red'
+  if (valor <= 35) return 'red'
   if (valor <= 54) return 'orange'
   if (valor <= 69) return 'yellow'
   if (valor <= 84) return 'green'
@@ -71,7 +71,7 @@ export const getChakraColorFromISESO = (valor: number): 'red' | 'orange' | 'yell
 
 // Mapear ISESO 5 faixas -> tri-classe (critico/atencao/favoravel) para ações por domínio
 export const getTriClassificacaoFromISESO = (valor: number): 'critico' | 'atencao' | 'favoravel' => {
-  if (valor <= 39) return 'critico'
+  if (valor <= 35) return 'critico'
   if (valor <= 69) return 'atencao'
   return 'favoravel'
 }
@@ -86,17 +86,17 @@ export const formatarPorcentagem = (valor: number): string => {
   return `${valor.toFixed(1)}%`
 }
 
-// Cores baseadas na classificação
+// Cores baseadas na classificação (Nova Paleta)
 export const obterCorClassificacao = (classificacao: string): string => {
   switch (classificacao) {
     case 'critico':
-      return '#E53E3E' // vermelho
+      return '#E53935' // Crítico — card de alerta
     case 'atencao':
-      return '#D69E2E' // amarelo
+      return '#FDCB6E' // Moderado — amarelo claro
     case 'favoravel':
-      return '#38A169' // verde
+      return '#00C4A7' // Saudável — verde turquesa
     default:
-      return '#718096' // cinza
+      return '#B6BEC6' // Última atualização — neutro
   }
 }
 
@@ -118,7 +118,7 @@ export const obterIconeClassificacao = (classificacao: string): string => {
 export const filtrarPorPeriodo = (dados: any[], inicio: string, fim: string) => {
   const dataInicio = new Date(inicio)
   const dataFim = new Date(fim)
-  
+
   return dados.filter(item => {
     const dataItem = new Date(item.dataAvaliacao || item.data)
     return dataItem >= dataInicio && dataItem <= dataFim
@@ -141,7 +141,7 @@ export const agruparPorSetor = (dados: any[]) => {
 export const calcularMediaSetor = (dados: any[], setor: string): number => {
   const dadosSetor = dados.filter(item => item.setor === setor)
   if (dadosSetor.length === 0) return 0
-  
+
   const soma = dadosSetor.reduce((acc, item) => acc + (item.valor || 0), 0)
   return Math.round(soma / dadosSetor.length)
 }
@@ -157,9 +157,9 @@ export const debounce = <T extends (...args: any[]) => any>(
   wait: number
 ): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout
-  
+
   return (...args: Parameters<T>) => {
     clearTimeout(timeout)
     timeout = setTimeout(() => func(...args), wait)
   }
-} 
+}
