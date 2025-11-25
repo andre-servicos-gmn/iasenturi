@@ -303,9 +303,6 @@ const PSQICard = () => {
                   colors={['#38A169', '#D69E2E', '#E53E3E']}
                   percent={gaugePercent}
                   arcWidth={0.2}
-                  animate
-                  needleTransition="easeQuadInOut"
-                  needleTransitionDuration={1500}
                   needleColor="#1A202C"
                   needleBaseColor="#1A202C"
                   textColor={textColor}

@@ -7,7 +7,7 @@ import GaugeChart from 'react-gauge-chart'
 import {
   FiBarChart2, FiChevronDown, FiChevronUp
 } from 'react-icons/fi'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import FiltrosEPSPSQI from './FiltrosEPSPSQI'
 import { supabase } from '@/lib/supabase'
 
@@ -318,9 +318,6 @@ const EPS10Card = () => {
                   colors={['#38A169', '#D69E2E', '#DD6B20', '#E53E3E']}
                   percent={gaugePercent}
                   arcWidth={0.2}
-                  animate
-                  needleTransition="easeQuadInOut"
-                  needleTransitionDuration={1500}
                   needleColor="#1A202C"
                   needleBaseColor="#1A202C"
                   textColor={textColor}

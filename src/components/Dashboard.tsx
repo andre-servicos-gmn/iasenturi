@@ -1,51 +1,29 @@
 import {
   Box, VStack, HStack, Text, useColorModeValue, Card, CardBody,
-  Badge, Button, Grid, Avatar, SimpleGrid, Stat, StatLabel, StatNumber, StatHelpText,
+  Badge, Button, Grid, Avatar,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
-  useDisclosure, Table, Thead, Tbody, Tr, Th, Td, ModalFooter, Tag, Icon
+  useDisclosure, Table, Thead, Tbody, Tr, Th, Td, ModalFooter, Tag
 } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import {
   FiUsers, FiAlertTriangle, FiActivity,
   FiBarChart2, FiTrendingUp, FiCalendar, FiCheckCircle
 } from 'react-icons/fi'
-import type { IconType } from 'react-icons'
 import { calculateDomainAverages } from '@/lib/supabase'
 import { classificarISESOCompleto, getChakraColorFromISESO } from '@/lib/utils'
 import { useFilters } from '@/contexts/store'
-import { useState, useEffect, useMemo } from 'react'
-import { Link as RouterLink } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import PSQICard from './PSQICard'
 import EPS10Card from './EPS10Card'
 
 const MotionBox = motion(Box)
 const MotionCard = motion(Card)
 
-type HighlightStat = {
-  id: string
-  label: string
-  value: string
-  helper: string
-  icon: IconType
-  accent: string
-}
-
-const formatNumberBR = (value: number) => new Intl.NumberFormat('pt-BR').format(value)
-
 const Dashboard = () => {
   const textColor = useColorModeValue('gray.600', 'gray.300')
   const cardBg = useColorModeValue('white', 'gray.800')
   const borderColor = useColorModeValue('#E5E7EB', 'gray.600')
   const alternateBg = useColorModeValue('gray.50', 'gray.700')
-  const heroBg = useColorModeValue('linear(135deg, #EEF2FF 0%, #E0EAFF 100%)', 'linear(135deg, rgba(13,36,155,0.45) 0%, rgba(15,23,42,0.85) 100%)')
-  const heroBorder = useColorModeValue('rgba(13,36,155,0.2)', 'rgba(255,255,255,0.15)')
-  const statBg = useColorModeValue('rgba(255,255,255,0.95)', 'rgba(15,23,42,0.5)')
-  const statBorder = useColorModeValue('rgba(226,232,240,0.8)', 'rgba(255,255,255,0.1)')
-  const statTextColor = useColorModeValue('gray.500', 'gray.300')
-  const iconBg = useColorModeValue('blackAlpha.50', 'whiteAlpha.200')
-  const heroHeadingColor = useColorModeValue('gray.900', 'white')
-  const heroTextMuted = useColorModeValue('gray.600', 'gray.200')
-  const ghostHoverBg = useColorModeValue('blackAlpha.100', 'whiteAlpha.200')
   const { filteredData, loading: filtersLoading } = useFilters()
 
   const [isesoGeral, setIsesoGeral] = useState(0)
@@ -59,44 +37,6 @@ const Dashboard = () => {
   const [allColaboradores, setAllColaboradores] = useState<any[]>([])
   const [criticalColaboradores, setCriticalColaboradores] = useState<any[]>([])
   const criticalModal = useDisclosure()
-  const criticalCount = criticalColaboradores.length
-  const heroClassification = useMemo(() => classificarISESOCompleto(Math.max(isesoGeral || 0, 0)), [isesoGeral])
-  const heroColorScheme = getChakraColorFromISESO(isesoGeral || 0)
-  const lastUpdateText = ultimaAtualizacao || 'Sem registro'
-  const highlightStats = useMemo<HighlightStat[]>(() => [
-    {
-      id: 'colaboradores',
-      label: 'Colaboradores ativos',
-      value: formatNumberBR(totalColaboradores),
-      helper: 'respondentes filtrados',
-      icon: FiUsers,
-      accent: 'blue.500'
-    },
-    {
-      id: 'criticos',
-      label: 'Em risco critico',
-      value: formatNumberBR(criticalCount),
-      helper: 'ISESO <= 39',
-      icon: FiAlertTriangle,
-      accent: 'red.500'
-    },
-    {
-      id: 'iseso',
-      label: 'ISESO medio',
-      value: isesoGeral > 0 ? `${isesoGeral}` : '--',
-      helper: heroClassification.nome,
-      icon: FiTrendingUp,
-      accent: `${heroColorScheme}.400`
-    },
-    {
-      id: 'atualizacao',
-      label: 'Ultima atualizacao',
-      value: lastUpdateText,
-      helper: lastUpdateText === 'Sem registro' ? 'aguardando primeira coleta' : 'dados mais recentes',
-      icon: FiCalendar,
-      accent: 'purple.500'
-    }
-  ], [totalColaboradores, criticalCount, heroClassification.nome, heroColorScheme, lastUpdateText, isesoGeral])
 
   useEffect(() => {
     const processData = () => {
@@ -330,110 +270,6 @@ const Dashboard = () => {
         transition={{ duration: 0.5 }}
       >
         <VStack spacing={8} align="stretch">
-          <Box
-            w="full"
-            bg={heroBg}
-            borderRadius="2xl"
-            border="1px solid"
-            borderColor={heroBorder}
-            p={{ base: 6, md: 8 }}
-            boxShadow="0 20px 45px rgba(15, 23, 42, 0.08)"
-          >
-            <VStack align="stretch" spacing={6}>
-              <HStack
-                spacing={8}
-                align={{ base: 'flex-start', md: 'center' }}
-                justify="space-between"
-                flexDir={{ base: 'column', md: 'row' }}
-              >
-                <VStack align="flex-start" spacing={3} flex={1}>
-                  <Badge
-                    colorScheme={heroColorScheme}
-                    borderRadius="full"
-                    px={4}
-                    py={1}
-                    fontSize="sm"
-                  >
-                    Status atual: {heroClassification.nome}
-                  </Badge>
-                  <Text fontSize={{ base: '2xl', md: '3xl' }} fontWeight="bold" color={heroHeadingColor}>
-                    Panorama geral do bem-estar
-                  </Text>
-                  <Text color={heroTextMuted} maxW="3xl">
-                    {heroClassification.descricaoResumida || 'Aguardando coleta de dados para calcular o índice geral.'}
-                  </Text>
-                </VStack>
-                <VStack spacing={3} align={{ base: 'flex-start', md: 'flex-end' }}>
-                  <Text fontSize="sm" color={heroTextMuted}>
-                    ISESO geral:
-                  </Text>
-                  <Text fontSize={{ base: '4xl', md: '5xl' }} fontWeight="extrabold" color={heroHeadingColor}>
-                    {isesoGeral > 0 ? isesoGeral : '--'}
-                  </Text>
-                  <HStack spacing={3} flexWrap="wrap">
-                    <Button
-                      as={RouterLink}
-                      to="/mapa-calor"
-                      size="sm"
-                      colorScheme={heroColorScheme}
-                      rightIcon={<FiTrendingUp />}
-                    >
-                      Ver mapa de calor
-                    </Button>
-                    <Button
-                      as={RouterLink}
-                      to="/historico"
-                      size="sm"
-                      variant="ghost"
-                      color={heroHeadingColor}
-                      leftIcon={<FiCalendar />}
-                      _hover={{ bg: ghostHoverBg }}
-                    >
-                      Historico
-                    </Button>
-                  </HStack>
-                </VStack>
-              </HStack>
-
-              <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={4}>
-                {highlightStats.map((stat) => (
-                  <Box
-                    key={stat.id}
-                    p={4}
-                    borderRadius="xl"
-                    border="1px solid"
-                    borderColor={statBorder}
-                    bg={statBg}
-                    boxShadow="0 8px 30px rgba(15, 23, 42, 0.08)"
-                  >
-                    <HStack spacing={4} align="flex-start">
-                      <Box
-                        p={2}
-                        borderRadius="lg"
-                        bg={iconBg}
-                        color={stat.accent}
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                      >
-                        <Icon as={stat.icon} boxSize={5} />
-                      </Box>
-                      <Stat>
-                        <StatLabel fontSize="sm" textTransform="uppercase" letterSpacing="wide" color={statTextColor}>
-                          {stat.label}
-                        </StatLabel>
-                        <StatNumber fontSize="2xl" color={heroHeadingColor}>
-                          {stat.value}
-                        </StatNumber>
-                        <StatHelpText color={statTextColor}>{stat.helper}</StatHelpText>
-                      </Stat>
-                    </HStack>
-                  </Box>
-                ))}
-              </SimpleGrid>
-            </VStack>
-          </Box>
-
           {/* Estatísticas Rápidas */}
           <MotionCard id="risk-distribution-chart"
             initial={{ opacity: 0, y: 20 }}
