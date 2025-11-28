@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import {
   Box, VStack, HStack, Text, useColorModeValue, Grid, Card, CardBody,
   Tooltip, Badge, useDisclosure, Modal, ModalOverlay,
@@ -47,39 +47,42 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ data, onCellClick }) => {
   const hasSetorSelected = !!filters.setor
 
   // Função para determinar cor baseada no valor (Mapa de Calor)
-  const getColorByValue = (value: number) => {
-    if (value <= 35) return '#E53935' // 0–35 Ação imediata → fundo #E53935, texto #FFFFFF
-    if (value <= 54) return '#E17055' // 36–54 Prevenção urgente → fundo #E17055, texto #FFFFFF
-    if (value <= 69) return '#FDCB6E' // 55–69 Manter atenção → fundo #FDCB6E, texto #0C0C28
-    if (value <= 84) return '#00C4A7' // 70–84 Boas práticas → fundo #00C4A7, texto #FFFFFF
-    return '#1A45FC' // 85–100 Excelência → fundo #1A45FC, texto #FFFFFF
+  const getColorByValue = (_value: number) => '#ffffff'
+
+  // Função para determinar fundo com paleta mais viva e moderna
+  const getBgGradientByValue = (value: number) => {
+    if (value <= 35) return 'linear-gradient(135deg, #e53935, #b31224)'     // Ação imediata
+    if (value <= 54) return 'linear-gradient(135deg, #f08c2e, #c54b1f)'     // Prevenção urgente
+    if (value <= 69) return 'linear-gradient(135deg, #eccc5c, #d8a722)'     // Manter atenção
+    if (value <= 84) return 'linear-gradient(135deg, #2fbf89, #1d8f72)'     // Boas práticas
+    return 'linear-gradient(135deg, #4d6df5, #2d3fa6)'                      // Excelência
   }
 
-  // Função para determinar cor de fundo com gradiente
-  const getBgColorByValue = (value: number) => {
-    if (value <= 35) return 'red.50'     // Ação imediata - fundo #E53935
-    if (value <= 54) return 'orange.50'  // Prevenção urgente - fundo #E17055
-    if (value <= 69) return 'yellow.50'  // Manter atenção - fundo #FDCB6E
-    if (value <= 84) return 'green.50'   // Boas práticas - fundo #00C4A7
-    return 'blue.50'                     // Excelência - fundo #1A45FC
+  // Fundo sutil mais escuro para caixas de texto
+  const getOverlayColorByValue = (value: number) => {
+    if (value <= 35) return '#9c1328'
+    if (value <= 54) return '#b64b24'
+    if (value <= 69) return '#b88f18'
+    if (value <= 84) return '#17775c'
+    return '#2739a1'
   }
 
   // Função para obter classificação (Mapa de Calor)
   const getClassification = (value: number) => {
-    if (value <= 35) return 'Ação imediata'      // 0–35 → fundo #E53935, texto #FFFFFF
-    if (value <= 54) return 'Prevenção urgente'  // 36–54 → fundo #E17055, texto #FFFFFF
-    if (value <= 69) return 'Manter atenção'     // 55–69 → fundo #FDCB6E, texto #0C0C28
-    if (value <= 84) return 'Boas práticas'      // 70–84 → fundo #00C4A7, texto #FFFFFF
-    return 'Excelência'                          // 85–100 → fundo #1A45FC, texto #FFFFFF
+    if (value <= 35) return 'Ação imediata'
+    if (value <= 54) return 'Prevenção urgente'
+    if (value <= 69) return 'Manter atenção'
+    if (value <= 84) return 'Boas práticas'
+    return 'Excelência'
   }
 
   // Função para obter cor da classificação (Mapa de Calor)
   const getClassificationColor = (value: number) => {
-    if (value <= 35) return 'red'    // Ação imediata - #E53935
-    if (value <= 54) return 'orange' // Prevenção urgente - #E17055
-    if (value <= 69) return 'yellow' // Manter atenção - #FDCB6E
-    if (value <= 84) return 'green'  // Boas práticas - #00C4A7
-    return 'blue'                    // Excelência - #1A45FC
+    if (value <= 35) return 'red.400'
+    if (value <= 54) return 'orange.400'
+    if (value <= 69) return 'yellow.500'
+    if (value <= 84) return 'green.400'
+    return 'blue.500'
   }
 
   // Função para calcular médias comparativas
@@ -189,21 +192,23 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ data, onCellClick }) => {
                         {/* Nome do setor */}
                         <Box
                           p={3}
-                          bg={isSelectedSetor ? "blue.50" : "gray.50"}
+                          bg={isSelectedSetor ? 'blue.50' : 'gray.50'}
                           borderRadius="md"
-                          border={isSelectedSetor ? "2px solid" : "1px solid"}
-                          borderColor={isSelectedSetor ? "blue.200" : "gray.200"}
+                          border={isSelectedSetor ? '2px solid' : '1px solid'}
+                          borderColor={isSelectedSetor ? 'blue.200' : 'gray.200'}
                         >
                           <VStack spacing={1} align="center">
                             <Text
                               fontSize="xs"
                               fontWeight="semibold"
-                              color={isSelectedSetor ? "blue.700" : textColor}
+                              color={isSelectedSetor ? 'blue.700' : textColor}
                               textAlign="center"
+                              whiteSpace="normal"
+                              wordBreak="break-word"
                             >
                               {setor}
                             </Text>
-                            <Text fontSize="xs" color={isSelectedSetor ? "blue.500" : "gray.500"}>
+                            <Text fontSize="xs" color={isSelectedSetor ? 'blue.500' : 'gray.500'}>
                               {setorData[0]?.totalColaboradores || 0} colab.
                             </Text>
                             {isSelectedSetor && (
@@ -218,7 +223,8 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ data, onCellClick }) => {
                         {domainNames.map((dominio, dominioIndex) => {
                           const cellData = setorData.find(item => item.dominio === dominio)
                           const valor = cellData?.valor || 0
-                          const bgColor = getBgColorByValue(valor)
+                          const bgGradient = getBgGradientByValue(valor)
+                          const overlayColor = getOverlayColorByValue(valor)
                           const textColorValue = getColorByValue(valor)
                           const isSelectedSetorCell = isSelectedSetor
 
@@ -262,40 +268,54 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ data, onCellClick }) => {
                             >
                               <Box
                                 p={3}
-                                bg={bgColor}
+                                bgGradient={bgGradient}
                                 borderRadius="md"
                                 cursor="pointer"
                                 transition="all 0.2s"
-                                border={isSelectedSetorCell ? "2px solid" : "1px solid"}
-                                borderColor={isSelectedSetorCell ? "blue.300" : "transparent"}
+                                border={isSelectedSetorCell ? '2px solid' : '1px solid'}
+                                borderColor={isSelectedSetorCell ? 'blue.300' : 'transparent'}
                                 _hover={{
-                                  transform: 'scale(1.05)',
-                                  boxShadow: 'md',
-                                  bg: useColorModeValue('gray.100', 'gray.700')
+                                  transform: 'translateY(-2px)',
+                                  boxShadow: 'lg',
+                                  filter: 'brightness(1.03)'
                                 }}
-                                onClick={() => cellData && handleCellClick(cellData)}
                                 display="flex"
                                 flexDirection="column"
                                 alignItems="center"
                                 justifyContent="center"
                                 minH="60px"
                                 position="relative"
+                                onClick={() => cellData && handleCellClick(cellData)}
                               >
-                                <Text
-                                  fontSize="lg"
-                                  fontWeight="bold"
-                                  color={textColorValue}
-                                >
-                                  {valor}%
-                                </Text>
-                                <Badge
-                                  size="sm"
-                                  colorScheme={getClassificationColor(valor)}
-                                  variant="subtle"
-                                  fontSize="xs"
-                                >
-                                  {getClassification(valor)}
-                                </Badge>
+                                <VStack spacing={1} align="center">
+                                  <Text
+                                    fontSize="lg"
+                                    fontWeight="bold"
+                                    color={textColorValue}
+                                    textShadow="0 1px 3px rgba(0,0,0,0.45)"
+                                  >
+                                    {valor}%
+                                  </Text>
+                                  <Box
+                                    px={2}
+                                    py={0.5}
+                                    bg={overlayColor}
+                                    borderRadius="full"
+                                    boxShadow="0 2px 6px rgba(0,0,0,0.16)"
+                                  >
+                                    <Text
+                                      fontSize="xs"
+                                      fontWeight="semibold"
+                                      letterSpacing="0.1em"
+                                      textTransform="uppercase"
+                                      color={textColorValue}
+                                      textAlign="center"
+                                      whiteSpace="nowrap"
+                                    >
+                                      {getClassification(valor)}
+                                    </Text>
+                                  </Box>
+                                </VStack>
 
                                 {/* Indicador de comparativo para setor selecionado */}
                                 {isSelectedSetorCell && cellData?.mediaOrganizacao !== undefined && (
@@ -332,38 +352,38 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ data, onCellClick }) => {
                       </Text>
                       <Grid templateColumns="repeat(5, 1fr)" gap={3}>
                         <HStack spacing={2} p={2} bg="red.50" borderRadius="md" border="1px solid" borderColor="red.200">
-                          <Box w={4} h={4} bg="#E53935" borderRadius="full" />
+                          <Box w={4} h={4} borderRadius="full" bgGradient="linear-gradient(135deg, #e53935, #b31224)" />
                           <VStack spacing={0} align="start">
-                            <Text fontSize="xs" fontWeight="bold" color="red.700">Ação imediata</Text>
-                            <Text fontSize="xs" color="red.600">0–35</Text>
+                            <Text fontSize="xs" fontWeight="bold" color="red.700" whiteSpace="nowrap">Ação imediata</Text>
+                            <Text fontSize="xs" color="red.600" whiteSpace="nowrap">0-35</Text>
                           </VStack>
                         </HStack>
                         <HStack spacing={2} p={2} bg="orange.50" borderRadius="md" border="1px solid" borderColor="orange.200">
-                          <Box w={4} h={4} bg="#E17055" borderRadius="full" />
+                          <Box w={4} h={4} borderRadius="full" bgGradient="linear-gradient(135deg, #f08c2e, #c54b1f)" />
                           <VStack spacing={0} align="start">
-                            <Text fontSize="xs" fontWeight="bold" color="orange.700">Prevenção urgente</Text>
-                            <Text fontSize="xs" color="orange.600">36–54</Text>
+                            <Text fontSize="xs" fontWeight="bold" color="orange.700" whiteSpace="nowrap">Prevenção urgente</Text>
+                            <Text fontSize="xs" color="orange.600" whiteSpace="nowrap">36-54</Text>
                           </VStack>
                         </HStack>
                         <HStack spacing={2} p={2} bg="yellow.50" borderRadius="md" border="1px solid" borderColor="yellow.200">
-                          <Box w={4} h={4} bg="#FDCB6E" borderRadius="full" />
+                          <Box w={4} h={4} borderRadius="full" bgGradient="linear-gradient(135deg, #eccc5c, #d8a722)" />
                           <VStack spacing={0} align="start">
-                            <Text fontSize="xs" fontWeight="bold" color="yellow.700">Manter atenção</Text>
-                            <Text fontSize="xs" color="yellow.600">55–69</Text>
+                            <Text fontSize="xs" fontWeight="bold" color="yellow.700" whiteSpace="nowrap">Manter atenção</Text>
+                            <Text fontSize="xs" color="yellow.600" whiteSpace="nowrap">55-69</Text>
                           </VStack>
                         </HStack>
                         <HStack spacing={2} p={2} bg="green.50" borderRadius="md" border="1px solid" borderColor="green.200">
-                          <Box w={4} h={4} bg="#00C4A7" borderRadius="full" />
+                          <Box w={4} h={4} borderRadius="full" bgGradient="linear-gradient(135deg, #2fbf89, #1d8f72)" />
                           <VStack spacing={0} align="start">
-                            <Text fontSize="xs" fontWeight="bold" color="green.700">Boas práticas</Text>
-                            <Text fontSize="xs" color="green.600">70–84</Text>
+                            <Text fontSize="xs" fontWeight="bold" color="green.700" whiteSpace="nowrap">Boas práticas</Text>
+                            <Text fontSize="xs" color="green.600" whiteSpace="nowrap">70-84</Text>
                           </VStack>
                         </HStack>
                         <HStack spacing={2} p={2} bg="blue.50" borderRadius="md" border="1px solid" borderColor="blue.200">
-                          <Box w={4} h={4} bg="#1A45FC" borderRadius="full" />
+                          <Box w={4} h={4} borderRadius="full" bgGradient="linear-gradient(135deg, #4d6df5, #2d3fa6)" />
                           <VStack spacing={0} align="start">
-                            <Text fontSize="xs" fontWeight="bold" color="blue.700">Excelência</Text>
-                            <Text fontSize="xs" color="blue.600">85–100</Text>
+                            <Text fontSize="xs" fontWeight="bold" color="blue.700" whiteSpace="nowrap">Excelência</Text>
+                            <Text fontSize="xs" color="blue.600" whiteSpace="nowrap">85-100</Text>
                           </VStack>
                         </HStack>
                       </Grid>
@@ -430,12 +450,12 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ data, onCellClick }) => {
                         <Text fontWeight="bold" color={textColor}>
                           {selectedCell.setor}
                         </Text>
-                        <Badge
-                          colorScheme={getClassificationColor(selectedCell.valor)}
-                          variant="subtle"
-                        >
-                          {getClassification(selectedCell.valor)}
-                        </Badge>
+                        <HStack spacing={2}>
+                          <Box w={2} h={2} borderRadius="full" bg={getClassificationColor(selectedCell.valor)} />
+                          <Text fontSize="sm" fontWeight="semibold" color={getClassificationColor(selectedCell.valor)}>
+                            {getClassification(selectedCell.valor)}
+                          </Text>
+                        </HStack>
                       </HStack>
 
                       <HStack justify="space-between">
@@ -525,4 +545,4 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ data, onCellClick }) => {
   )
 }
 
-export default HeatmapTable 
+export default HeatmapTable

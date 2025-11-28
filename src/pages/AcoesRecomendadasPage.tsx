@@ -1,84 +1,120 @@
+import React, { useEffect, useState } from 'react'
 import {
-  Box, VStack, HStack, Text, useColorModeValue, Grid, Card, CardBody, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure, Badge, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon
+  Box,
+  VStack,
+  HStack,
+  Text,
+  useColorModeValue,
+  Grid,
+  Card,
+  CardBody,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Badge,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon
 } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { FiAlertTriangle, FiTrendingUp, FiCheckCircle, FiClock, FiTarget } from 'react-icons/fi'
 import { calculateDomainAverages, calculateDomainAveragesBySectorAverages, fetchAllSectorsForCompany } from '@/lib/supabase'
 import { useFilters } from '@/contexts/store'
-import { useState, useEffect } from 'react'
 import acoesRecomendadas from '@/data/acoes_recomendadas.json'
 
 const MotionBox = motion(Box)
 
-const AcoesRecomendadasPage = () => {
+type Domain = {
+  nome: string
+  valor: number
+  classificacao?: 'critico' | 'vulneravel' | 'moderado'
+}
+
+const gradientByValue = (value: number) => {
+  if (value < 40) return 'linear-gradient(135deg, #e53935, #b31224)'
+  if (value < 55) return 'linear-gradient(135deg, #f08c2e, #c54b1f)'
+  return 'linear-gradient(135deg, #eccc5c, #d8a722)'
+}
+
+const overlayByValue = (value: number) => {
+  if (value < 40) return '#9c1328'
+  if (value < 55) return '#b64b24'
+  return '#b88f18'
+}
+
+const classificationLabel = (c: Domain['classificacao']) => {
+  if (c === 'critico') return 'Ação imediata obrigatória'
+  if (c === 'vulneravel') return 'Prevenção urgente'
+  return 'Manter atenção'
+}
+
+const classificationBadge = (c: Domain['classificacao']) => {
+  if (c === 'critico') return 'Ação Imediata'
+  if (c === 'vulneravel') return 'Prevenção Urgente'
+  return 'Manter Atenção'
+}
+
+const colorSchemeByValue = (value: number) => {
+  if (value < 40) return 'red'
+  if (value < 55) return 'orange'
+  return 'yellow'
+}
+
+const domainMapping: Record<string, string> = {
+  'Saúde Emocional': 'Saúde Emocional (Senturi)',
+  'Demandas Psicológicas': 'Demandas Psicológicas',
+  'Demandas Físicas': 'Demandas Físicas',
+  'Demandas de Trabalho': 'Demandas de Trabalho',
+  'Suporte Social e Liderança': 'Suporte Social e Liderança',
+  'Esforço e Recompensa': 'Esforço e Recompensa',
+  'Interface Trabalho-Vida': 'Interface Trabalho-Vida'
+}
+
+const AcoesRecomendadasPage: React.FC = () => {
   const textColor = useColorModeValue('gray.600', 'gray.300')
   const { filteredData, loading: filtersLoading, filters } = useFilters()
-  const [domainAverages, setDomainAverages] = useState<any[]>([])
+  const [domainAverages, setDomainAverages] = useState<Domain[]>([])
   const [loading, setLoading] = useState(true)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [selectedDomain, setSelectedDomain] = useState<any>(null)
+  const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null)
 
   useEffect(() => {
     const processData = async () => {
       try {
         setLoading(true)
-
-        console.log('🔍 AcoesRecomendadasPage - filters:', filters)
-
-        // Filtrar dados válidos (empresa_id não nulo)
         const validData = filteredData.filter(item => item.empresa_id !== null && item.empresa_id !== undefined)
-        console.log('🔍 Dados válidos (empresa_id não nulo):', validData.length, 'de', filteredData.length)
 
-        // Determinar quais dados usar para o radar
         let radarData: any[] = []
-
         if (filters.setor) {
-          // Se setor está selecionado, usar apenas dados do setor selecionado
-          console.log('🏭 Setor selecionado - usando dados do setor:', filters.setor)
           radarData = validData.filter(item => item.area_setor === filters.setor)
-          console.log('🔍 Dados do setor encontrados:', radarData.length, 'registros')
         } else if (filters.empresa) {
-          // Se empresa está selecionada mas nenhum setor, usar dados de TODOS os setores da empresa
-          console.log('🏢 Empresa selecionada - buscando dados de todos os setores:', filters.empresa)
           radarData = await fetchAllSectorsForCompany(filters.empresa) as any[]
-          console.log('🔍 Dados de todos os setores encontrados:', radarData.length, 'registros')
         } else {
-          // Se nenhum filtro específico, usar validData
           radarData = validData
-          console.log('🔍 Usando validData geral:', radarData.length, 'registros')
         }
 
-        console.log('🔍 AcoesRecomendadasPage - radarData length:', radarData.length)
-
         if (radarData.length > 0) {
-          // Calcular médias por domínio
-          let averages: any[]
+          const averages = (filters.empresa && !filters.setor)
+            ? calculateDomainAveragesBySectorAverages(radarData as any[])
+            : calculateDomainAverages(radarData as any[])
 
-          if (filters.empresa && !filters.setor) {
-            // Se empresa está selecionada mas nenhum setor, usar o mesmo método do mapa de calor
-            console.log('🏢 Usando método do mapa de calor (média das médias dos setores)')
-            averages = calculateDomainAveragesBySectorAverages(radarData as any[])
-          } else {
-            // Para setor específico ou dados gerais, usar método direto
-            console.log('🏭 Usando método direto (média de todos os colaboradores)')
-            averages = calculateDomainAverages(radarData as any[])
-          }
+          const critical = (averages as any[])
+            .filter(domain => domain.valor < 70)
+            .map(domain => ({
+              ...domain,
+              classificacao:
+                domain.valor < 40 ? 'critico' :
+                domain.valor < 55 ? 'vulneravel' : 'moderado'
+            }))
 
-          // Filtrar apenas domínios com ISESO < 70
-          const criticalDomains = averages.filter(domain => domain.valor < 70)
-
-          // Adicionar classificação baseada no valor (5 categorias)
-          const criticalDomainsWithClassification = criticalDomains.map(domain => ({
-            ...domain,
-            classificacao:
-              domain.valor < 40
-                ? 'critico'
-                : domain.valor < 55
-                ? 'vulneravel'
-                : 'moderado'
-          }))
-
-          setDomainAverages(criticalDomainsWithClassification)
+          setDomainAverages(critical)
         } else {
           setDomainAverages([])
         }
@@ -92,7 +128,7 @@ const AcoesRecomendadasPage = () => {
     processData()
   }, [filteredData, filters.setor, filters.empresa])
 
-  const handleDomainClick = (domain: any) => {
+  const handleDomainClick = (domain: Domain) => {
     setSelectedDomain(domain)
     onOpen()
   }
@@ -120,7 +156,7 @@ const AcoesRecomendadasPage = () => {
         {/* Header */}
         <Box w="full">
           <HStack spacing={3} mb={2}>
-            <FiAlertTriangle size={24} color="#FF6F00" />
+            <FiAlertTriangle size={24} color="#e53935" />
             <Text fontSize="2xl" fontWeight="bold" color={textColor}>
               Ações Recomendadas
             </Text>
@@ -144,9 +180,14 @@ const AcoesRecomendadasPage = () => {
                   variant="premium"
                   cursor="pointer"
                   onClick={() => handleDomainClick(domain)}
+                  bgGradient={gradientByValue(domain.valor)}
+                  color="white"
+                  border="1px solid"
+                  borderColor="transparent"
                   _hover={{
                     transform: 'translateY(-2px)',
-                    boxShadow: 'lg'
+                    boxShadow: 'xl',
+                    filter: 'brightness(1.05)'
                   }}
                   transition="all 0.3s"
                 >
@@ -157,28 +198,27 @@ const AcoesRecomendadasPage = () => {
                           w={4}
                           h={4}
                           borderRadius="full"
-                          bg={domain.valor < 40 ? 'red.500' :
-                              domain.valor < 55 ? 'orange.500' : 'yellow.500'}
+                          bg={overlayByValue(domain.valor)}
+                          boxShadow="0 0 0 3px rgba(255,255,255,0.2)"
                         />
-                        <Text fontSize="sm" color="gray.500">
+                        <Text fontSize="sm" color="whiteAlpha.900">
                           ISESO: {domain.valor}%
                         </Text>
                       </HStack>
 
-                      <Text fontSize="lg" fontWeight="bold" color={textColor}>
+                      <Text fontSize="lg" fontWeight="bold" color="white">
                         {domain.nome}
                       </Text>
 
-                      <Text fontSize="sm" color="gray.600" noOfLines={2}>
-                        {domain.classificacao === 'critico' ? 'Ação imediata obrigatória' :
-                         domain.classificacao === 'vulneravel' ? 'Prevenção urgente' :
-                         'Manter atenção'}
+                      <Text fontSize="sm" color="whiteAlpha.900" noOfLines={2}>
+                        {classificationLabel(domain.classificacao)}
                       </Text>
 
                       <Button
                         size="sm"
-                        colorScheme={domain.valor < 40 ? 'red' : domain.valor < 55 ? 'orange' : 'yellow'}
-                        variant="outline"
+                        bg={overlayByValue(domain.valor)}
+                        color="white"
+                        _hover={{ bg: overlayByValue(domain.valor), filter: 'brightness(1.1)' }}
                         w="full"
                       >
                         Ver Ações Recomendadas
@@ -217,25 +257,21 @@ const AcoesRecomendadasPage = () => {
                   w={5}
                   h={5}
                   borderRadius="full"
-                  bg={selectedDomain?.valor < 40 ? 'red.500' :
-                      selectedDomain?.valor < 55 ? 'orange.500' : 'yellow.500'}
+                  bgGradient={selectedDomain ? gradientByValue(selectedDomain.valor) : undefined}
                   boxShadow="md"
                 />
                 <VStack align="start" spacing={0}>
                   <Text fontSize="xl" fontWeight="bold">{selectedDomain?.nome}</Text>
                   <HStack spacing={2}>
                     <Badge
-                      colorScheme={selectedDomain?.valor < 40 ? 'red' :
-                                   selectedDomain?.valor < 55 ? 'orange' : 'yellow'}
+                      colorScheme={selectedDomain ? colorSchemeByValue(selectedDomain.valor) : 'gray'}
                       variant="subtle"
                       fontSize="xs"
                     >
                       ISESO: {selectedDomain?.valor}%
                     </Badge>
                     <Badge variant="outline" fontSize="xs">
-                      {selectedDomain?.classificacao === 'critico' ? 'Ação Imediata' :
-                       selectedDomain?.classificacao === 'vulneravel' ? 'Prevenção Urgente' :
-                       'Manter Atenção'}
+                      {selectedDomain ? classificationBadge(selectedDomain.classificacao) : ''}
                     </Badge>
                   </HStack>
                 </VStack>
@@ -260,8 +296,8 @@ const AcoesRecomendadasPage = () => {
                       : 'Nível aceitável com fatores pontuais de risco.'}
                   </Text>
                   <Text fontSize="sm" color="gray.600">
-                    <strong>Faixa ISESO:</strong> {selectedDomain?.valor < 40 ? '< 40%' :
-                                                  selectedDomain?.valor < 55 ? '40-55%' : '55-70%'}
+                    <strong>Faixa ISESO:</strong> {selectedDomain && selectedDomain.valor < 40 ? '< 40%' :
+                                                  selectedDomain && selectedDomain.valor < 55 ? '40-55%' : '55-70%'}
                   </Text>
                 </Box>
 
@@ -275,23 +311,12 @@ const AcoesRecomendadasPage = () => {
                   </HStack>
 
                   <Accordion allowMultiple defaultIndex={[0]}>
-                    {acoesRecomendadas.Dimensões
-                      .filter(dimensao => {
-                        console.log('🔍 Filtrando dimensão:', dimensao.nome, 'vs', selectedDomain?.nome)
-                        // Mapeamento correto dos nomes dos domínios
-                        const domainMapping: { [key: string]: string } = {
-                          'Saúde Emocional': 'Saúde Emocional (Senturi)',
-                          'Demandas Psicológicas': 'Demandas Psicológicas',
-                          'Demandas Físicas': 'Demandas Físicas',
-                          'Demandas de Trabalho': 'Demandas de Trabalho',
-                          'Suporte Social e Liderança': 'Suporte Social e Liderança',
-                          'Esforço e Recompensa': 'Esforço e Recompensa',
-                          'Interface Trabalho-Vida': 'Interface Trabalho-Vida'
-                        }
-                        const mappedName = domainMapping[selectedDomain?.nome] || selectedDomain?.nome
+                    {((acoesRecomendadas as any).Dimensões || (acoesRecomendadas as any).Dimensoes || [])
+                      .filter((dimensao: any) => {
+                        const mappedName = domainMapping[selectedDomain?.nome || ''] || selectedDomain?.nome
                         return dimensao.nome === mappedName
                       })
-                      .map((dimensao, dimIndex) => (
+                      .map((dimensao: any, dimIndex: number) => (
                         <AccordionItem key={dimIndex}>
                           <AccordionButton>
                             <Box flex="1" textAlign="left">
@@ -306,7 +331,7 @@ const AcoesRecomendadasPage = () => {
                               {(dimensao as any).ações
                                 .filter((acao: any) => {
                                   const nivelNormalizado = acao.nível.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                                  return nivelNormalizado === selectedDomain?.classificacao
+                                  return selectedDomain ? nivelNormalizado === selectedDomain.classificacao : false
                                 })
                                 .map((acao: any, acaoIndex: number) => (
                                   <MotionBox
@@ -316,7 +341,6 @@ const AcoesRecomendadasPage = () => {
                                     transition={{ duration: 0.3, delay: acaoIndex * 0.1 }}
                                   >
                                     <VStack spacing={3} align="stretch">
-                                      {/* Ação Simples */}
                                       <Card variant="outline" borderColor="green.200" bg="green.50">
                                         <CardBody p={4}>
                                           <HStack spacing={3} align="start">
@@ -338,7 +362,6 @@ const AcoesRecomendadasPage = () => {
                                         </CardBody>
                                       </Card>
 
-                                      {/* Ação Moderada */}
                                       <Card variant="outline" borderColor="orange.200" bg="orange.50">
                                         <CardBody p={4}>
                                           <HStack spacing={3} align="start">
@@ -360,7 +383,6 @@ const AcoesRecomendadasPage = () => {
                                         </CardBody>
                                       </Card>
 
-                                      {/* Ação Complexa */}
                                       <Card variant="outline" borderColor="red.200" bg="red.50">
                                         <CardBody p={4}>
                                           <HStack spacing={3} align="start">

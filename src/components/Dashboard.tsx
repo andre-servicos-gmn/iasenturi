@@ -532,7 +532,7 @@ const Dashboard = () => {
                     <HStack spacing={3}>
                       <Box
                         p={2}
-                        bg="senturi.azulProfundo"
+                        bgGradient="linear(135deg, #e53935, #b31224)"
                         borderRadius="lg"
                         color="white"
                       >
@@ -544,7 +544,7 @@ const Dashboard = () => {
                     </HStack>
                     <Badge
                       variant="premium"
-                      bgGradient="linear(135deg, senturi.azulProfundo 0%, senturi.azulMedio 100%)"
+                      bgGradient="linear(135deg, #e53935, #f08c2e)"
                       color="white"
                     >
                       ISESO
@@ -672,7 +672,7 @@ const Dashboard = () => {
                     <HStack spacing={3}>
                       <Box
                         p={2}
-                        bg="senturi.azulProfundo"
+                        bgGradient="linear(135deg, #eccc5c, #d8a722)"
                         borderRadius="lg"
                         color="white"
                       >
@@ -684,7 +684,7 @@ const Dashboard = () => {
                     </HStack>
                     <Badge
                       variant="premium"
-                      bgGradient="linear(135deg, senturi.azulProfundo 0%, senturi.azulMedio 100%)"
+                      bgGradient="linear(135deg, #eccc5c, #f08c2e)"
                       color="white"
                     >
                       ISESO
@@ -812,7 +812,7 @@ const Dashboard = () => {
                     <HStack spacing={3}>
                       <Box
                         p={2}
-                        bg="senturi.azulProfundo"
+                        bgGradient="linear(135deg, #2fbf89, #1d8f72)"
                         borderRadius="lg"
                         color="white"
                       >
@@ -824,7 +824,7 @@ const Dashboard = () => {
                     </HStack>
                     <Badge
                       variant="premium"
-                      bgGradient="linear(135deg, senturi.azulProfundo 0%, senturi.azulMedio 100%)"
+                      bgGradient="linear(135deg, #2fbf89, #4d6df5)"
                       color="white"
                     >
                       ISESO

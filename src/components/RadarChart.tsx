@@ -62,13 +62,13 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
     return { x, y, label: domainNames[i] || item.nome, value: item.valor, angle }
   }) : []
 
-  // Função para determinar cor baseada no valor (5 categorias)
+  // Paleta viva para determinar cor baseada no valor (5 categorias)
   const getColorByValue = (value: number) => {
-    if (value < 40) return '#E53935' // Crítico - vermelho sólido
-    if (value < 55) return '#E17055' // Vulnerável - laranja forte
-    if (value < 70) return '#FDCB6E' // Moderado - amarelo claro
-    if (value < 85) return '#00C4A7' // Saudável - verde turquesa
-    return '#1A45FC' // Excelente - azul vibrante
+    if (value < 40) return '#e53935' // Crítico - vermelho médio/escuro
+    if (value < 55) return '#f08c2e' // Vulnerável - laranja vívido
+    if (value < 70) return '#eccc5c' // Moderado - amarelo vivo
+    if (value < 85) return '#2fbf89' // Saudável - verde/teal
+    return '#4d6df5' // Excelente - azul vibrante
   }
 
   // Função para obter classificação (5 categorias)
@@ -86,14 +86,14 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
         <defs>
           {/* Gradiente para dados principais */}
           <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0C0C28" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#169DEF" stopOpacity="0.3" />
+            <stop offset="0%" stopColor="#4d6df5" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#2fbf89" stopOpacity="0.35" />
           </linearGradient>
 
           {/* Gradiente para setor selecionado */}
           <linearGradient id="sectorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="#60A5FA" stopOpacity="0.2" />
+            <stop offset="0%" stopColor="#f08c2e" stopOpacity="0.7" />
+            <stop offset="100%" stopColor="#e53935" stopOpacity="0.25" />
           </linearGradient>
         </defs>
 
@@ -261,15 +261,15 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
             </Text>
             <Text
               fontSize="xs"
-              color="gray.500"
-              fontWeight="medium"
+              color="white"
+              fontWeight="semibold"
               px={2}
               py={1}
-              bg="gray.100"
+              bg={getColorByValue(points[hoveredPoint].value)}
               borderRadius="md"
               _dark={{
-                bg: "gray.700",
-                color: "gray.300"
+                bg: getColorByValue(points[hoveredPoint].value),
+                color: "white"
               }}
             >
               {getClassification(points[hoveredPoint].value)}

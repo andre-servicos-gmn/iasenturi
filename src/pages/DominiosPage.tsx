@@ -22,32 +22,32 @@ const DominiosPage = () => {
       try {
         setLoading(true)
         
-        console.log('🔍 DominiosPage - filters:', filters)
+        console.log(' DominiosPage - filters:', filters)
         
         // Filtrar dados válidos (empresa_id não nulo)
         const validData = filteredData.filter(item => item.empresa_id !== null && item.empresa_id !== undefined)
-        console.log('🔍 Dados válidos (empresa_id não nulo):', validData.length, 'de', filteredData.length)
+        console.log(' Dados válidos (empresa_id não nulo):', validData.length, 'de', filteredData.length)
         
         // Determinar quais dados usar para o radar
         let radarData: any[] = []
         
         if (filters.setor) {
           // Se setor está selecionado, usar apenas dados do setor selecionado
-          console.log('🏭 Setor selecionado - usando dados do setor:', filters.setor)
+          console.log(' Setor selecionado - usando dados do setor:', filters.setor)
           radarData = validData.filter(item => item.area_setor === filters.setor)
-          console.log('🔍 Dados do setor encontrados:', radarData.length, 'registros')
+          console.log(' Dados do setor encontrados:', radarData.length, 'registros')
         } else if (filters.empresa) {
           // Se empresa está selecionada mas nenhum setor, usar dados de TODOS os setores da empresa
-          console.log('🏢 Empresa selecionada - buscando dados de todos os setores:', filters.empresa)
+          console.log(' Empresa selecionada - buscando dados de todos os setores:', filters.empresa)
           radarData = await fetchAllSectorsForCompany(filters.empresa) as any[]
-          console.log('🔍 Dados de todos os setores encontrados:', radarData.length, 'registros')
+          console.log(' Dados de todos os setores encontrados:', radarData.length, 'registros')
         } else {
           // Se nenhum filtro específico, usar validData
           radarData = validData
-          console.log('🔍 Usando validData geral:', radarData.length, 'registros')
+          console.log(' Usando validData geral:', radarData.length, 'registros')
         }
         
-        console.log('🔍 DominiosPage - radarData length:', radarData.length)
+        console.log(' DominiosPage - radarData length:', radarData.length)
         
         if (radarData.length > 0) {
           // Calcular médias por domínio
@@ -55,11 +55,11 @@ const DominiosPage = () => {
           
           if (filters.empresa && !filters.setor) {
             // Se empresa está selecionada mas nenhum setor, usar o mesmo método do mapa de calor
-            console.log('🏢 Usando método do mapa de calor (média das médias dos setores)')
+            console.log(' Usando método do mapa de calor (média das médias dos setores)')
             averages = calculateDomainAveragesBySectorAverages(radarData as any[])
           } else {
             // Para setor específico ou dados gerais, usar método direto
-            console.log('🏭 Usando método direto (média de todos os colaboradores)')
+            console.log(' Usando método direto (média de todos os colaboradores)')
             averages = calculateDomainAverages(radarData as any[])
           }
           
@@ -82,7 +82,7 @@ const DominiosPage = () => {
 
           // Para dados por setor, sempre usar validData (que já está filtrado)
           if (filters.setor) {
-            console.log('🔍 Calculando médias do setor selecionado para comparação:', filters.setor)
+            console.log(' Calculando médias do setor selecionado para comparação:', filters.setor)
             const sectorAverages = calculateDomainAveragesBySector(validData as any[], filters.setor)
             setSectorData(sectorAverages)
           } else {
@@ -127,11 +127,11 @@ const DominiosPage = () => {
           <HStack spacing={3} mb={2}>
             <FiBarChart2 size={24} color="#0D249B" />
             <Text fontSize="2xl" fontWeight="bold" color={textColor}>
-              Análise por Domínios COPSOQ
+              Análise por Domínios Psicossociais COPSOQ + Senturi
             </Text>
           </HStack>
           <Text color="gray.500" fontSize="lg">
-            Visualização detalhada dos 8 domínios psicossociais com ações sugeridas
+            Visualização detalhada dos 7 domínios psicossociais
           </Text>
         </Box>
 
