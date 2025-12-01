@@ -1,7 +1,7 @@
 {
   "Dimensões": [
     {
-      "nome": "Demandas Psicológicas",
+      "nome": "Exigências do trabalho",
       "ações": [
         {
           "nível": "Crítico",
@@ -47,7 +47,7 @@
       ]
     },
     {
-      "nome": "Demandas de Trabalho",
+      "nome": "Autonomia e Controle no trabalho",
       "ações": [
         {
           "nível": "Crítico",
@@ -70,7 +70,7 @@
       ]
     },
     {
-      "nome": "Suporte Social e Liderança",
+      "nome": "Suporte Social e Qualidade da Liderança",
       "ações": [
         {
           "nível": "Crítico",
@@ -116,7 +116,7 @@
       ]
     },
     {
-      "nome": "Interface Trabalho-Vida",
+      "nome": "Equilíbrio Trabalho - Vida",
       "ações": [
         {
           "nível": "Crítico",
@@ -139,7 +139,7 @@
       ]
     },
     {
-      "nome": "Saúde Emocional (Senturi)",
+      "nome": "Saúde Emocional e Bem-Estar",
       "ações": [
         {
           "nível": "Crítico",

@@ -140,25 +140,25 @@ const Dashboard = () => {
 
     // Primeiro, tentar usar os campos de média calculada
     const dominios = [
-      { nome: 'Demandas Psicológicas', valor: parseFloat((item as any).media_exigencias || '0') },
+      { nome: 'Exigências do trabalho', valor: parseFloat((item as any).media_exigencias || '0') },
       { nome: 'Demandas Físicas', valor: parseFloat((item as any).media_organizacao || '0') },
-      { nome: 'Demandas de Trabalho', valor: parseFloat((item as any).media_relacoes || '0') },
-      { nome: 'Suporte Social e Liderança', valor: parseFloat((item as any).media_interface || '0') },
+      { nome: 'Autonomia e Controle no trabalho', valor: parseFloat((item as any).media_relacoes || '0') },
+      { nome: 'Suporte Social e Qualidade da Liderança', valor: parseFloat((item as any).media_interface || '0') },
       { nome: 'Esforço e Recompensa', valor: parseFloat((item as any).media_significado || '0') },
-      { nome: 'Interface Trabalho-Vida', valor: parseFloat((item as any).media_inseguranca || '0') },
-      { nome: 'Saúde Emocional', valor: parseFloat((item as any).saude_emocional || '0') }
+      { nome: 'Equilíbrio Trabalho - Vida', valor: parseFloat((item as any).media_inseguranca || '0') },
+      { nome: 'Saúde Emocional e Bem-Estar', valor: parseFloat((item as any).saude_emocional || '0') }
     ]
 
     // Se não temos médias calculadas, usar campos individuais
     if (dominios.every(d => d.valor === 0)) {
       console.log('⚠️ Usando campos individuais para domínio crítico')
       const dominiosIndividuais = [
-        { nome: 'Demandas Psicológicas', valor: parseFloat(item.exige_concentracao || '0') },
+        { nome: 'Exigências do trabalho', valor: parseFloat(item.exige_concentracao || '0') },
         { nome: 'Demandas Físicas', valor: parseFloat(item.influencia_no_trabalho || '0') },
-        { nome: 'Demandas de Trabalho', valor: parseFloat(item.colegas_ajudam || '0') },
-        { nome: 'Suporte Social e Liderança', valor: parseFloat(item.impacto_negativo_vida_pessoal || '0') },
+        { nome: 'Autonomia e Controle no trabalho', valor: parseFloat(item.colegas_ajudam || '0') },
+        { nome: 'Suporte Social e Qualidade da Liderança', valor: parseFloat(item.impacto_negativo_vida_pessoal || '0') },
         { nome: 'Esforço e Recompensa', valor: parseFloat(item.trabalho_significativo || '0') },
-        { nome: 'Interface Trabalho-Vida', valor: parseFloat(item.esgotamento_ao_final_do_dia || '0') }
+        { nome: 'Equilíbrio Trabalho - Vida', valor: parseFloat(item.esgotamento_ao_final_do_dia || '0') }
       ]
 
       const dominioCritico = dominiosIndividuais.reduce((max, dominio) =>
@@ -182,25 +182,25 @@ const Dashboard = () => {
 
     // Primeiro, tentar usar os campos de média calculada
     const dominios = [
-      { nome: 'Demandas Psicológicas', valor: parseFloat((item as any).media_exigencias || '0') },
+      { nome: 'Exigências do trabalho', valor: parseFloat((item as any).media_exigencias || '0') },
       { nome: 'Demandas Físicas', valor: parseFloat((item as any).media_organizacao || '0') },
-      { nome: 'Demandas de Trabalho', valor: parseFloat((item as any).media_relacoes || '0') },
-      { nome: 'Suporte Social e Liderança', valor: parseFloat((item as any).media_interface || '0') },
+      { nome: 'Autonomia e Controle no trabalho', valor: parseFloat((item as any).media_relacoes || '0') },
+      { nome: 'Suporte Social e Qualidade da Liderança', valor: parseFloat((item as any).media_interface || '0') },
       { nome: 'Esforço e Recompensa', valor: parseFloat((item as any).media_significado || '0') },
-      { nome: 'Interface Trabalho-Vida', valor: parseFloat((item as any).media_inseguranca || '0') },
-      { nome: 'Saúde Emocional', valor: parseFloat((item as any).saude_emocional || '0') }
+      { nome: 'Equilíbrio Trabalho - Vida', valor: parseFloat((item as any).media_inseguranca || '0') },
+      { nome: 'Saúde Emocional e Bem-Estar', valor: parseFloat((item as any).saude_emocional || '0') }
     ]
 
     // Se não temos médias calculadas, usar campos individuais
     if (dominios.every(d => d.valor === 0)) {
       console.log('⚠️ Usando campos individuais para domínio favorável')
       const dominiosIndividuais = [
-        { nome: 'Demandas Psicológicas', valor: parseFloat(item.exige_concentracao || '0') },
+        { nome: 'Exigências do trabalho', valor: parseFloat(item.exige_concentracao || '0') },
         { nome: 'Demandas Físicas', valor: parseFloat(item.influencia_no_trabalho || '0') },
-        { nome: 'Demandas de Trabalho', valor: parseFloat(item.colegas_ajudam || '0') },
-        { nome: 'Suporte Social e Liderança', valor: parseFloat(item.impacto_negativo_vida_pessoal || '0') },
+        { nome: 'Autonomia e Controle no trabalho', valor: parseFloat(item.colegas_ajudam || '0') },
+        { nome: 'Suporte Social e Qualidade da Liderança', valor: parseFloat(item.impacto_negativo_vida_pessoal || '0') },
         { nome: 'Esforço e Recompensa', valor: parseFloat(item.trabalho_significativo || '0') },
-        { nome: 'Interface Trabalho-Vida', valor: parseFloat(item.esgotamento_ao_final_do_dia || '0') }
+        { nome: 'Equilíbrio Trabalho - Vida', valor: parseFloat(item.esgotamento_ao_final_do_dia || '0') }
       ]
 
       // Filtrar domínios com valores válidos e pegar o com menor valor (mais favorável)

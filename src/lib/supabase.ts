@@ -56,7 +56,7 @@ export interface COPSQResposta {
   faixa_etaria: string | null
   data_resposta: string | null
   comentario_final: string | null
-  
+
   // Campos de demanda
   exige_concentracao: string | null
   exige_memorizacao: string | null
@@ -64,42 +64,42 @@ export interface COPSQResposta {
   influencia_no_trabalho: string | null
   decide_tarefas: string | null
   desenvolve_habilidades: string | null
-  
+
   // Campos de suporte social
   colegas_ajudam: string | null
   apoio_superior: string | null
   respeito_superiores: string | null
   reconhecimento_superior: string | null
   clima_cooperacao: string | null
-  
+
   // Campos de interface trabalho-vida
   impacto_negativo_vida_pessoal: string | null
   dificuldade_relaxar: string | null
   tempo_para_vida_pessoal: string | null
-  
+
   // Campos de significado do trabalho
   trabalho_significativo: string | null
   orgulho_trabalho: string | null
   valorizado_pelo_que_faz: string | null
-  
+
   // Campos de insegurança no trabalho
   medo_perder_emprego: string | null
   futuro_incerto: string | null
   posicao_estavel: string | null
-  
+
   // Campos de bem-estar
   esgotamento_ao_final_do_dia: string | null
   dormir_por_causa_do_trabalho: string | null
   dores_fisicas: string | null
   satisfacao_com_saude: string | null
-  
+
   // Campos de desenvolvimento
   Desenvolver_Raciocinio: string | null
   Senso_Claro_De_Utilidade: string | null
   Frenquencia_Falta_De_Energia: string | null
   Errar_Sem_Ser_Julgado: string | null
   Espaço_Para_Inovar: string | null
-  
+
   // Médias calculadas
   media_exigencias: string | null
   risco_exigencias: string | null
@@ -123,7 +123,7 @@ export interface COPSQResposta {
   iseso_classificacao_cor?: string | null
   iseso_pcmso_prioridade?: number | null
   iseso_pcmso_frequencia?: string | null
-  
+
   // Campos adicionais
   Trabalho_Rapido: string | null
   Decidir_Velocidade: string | null
@@ -142,7 +142,7 @@ export async function fetchCOPSQData() {
     }
 
     console.log('Fetching COPSQ data...')
-    
+
     // Primeiro, vamos buscar todos os dados sem filtros
     const { data: allData, error: allError } = await supabase
       .from('COPSQ_respostas')
@@ -170,7 +170,7 @@ export async function fetchCOPSQData() {
 
     console.log('Filtered data:', data?.length || 0, 'records')
     console.log('Data fetched successfully:', data?.length || 0, 'records')
-    
+
     // Se não há dados filtrados, retornar todos os dados
     if (!data || data.length === 0) {
       console.log('No filtered data found, returning all data')
@@ -195,7 +195,7 @@ export async function fetchCOPSQData() {
     })
 
     // Persiste histórico de forma assíncrona (sem bloquear a UI)
-    persistirHistoricoISESO(enriched).catch(() => {})
+    persistirHistoricoISESO(enriched).catch(() => { })
 
     return enriched
   } catch (error) {
@@ -252,37 +252,37 @@ export async function persistirHistoricoISESO(rows: any[]) {
 // Função para calcular médias por domínio
 export function calculateDomainAverages(data: COPSQResposta[]) {
   const domains: Record<string, number[]> = {
-    'Demandas Psicológicas': [],
+    'Exigências do trabalho': [],
     'Demandas Físicas': [],
-    'Demandas de Trabalho': [],
-    'Suporte Social e Liderança': [],
+    'Autonomia e Controle no trabalho': [],
+    'Suporte Social e Qualidade da Liderança': [],
     'Esforço e Recompensa': [],
-    'Interface Trabalho-Vida': [],
-    'Saúde Emocional': []
+    'Equilíbrio Trabalho - Vida': [],
+    'Saúde Emocional e Bem-Estar': []
   }
 
   data.forEach(resposta => {
     // Mapear campos para domínios (baseado na estrutura COPSOQ)
     if (resposta.media_exigencias) {
-      domains['Demandas Psicológicas'].push(parseFloat(resposta.media_exigencias))
+      domains['Exigências do trabalho'].push(parseFloat(resposta.media_exigencias))
     }
     if (resposta.media_organizacao) {
       domains['Demandas Físicas'].push(parseFloat(resposta.media_organizacao))
     }
     if (resposta.media_relacoes) {
-      domains['Demandas de Trabalho'].push(parseFloat(resposta.media_relacoes))
+      domains['Autonomia e Controle no trabalho'].push(parseFloat(resposta.media_relacoes))
     }
     if (resposta.media_interface) {
-      domains['Suporte Social e Liderança'].push(parseFloat(resposta.media_interface))
+      domains['Suporte Social e Qualidade da Liderança'].push(parseFloat(resposta.media_interface))
     }
     if (resposta.media_significado) {
       domains['Esforço e Recompensa'].push(parseFloat(resposta.media_significado))
     }
     if (resposta.media_inseguranca) {
-      domains['Interface Trabalho-Vida'].push(parseFloat(resposta.media_inseguranca))
+      domains['Equilíbrio Trabalho - Vida'].push(parseFloat(resposta.media_inseguranca))
     }
     if (resposta.saude_emocional) {
-      domains['Saúde Emocional'].push(parseFloat(resposta.saude_emocional))
+      domains['Saúde Emocional e Bem-Estar'].push(parseFloat(resposta.saude_emocional))
     }
   })
 
@@ -298,7 +298,7 @@ export function calculateDomainAverages(data: COPSQResposta[]) {
 // Função para buscar dados por setor
 export function getDataBySector(data: COPSQResposta[]) {
   const sectors: Record<string, any[]> = {}
-  
+
   data.forEach(resposta => {
     if (resposta.area_setor && resposta.iseso) {
       const sector = resposta.area_setor
@@ -318,12 +318,12 @@ export function getDataBySector(data: COPSQResposta[]) {
 
 export function calculateDomainAveragesBySector(data: COPSQResposta[], targetSector: string) {
   console.log('🔍 calculateDomainAveragesBySector - Setor:', targetSector)
-  
+
   const sectorData = data.filter(item => item.area_setor === targetSector)
   console.log('🔍 Dados do setor encontrados:', sectorData.length, 'registros')
-  
+
   const averages = calculateDomainAverages(sectorData)
-  
+
   console.log('📊 Médias do setor', targetSector, ':', averages)
   return averages
 }
@@ -331,25 +331,25 @@ export function calculateDomainAveragesBySector(data: COPSQResposta[], targetSec
 // Função para calcular médias por domínio usando o mesmo método do mapa de calor (média das médias dos setores)
 export function calculateDomainAveragesBySectorAverages(data: COPSQResposta[]) {
   console.log('🔍 calculateDomainAveragesBySectorAverages - Calculando média das médias dos setores')
-  
+
   // Obter setores únicos
   const setores = [...new Set(data.map(item => item.area_setor).filter(Boolean))]
   console.log('🔍 Setores encontrados:', setores)
-  
+
   const domains: Record<string, number[]> = {
-    'Demandas Psicológicas': [],
+    'Exigências do trabalho': [],
     'Demandas Físicas': [],
-    'Demandas de Trabalho': [],
-    'Suporte Social e Liderança': [],
+    'Autonomia e Controle no trabalho': [],
+    'Suporte Social e Qualidade da Liderança': [],
     'Esforço e Recompensa': [],
-    'Interface Trabalho-Vida': [],
-    'Saúde Emocional': []
+    'Equilíbrio Trabalho - Vida': [],
+    'Saúde Emocional e Bem-Estar': []
   }
 
   // Mapear campos para domínios
   const domainFields = [
     'media_exigencias',
-    'media_organizacao', 
+    'media_organizacao',
     'media_relacoes',
     'media_interface',
     'media_significado',
@@ -360,7 +360,7 @@ export function calculateDomainAveragesBySectorAverages(data: COPSQResposta[]) {
   // Para cada setor, calcular a média e adicionar ao array do domínio
   setores.forEach(setor => {
     const dadosSetor = data.filter(item => item.area_setor === setor)
-    
+
     domainFields.forEach((field, index) => {
       const domainName = Object.keys(domains)[index]
       const valores = dadosSetor
@@ -369,7 +369,7 @@ export function calculateDomainAveragesBySectorAverages(data: COPSQResposta[]) {
           return parseFloat(valor || '0')
         })
         .filter(valor => valor > 0)
-      
+
       if (valores.length > 0) {
         const mediaSetor = Math.round(valores.reduce((a, b) => a + b, 0) / valores.length)
         domains[domainName].push(mediaSetor)
@@ -396,7 +396,7 @@ export async function fetchAllSectorsForCompany(empresaId: string): Promise<COPS
     }
 
     console.log('🏢 Buscando dados de todos os setores da empresa para radar:', empresaId)
-    
+
     const { data, error } = await supabase
       .from('COPSQ_respostas')
       .select('*')
@@ -862,7 +862,7 @@ export async function fetchDadosHistoricos(filtros: {
 
 // Função para processar ciclos de avaliação
 function processarCiclosAvaliacao(
-  copsoqData: COPSQResposta[], 
+  copsoqData: COPSQResposta[],
   intervencoes: Intervencao[]
 ): DadosHistoricoCompleto[] {
   const ciclos: Record<string, DadosHistoricoCompleto> = {}
@@ -875,11 +875,11 @@ function processarCiclosAvaliacao(
       const mes = data.getMonth()
       const trimestre = Math.floor(mes / 3) + 1
       const chave = `${ano}-T${trimestre}`
-      
+
       if (!ciclos[chave]) {
         const meses = ['Jan', 'Abr', 'Jul', 'Out']
         const nomeCiclo = `${meses[trimestre - 1]}/${ano}`
-        
+
         ciclos[chave] = {
           ciclo: {
             id: chave,
@@ -961,7 +961,7 @@ function processarCiclosAvaliacao(
   })
 
   // Ordenar por data
-  return Object.values(ciclos).sort((a, b) => 
+  return Object.values(ciclos).sort((a, b) =>
     new Date(a.ciclo.data_inicio).getTime() - new Date(b.ciclo.data_inicio).getTime()
   )
 }
@@ -1068,7 +1068,7 @@ export function calcularComparacaoCiclos(ciclos: DadosHistoricoCompleto[]): Dado
     Object.keys(ciclo.ciclo.dominios_medios).forEach(dominio => {
       const antes = cicloAnterior.ciclo.dominios_medios[dominio] || 0
       const depois = ciclo.ciclo.dominios_medios[dominio] || 0
-      
+
       comparacao.dominios[dominio] = {
         antes,
         depois,

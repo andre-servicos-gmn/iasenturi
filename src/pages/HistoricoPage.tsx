@@ -1,12 +1,12 @@
 import {
-  Box, VStack, HStack, Text, useColorModeValue, Grid, Card, CardBody, 
+  Box, VStack, HStack, Text, useColorModeValue, Grid, Card, CardBody,
   Badge, Icon, useDisclosure, Divider,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton,
   Button, Input, Textarea, Select, Checkbox, useToast,
   Tabs, TabList, TabPanels, Tab, TabPanel
 } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import { 
+import {
   FiTrendingUp, FiTarget, FiCheckCircle,
   FiBarChart2,
   FiInfo, FiHelpCircle, FiMapPin, FiCalendar, FiUser, FiSettings, FiDollarSign,
@@ -111,8 +111,8 @@ const HistoricoPage = () => {
   }, [topicos])
 
   useEffect(() => {
-    fetchEmpresas().then(setEmpresas).catch(() => {})
-    fetchTopicos().then(setTopicos).catch(() => {})
+    fetchEmpresas().then(setEmpresas).catch(() => { })
+    fetchTopicos().then(setTopicos).catch(() => { })
   }, [])
 
   // Estado do formulário de criação de intervenção
@@ -146,13 +146,13 @@ const HistoricoPage = () => {
 
   // Cores da nova paleta Senturi para os domínios
   const coresDominios = {
-    'Demandas Psicológicas': '#E53935',    // Vermelho técnico
+    'Exigências do trabalho': '#E53935',    // Vermelho técnico
     'Demandas Físicas': '#00C4A7',        // Verde turquesa
-    'Demandas de Trabalho': '#1A45FC',    // Azul vibrante
-    'Suporte Social e Liderança': '#169DEF', // Azul claro
+    'Autonomia e Controle no trabalho': '#1A45FC',    // Azul vibrante
+    'Suporte Social e Qualidade da Liderança': '#169DEF', // Azul claro
     'Esforço e Recompensa': '#FDCB6E',    // Amarelo claro
-    'Interface Trabalho-Vida': '#E17055', // Laranja forte
-    'Saúde Emocional': '#0D249B'          // Azul escuro
+    'Equilíbrio Trabalho - Vida': '#E17055', // Laranja forte
+    'Saúde Emocional e Bem-Estar': '#0D249B'          // Azul escuro
   }
 
   // Intervenções simuladas removidas: agora usamos dados reais vindos do banco via fetchDadosHistoricos
@@ -370,11 +370,11 @@ const HistoricoPage = () => {
         </Box>
 
         {/* Grid Principal */}
-        <Grid 
+        <Grid
           templateColumns={{ base: "1fr", lg: "2fr 1fr" }}
-          gap={6} 
-          w="full" 
-          h="full" 
+          gap={6}
+          w="full"
+          h="full"
           flex={1}
           minH="calc(100vh - 200px)"
         >
@@ -458,32 +458,32 @@ const HistoricoPage = () => {
 
                   {intervencoesFlat.length > 0 ? (
                     <Box overflowY="auto" flex={1}>
-                              <VStack spacing={3} align="stretch">
+                      <VStack spacing={3} align="stretch">
                         {intervencoesFlat.map((intervencao, idx) => (
-                                      <MotionBox
-                                        key={idx}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
+                          <MotionBox
+                            key={idx}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.03 }}
-                                        p={3}
-                                        bg="white"
-                                        _dark={{ bg: 'gray.800', borderColor: 'gray.600' }}
-                                        borderRadius="md"
-                                        border="1px solid"
-                                        borderColor="gray.200"
+                            p={3}
+                            bg="white"
+                            _dark={{ bg: 'gray.800', borderColor: 'gray.600' }}
+                            borderRadius="md"
+                            border="1px solid"
+                            borderColor="gray.200"
                             role="button"
                             tabIndex={0}
                             onClick={() => { setSelectedIntervencao(intervencao); intervencaoModal.onOpen() }}
                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setSelectedIntervencao(intervencao); intervencaoModal.onOpen() } }}
-                                      >
-                                        <VStack spacing={2} align="stretch">
+                          >
+                            <VStack spacing={2} align="stretch">
                               <HStack justify="space-between" align="center">
-                                            <HStack spacing={2}>
-                                              <Icon as={FiCheckCircle} color={`${getImpactoColor(intervencao.impacto)}.500`} />
-                                              <Text fontWeight="semibold" fontSize="sm">
+                                <HStack spacing={2}>
+                                  <Icon as={FiCheckCircle} color={`${getImpactoColor(intervencao.impacto)}.500`} />
+                                  <Text fontWeight="semibold" fontSize="sm">
                                     {intervencao.tipo}{intervencao.titulo ? ` - ${intervencao.titulo}` : ''}
-                                              </Text>
-                                            </HStack>
+                                  </Text>
+                                </HStack>
                                 <HStack spacing={2}>
                                   {intervencao.empresa_id && (
                                     <Badge colorScheme="purple">{empresaNomeById[intervencao.empresa_id] || intervencao.empresa_id}</Badge>
@@ -516,47 +516,47 @@ const HistoricoPage = () => {
                                     Excluir
                                   </Button>
                                 </HStack>
-                                          </HStack>
-                                          <Text fontSize="sm" color={textColor}>
-                                            {intervencao.descricao}
-                                          </Text>
-                                          <HStack spacing={4} fontSize="xs">
-                                            <VStack align="start" spacing={1}>
-                                              <Text color="gray.500">Esperado:</Text>
-                                              <Text color="blue.600">{intervencao.resultadoEsperado}</Text>
-                                            </VStack>
-                                            <VStack align="start" spacing={1}>
-                                              <Text color="gray.500">Observado:</Text>
-                                              <Text color="green.600">{intervencao.resultadoObservado}</Text>
-                                            </VStack>
-                                          </HStack>
-                                          {intervencao.topicos && intervencao.topicos.length > 0 && (
-                                            <HStack spacing={2} wrap="wrap">
-                                              <Text fontSize="xs" color="gray.500">Tópicos:</Text>
-                                              {intervencao.topicos.map((topicoId) => {
-                                                const topico = topicoById[topicoId]
-                                                return topico ? (
-                                                  <Badge
-                                                    key={topicoId}
-                                                    size="sm"
-                                                    colorScheme="purple"
-                                                    variant="subtle"
-                                                  >
-                                                    <HStack spacing={1}>
-                                                      {topico.cor && (
-                                                        <Box w={2} h={2} bg={topico.cor} borderRadius="full" />
-                                                      )}
-                                                      <Text>{topico.nome}</Text>
-                                                    </HStack>
-                                                  </Badge>
-                                                ) : null
-                                              })}
-                                            </HStack>
+                              </HStack>
+                              <Text fontSize="sm" color={textColor}>
+                                {intervencao.descricao}
+                              </Text>
+                              <HStack spacing={4} fontSize="xs">
+                                <VStack align="start" spacing={1}>
+                                  <Text color="gray.500">Esperado:</Text>
+                                  <Text color="blue.600">{intervencao.resultadoEsperado}</Text>
+                                </VStack>
+                                <VStack align="start" spacing={1}>
+                                  <Text color="gray.500">Observado:</Text>
+                                  <Text color="green.600">{intervencao.resultadoObservado}</Text>
+                                </VStack>
+                              </HStack>
+                              {intervencao.topicos && intervencao.topicos.length > 0 && (
+                                <HStack spacing={2} wrap="wrap">
+                                  <Text fontSize="xs" color="gray.500">Tópicos:</Text>
+                                  {intervencao.topicos.map((topicoId) => {
+                                    const topico = topicoById[topicoId]
+                                    return topico ? (
+                                      <Badge
+                                        key={topicoId}
+                                        size="sm"
+                                        colorScheme="purple"
+                                        variant="subtle"
+                                      >
+                                        <HStack spacing={1}>
+                                          {topico.cor && (
+                                            <Box w={2} h={2} bg={topico.cor} borderRadius="full" />
                                           )}
-                                        </VStack>
-                                      </MotionBox>
-                                    ))}
-                              </VStack>
+                                          <Text>{topico.nome}</Text>
+                                        </HStack>
+                                      </Badge>
+                                    ) : null
+                                  })}
+                                </HStack>
+                              )}
+                            </VStack>
+                          </MotionBox>
+                        ))}
+                      </VStack>
                     </Box>
                   ) : (
                     <Box textAlign="center" py={4} flex={1} display="flex" alignItems="center" justifyContent="center">
@@ -620,7 +620,7 @@ const HistoricoPage = () => {
                     <Text fontSize="sm" color="gray.500" mb={1}>Resultado Observado</Text>
                     <Text fontSize="sm" color="green.700">{selectedIntervencao.resultadoObservado || '-'}</Text>
                   </Box>
-                  </Grid>
+                </Grid>
 
                 <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={4}>
                   <Box>
@@ -640,8 +640,8 @@ const HistoricoPage = () => {
                       {selectedIntervencao.dominios_afetados.map((dom) => (
                         <Badge key={dom} colorScheme="gray">{dom}</Badge>
                       ))}
-                        </HStack>
-                      </Box>
+                    </HStack>
+                  </Box>
                 )}
 
                 {selectedIntervencao.topicos && selectedIntervencao.topicos.length > 0 && (
@@ -670,7 +670,7 @@ const HistoricoPage = () => {
                 )}
 
                 {/* Edição rápida do Resultado Observado */}
-                      <Divider />
+                <Divider />
                 <Box>
                   <Text fontSize="sm" color="gray.500" mb={2}>Atualizar Resultado Observado</Text>
                   <HStack spacing={3} align="start">
@@ -694,7 +694,7 @@ const HistoricoPage = () => {
                     >Salvar</Button>
                   </HStack>
                 </Box>
-                </VStack>
+              </VStack>
             )}
           </ModalBody>
         </ModalContent>
@@ -769,389 +769,389 @@ const HistoricoPage = () => {
                     </Tab>
                   </TabList>
                   <TabPanels flex={1} w="full">
-                  {/* WHAT */}
-                  <TabPanel>
-                    <VStack spacing={4} align="stretch">
-                      <HStack spacing={4} wrap="wrap">
-                        <Box flex={1} minW="200px">
-                          <Text fontSize="sm" mb={1}>Tipo</Text>
-                          <Input
-                            placeholder="Ex: Workshop, Treinamento"
-                            value={formData.tipo}
-                            onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
-                          />
-                        </Box>
-                        <Box flex={2} minW="200px">
-                          <Text fontSize="sm" mb={1}>Título</Text>
-                          <Input
-                            placeholder="Título da intervenção"
-                            value={formData.titulo}
-                            onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
-                          />
-                        </Box>
-                      </HStack>
-                      <Box>
-                        <Text fontSize="sm" mb={2}>Domínios Afetados</Text>
+                    {/* WHAT */}
+                    <TabPanel>
+                      <VStack spacing={4} align="stretch">
                         <HStack spacing={4} wrap="wrap">
-                          {Object.keys(coresDominios).map((dom) => (
-                            <Checkbox
-                              key={dom}
-                              isChecked={formData.dominios_afetados.includes(dom)}
-                              onChange={(e) => {
-                                const checked = e.target.checked
-                                setFormData(prev => ({
-                                  ...prev,
-                                  dominios_afetados: checked
-                                    ? [...prev.dominios_afetados, dom]
-                                    : prev.dominios_afetados.filter(d => d !== dom)
-                                }))
-                              }}
-                            >
-                              {dom}
-                            </Checkbox>
-                          ))}
+                          <Box flex={1} minW="200px">
+                            <Text fontSize="sm" mb={1}>Tipo</Text>
+                            <Input
+                              placeholder="Ex: Workshop, Treinamento"
+                              value={formData.tipo}
+                              onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
+                            />
+                          </Box>
+                          <Box flex={2} minW="200px">
+                            <Text fontSize="sm" mb={1}>Título</Text>
+                            <Input
+                              placeholder="Título da intervenção"
+                              value={formData.titulo}
+                              onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
+                            />
+                          </Box>
                         </HStack>
-                      </Box>
-                    </VStack>
-                  </TabPanel>
-                  {/* WHY */}
-                  <TabPanel>
-                    <VStack spacing={4} align="stretch">
-                      <Box>
-                        <Text fontSize="sm" mb={1}>Justificativa (Why)</Text>
-                        <Textarea
-                          placeholder="Qual a razão/motivação desta intervenção? Objetivos e resultados esperados."
-                          value={formData.resultado_esperado}
-                          onChange={(e) => setFormData({ ...formData, resultado_esperado: e.target.value })}
-                        />
-                      </Box>
-                    </VStack>
-                  </TabPanel>
-                  {/* WHERE */}
-                  <TabPanel>
-                    <VStack spacing={4} align="stretch">
-                      <HStack spacing={4} wrap="wrap">
-                        <Box flex={1} minW="200px">
-                          <Text fontSize="sm" mb={1}>Empresa ID</Text>
-                          <Input
-                            placeholder="empresa_id"
-                            value={formData.empresa_id}
-                            onChange={(e) => setFormData({ ...formData, empresa_id: e.target.value })}
-                          />
-                        </Box>
-                        <Box flex={1} minW="200px">
-                          <Text fontSize="sm" mb={1}>Setor (opcional)</Text>
-                          <Input
-                            placeholder="setor"
-                            value={formData.setor}
-                            onChange={(e) => setFormData({ ...formData, setor: e.target.value })}
-                          />
-                        </Box>
-                      </HStack>
-                    </VStack>
-                  </TabPanel>
-                  {/* WHEN */}
-                  <TabPanel>
-                    <VStack spacing={4} align="stretch">
-                      <HStack spacing={4} wrap="wrap">
                         <Box>
-                          <Text fontSize="sm" mb={1}>Data Início</Text>
-                          <Input
-                            type="date"
-                            value={formData.data_inicio}
-                            onChange={(e) => setFormData({ ...formData, data_inicio: e.target.value })}
-                          />
+                          <Text fontSize="sm" mb={2}>Domínios Afetados</Text>
+                          <HStack spacing={4} wrap="wrap">
+                            {Object.keys(coresDominios).map((dom) => (
+                              <Checkbox
+                                key={dom}
+                                isChecked={formData.dominios_afetados.includes(dom)}
+                                onChange={(e) => {
+                                  const checked = e.target.checked
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    dominios_afetados: checked
+                                      ? [...prev.dominios_afetados, dom]
+                                      : prev.dominios_afetados.filter(d => d !== dom)
+                                  }))
+                                }}
+                              >
+                                {dom}
+                              </Checkbox>
+                            ))}
+                          </HStack>
                         </Box>
+                      </VStack>
+                    </TabPanel>
+                    {/* WHY */}
+                    <TabPanel>
+                      <VStack spacing={4} align="stretch">
                         <Box>
-                          <Text fontSize="sm" mb={1}>Data Fim (opcional)</Text>
-                          <Input
-                            type="date"
-                            value={formData.data_fim}
-                            onChange={(e) => setFormData({ ...formData, data_fim: e.target.value })}
+                          <Text fontSize="sm" mb={1}>Justificativa (Why)</Text>
+                          <Textarea
+                            placeholder="Qual a razão/motivação desta intervenção? Objetivos e resultados esperados."
+                            value={formData.resultado_esperado}
+                            onChange={(e) => setFormData({ ...formData, resultado_esperado: e.target.value })}
                           />
                         </Box>
-                        <Box minW="200px">
-                          <Text fontSize="sm" mb={1}>Status</Text>
-                          <Select
-                            value={formData.status}
-                            onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                          >
-                            <option value="planejada">Planejada</option>
-                            <option value="em_andamento">Em andamento</option>
-                            <option value="concluida">Concluída</option>
-                            <option value="cancelada">Cancelada</option>
-                          </Select>
-                        </Box>
-                      </HStack>
-                    </VStack>
-                  </TabPanel>
-                  {/* WHO */}
-                  <TabPanel>
-                    <VStack spacing={4} align="stretch">
-                      <HStack spacing={4} wrap="wrap">
-                        <Box flex={1} minW="200px">
-                          <Text fontSize="sm" mb={1}>Responsável</Text>
-                          <Input
-                            placeholder="Nome do responsável"
-                            value={formData.responsavel}
-                            onChange={(e) => setFormData({ ...formData, responsavel: e.target.value })}
+                      </VStack>
+                    </TabPanel>
+                    {/* WHERE */}
+                    <TabPanel>
+                      <VStack spacing={4} align="stretch">
+                        <HStack spacing={4} wrap="wrap">
+                          <Box flex={1} minW="200px">
+                            <Text fontSize="sm" mb={1}>Empresa ID</Text>
+                            <Input
+                              placeholder="empresa_id"
+                              value={formData.empresa_id}
+                              onChange={(e) => setFormData({ ...formData, empresa_id: e.target.value })}
+                            />
+                          </Box>
+                          <Box flex={1} minW="200px">
+                            <Text fontSize="sm" mb={1}>Setor (opcional)</Text>
+                            <Input
+                              placeholder="setor"
+                              value={formData.setor}
+                              onChange={(e) => setFormData({ ...formData, setor: e.target.value })}
+                            />
+                          </Box>
+                        </HStack>
+                      </VStack>
+                    </TabPanel>
+                    {/* WHEN */}
+                    <TabPanel>
+                      <VStack spacing={4} align="stretch">
+                        <HStack spacing={4} wrap="wrap">
+                          <Box>
+                            <Text fontSize="sm" mb={1}>Data Início</Text>
+                            <Input
+                              type="date"
+                              value={formData.data_inicio}
+                              onChange={(e) => setFormData({ ...formData, data_inicio: e.target.value })}
+                            />
+                          </Box>
+                          <Box>
+                            <Text fontSize="sm" mb={1}>Data Fim (opcional)</Text>
+                            <Input
+                              type="date"
+                              value={formData.data_fim}
+                              onChange={(e) => setFormData({ ...formData, data_fim: e.target.value })}
+                            />
+                          </Box>
+                          <Box minW="200px">
+                            <Text fontSize="sm" mb={1}>Status</Text>
+                            <Select
+                              value={formData.status}
+                              onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                            >
+                              <option value="planejada">Planejada</option>
+                              <option value="em_andamento">Em andamento</option>
+                              <option value="concluida">Concluída</option>
+                              <option value="cancelada">Cancelada</option>
+                            </Select>
+                          </Box>
+                        </HStack>
+                      </VStack>
+                    </TabPanel>
+                    {/* WHO */}
+                    <TabPanel>
+                      <VStack spacing={4} align="stretch">
+                        <HStack spacing={4} wrap="wrap">
+                          <Box flex={1} minW="200px">
+                            <Text fontSize="sm" mb={1}>Responsável</Text>
+                            <Input
+                              placeholder="Nome do responsável"
+                              value={formData.responsavel}
+                              onChange={(e) => setFormData({ ...formData, responsavel: e.target.value })}
+                            />
+                          </Box>
+                          <Box flex={1} minW="200px">
+                            <Text fontSize="sm" mb={1}>Impacto Qualitativo</Text>
+                            <Select
+                              value={formData.impacto_qualitativo}
+                              onChange={(e) => setFormData({ ...formData, impacto_qualitativo: e.target.value as any })}
+                            >
+                              <option value="positivo">Positivo</option>
+                              <option value="neutro">Neutro</option>
+                              <option value="negativo">Negativo</option>
+                            </Select>
+                          </Box>
+                        </HStack>
+                      </VStack>
+                    </TabPanel>
+                    {/* HOW */}
+                    <TabPanel>
+                      <VStack spacing={4} align="stretch">
+                        <Box>
+                          <Text fontSize="sm" mb={1}>Plano de Ação (How)</Text>
+                          <Textarea
+                            placeholder="Como será executada a intervenção? Etapas, recursos, cronograma."
+                            value={formData.descricao}
+                            onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
                           />
                         </Box>
-                        <Box flex={1} minW="200px">
-                          <Text fontSize="sm" mb={1}>Impacto Qualitativo</Text>
-                          <Select
-                            value={formData.impacto_qualitativo}
-                            onChange={(e) => setFormData({ ...formData, impacto_qualitativo: e.target.value as any })}
-                          >
-                            <option value="positivo">Positivo</option>
-                            <option value="neutro">Neutro</option>
-                            <option value="negativo">Negativo</option>
-                          </Select>
+                      </VStack>
+                    </TabPanel>
+                    {/* HOW MUCH */}
+                    <TabPanel>
+                      <VStack spacing={4} align="stretch">
+                        <HStack spacing={4} wrap="wrap">
+                          <Box minW="160px">
+                            <Text fontSize="sm" mb={1}>Custo (R$) opcional</Text>
+                            <Input
+                              type="number"
+                              value={formData.custo as any}
+                              onChange={(e) => setFormData({ ...formData, custo: e.target.value })}
+                            />
+                          </Box>
+                          <Box flex={1} minW="200px">
+                            <Text fontSize="sm" mb={1}>Resultado Observado (opcional)</Text>
+                            <Input
+                              placeholder="Ex: Aumento de 8 pts"
+                              value={formData.resultado_observado}
+                              onChange={(e) => setFormData({ ...formData, resultado_observado: e.target.value })}
+                            />
+                          </Box>
+                        </HStack>
+                      </VStack>
+                    </TabPanel>
+                    {/* TÓPICOS */}
+                    <TabPanel>
+                      <VStack spacing={6} align="stretch">
+                        {/* Tópicos Selecionados */}
+                        <Box>
+                          <Text fontSize="sm" mb={2}>Tópicos Selecionados</Text>
+                          {formData.topicos.length > 0 ? (
+                            <HStack spacing={2} wrap="wrap">
+                              {formData.topicos.map((topicoId) => {
+                                const topico = topicos.find(t => t.id === topicoId)
+                                return topico ? (
+                                  <Badge
+                                    key={topicoId}
+                                    colorScheme="purple"
+                                    variant="subtle"
+                                    px={3}
+                                    py={1}
+                                    borderRadius="full"
+                                  >
+                                    <HStack spacing={2}>
+                                      {topico.cor && (
+                                        <Box w={2} h={2} bg={topico.cor} borderRadius="full" />
+                                      )}
+                                      <Text>{topico.nome}</Text>
+                                      <Button
+                                        size="xs"
+                                        variant="ghost"
+                                        colorScheme="red"
+                                        onClick={() => {
+                                          setFormData(prev => ({
+                                            ...prev,
+                                            topicos: prev.topicos.filter(t => t !== topicoId)
+                                          }))
+                                        }}
+                                      >
+                                        ×
+                                      </Button>
+                                    </HStack>
+                                  </Badge>
+                                ) : null
+                              })}
+                            </HStack>
+                          ) : (
+                            <Text fontSize="sm" color="gray.500">
+                              Nenhum tópico selecionado
+                            </Text>
+                          )}
                         </Box>
-                      </HStack>
-                    </VStack>
-                  </TabPanel>
-                  {/* HOW */}
-                  <TabPanel>
-                    <VStack spacing={4} align="stretch">
-                      <Box>
-                        <Text fontSize="sm" mb={1}>Plano de Ação (How)</Text>
-                        <Textarea
-                          placeholder="Como será executada a intervenção? Etapas, recursos, cronograma."
-                          value={formData.descricao}
-                          onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                        />
-                      </Box>
-                    </VStack>
-                  </TabPanel>
-                  {/* HOW MUCH */}
-                  <TabPanel>
-                    <VStack spacing={4} align="stretch">
-                      <HStack spacing={4} wrap="wrap">
-                        <Box minW="160px">
-                          <Text fontSize="sm" mb={1}>Custo (R$) opcional</Text>
-                          <Input
-                            type="number"
-                            value={formData.custo as any}
-                            onChange={(e) => setFormData({ ...formData, custo: e.target.value })}
-                          />
-                        </Box>
-                        <Box flex={1} minW="200px">
-                          <Text fontSize="sm" mb={1}>Resultado Observado (opcional)</Text>
-                          <Input
-                            placeholder="Ex: Aumento de 8 pts"
-                            value={formData.resultado_observado}
-                            onChange={(e) => setFormData({ ...formData, resultado_observado: e.target.value })}
-                          />
-                        </Box>
-                      </HStack>
-                    </VStack>
-                  </TabPanel>
-                  {/* TÓPICOS */}
-                  <TabPanel>
-                    <VStack spacing={6} align="stretch">
-                      {/* Tópicos Selecionados */}
-                      <Box>
-                        <Text fontSize="sm" mb={2}>Tópicos Selecionados</Text>
-                        {formData.topicos.length > 0 ? (
-                          <HStack spacing={2} wrap="wrap">
-                            {formData.topicos.map((topicoId) => {
-                              const topico = topicos.find(t => t.id === topicoId)
-                              return topico ? (
-                                <Badge
-                                  key={topicoId}
-                                  colorScheme="purple"
-                                  variant="subtle"
-                                  px={3}
-                                  py={1}
-                                  borderRadius="full"
-                                >
-                                  <HStack spacing={2}>
-                                    {topico.cor && (
-                                      <Box w={2} h={2} bg={topico.cor} borderRadius="full" />
-                                    )}
-                                    <Text>{topico.nome}</Text>
-                                    <Button
-                                      size="xs"
-                                      variant="ghost"
-                                      colorScheme="red"
-                                      onClick={() => {
+
+                        <Divider />
+
+                        {/* Tópicos Disponíveis */}
+                        <Box>
+                          <Text fontSize="sm" mb={2}>Tópicos Disponíveis</Text>
+                          {topicos.length > 0 ? (
+                            <VStack spacing={2} align="stretch">
+                              {topicos.map((topico) => (
+                                <HStack key={topico.id} justify="space-between" p={2} bg="gray.50" borderRadius="md">
+                                  <HStack spacing={3}>
+                                    <Checkbox
+                                      isChecked={formData.topicos.includes(topico.id)}
+                                      onChange={(e) => {
+                                        const checked = e.target.checked
                                         setFormData(prev => ({
                                           ...prev,
-                                          topicos: prev.topicos.filter(t => t !== topicoId)
+                                          topicos: checked
+                                            ? [...prev.topicos, topico.id]
+                                            : prev.topicos.filter(t => t !== topico.id)
                                         }))
                                       }}
-                                    >
-                                      ×
-                                    </Button>
-                                  </HStack>
-                                </Badge>
-                              ) : null
-                            })}
-                          </HStack>
-                        ) : (
-                          <Text fontSize="sm" color="gray.500">
-                            Nenhum tópico selecionado
-                          </Text>
-                        )}
-                      </Box>
-
-                      <Divider />
-
-                      {/* Tópicos Disponíveis */}
-                      <Box>
-                        <Text fontSize="sm" mb={2}>Tópicos Disponíveis</Text>
-                        {topicos.length > 0 ? (
-                          <VStack spacing={2} align="stretch">
-                            {topicos.map((topico) => (
-                              <HStack key={topico.id} justify="space-between" p={2} bg="gray.50" borderRadius="md">
-                                <HStack spacing={3}>
-                                  <Checkbox
-                                    isChecked={formData.topicos.includes(topico.id)}
-                                    onChange={(e) => {
-                                      const checked = e.target.checked
-                                      setFormData(prev => ({
-                                        ...prev,
-                                        topicos: checked
-                                          ? [...prev.topicos, topico.id]
-                                          : prev.topicos.filter(t => t !== topico.id)
-                                      }))
-                                    }}
-                                  />
-                                  {topico.cor && (
-                                    <Box w={3} h={3} bg={topico.cor} borderRadius="full" />
-                                  )}
-                                  <VStack align="start" spacing={0}>
-                                    <Text fontSize="sm" fontWeight="medium">{topico.nome}</Text>
-                                    {topico.descricao && (
-                                      <Text fontSize="xs" color="gray.600">{topico.descricao}</Text>
+                                    />
+                                    {topico.cor && (
+                                      <Box w={3} h={3} bg={topico.cor} borderRadius="full" />
                                     )}
-                                  </VStack>
-                                </HStack>
-                                <Button
-                                  size="xs"
-                                  variant="ghost"
-                                  colorScheme="red"
-                                  onClick={async () => {
-                                    if (confirm(`Tem certeza que deseja excluir o tópico "${topico.nome}"?`)) {
-                                      const sucesso = await deleteTopico(topico.id)
-                                      if (sucesso) {
-                                        toast({ title: 'Tópico excluído com sucesso', status: 'success' })
-                                        setTopicos(prev => prev.filter(t => t.id !== topico.id))
-                                        setFormData(prev => ({
-                                          ...prev,
-                                          topicos: prev.topicos.filter(t => t !== topico.id)
-                                        }))
-                                      } else {
-                                        toast({ title: 'Erro ao excluir tópico', status: 'error' })
+                                    <VStack align="start" spacing={0}>
+                                      <Text fontSize="sm" fontWeight="medium">{topico.nome}</Text>
+                                      {topico.descricao && (
+                                        <Text fontSize="xs" color="gray.600">{topico.descricao}</Text>
+                                      )}
+                                    </VStack>
+                                  </HStack>
+                                  <Button
+                                    size="xs"
+                                    variant="ghost"
+                                    colorScheme="red"
+                                    onClick={async () => {
+                                      if (confirm(`Tem certeza que deseja excluir o tópico "${topico.nome}"?`)) {
+                                        const sucesso = await deleteTopico(topico.id)
+                                        if (sucesso) {
+                                          toast({ title: 'Tópico excluído com sucesso', status: 'success' })
+                                          setTopicos(prev => prev.filter(t => t.id !== topico.id))
+                                          setFormData(prev => ({
+                                            ...prev,
+                                            topicos: prev.topicos.filter(t => t !== topico.id)
+                                          }))
+                                        } else {
+                                          toast({ title: 'Erro ao excluir tópico', status: 'error' })
+                                        }
                                       }
-                                    }
+                                    }}
+                                  >
+                                    <FiTrash2 size={12} />
+                                  </Button>
+                                </HStack>
+                              ))}
+                            </VStack>
+                          ) : (
+                            <Text fontSize="sm" color="gray.500" textAlign="center" py={4}>
+                              Nenhum tópico cadastrado
+                            </Text>
+                          )}
+                        </Box>
+
+                        <Divider />
+
+                        {/* Criar Novo Tópico */}
+                        <Box>
+                          <Text fontSize="sm" mb={2}>Criar Novo Tópico</Text>
+                          <VStack spacing={3} align="stretch">
+                            <HStack spacing={3}>
+                              <Box flex={1}>
+                                <Input
+                                  placeholder="Nome do tópico"
+                                  size="sm"
+                                  id="novo-topico-nome"
+                                />
+                              </Box>
+                              <Box flex={1}>
+                                <Input
+                                  placeholder="Descrição (opcional)"
+                                  size="sm"
+                                  id="novo-topico-descricao"
+                                />
+                              </Box>
+                            </HStack>
+                            <HStack spacing={2} align="center">
+                              <Text fontSize="xs" color="gray.600">Cor:</Text>
+                              {['#E53935', '#E17055', '#FDCB6E', '#00C4A7', '#1A45FC', '#0D249B', '#169DEF', '#B6BEC6', '#FFA07A', '#20B2AA'].map((cor) => (
+                                <Box
+                                  key={cor}
+                                  w={4}
+                                  h={4}
+                                  bg={cor}
+                                  borderRadius="full"
+                                  cursor="pointer"
+                                  border="2px solid"
+                                  borderColor="transparent"
+                                  _hover={{ borderColor: 'gray.400' }}
+                                  onClick={() => {
+                                    const input = document.getElementById('novo-topico-cor') as HTMLInputElement
+                                    if (input) input.value = cor
                                   }}
-                                >
-                                  <FiTrash2 size={12} />
-                                </Button>
-                              </HStack>
-                            ))}
+                                />
+                              ))}
+                              <Input
+                                id="novo-topico-cor"
+                                placeholder="#000000"
+                                size="xs"
+                                maxW="80px"
+                              />
+                            </HStack>
+                            <Button
+                              size="sm"
+                              colorScheme="purple"
+                              variant="outline"
+                              onClick={async () => {
+                                const nomeInput = document.getElementById('novo-topico-nome') as HTMLInputElement
+                                const descricaoInput = document.getElementById('novo-topico-descricao') as HTMLInputElement
+                                const corInput = document.getElementById('novo-topico-cor') as HTMLInputElement
+
+                                const nome = nomeInput?.value?.trim()
+                                if (!nome) {
+                                  toast({ title: 'Nome do tópico é obrigatório', status: 'warning' })
+                                  return
+                                }
+
+                                const novoTopico = await createTopico({
+                                  nome,
+                                  descricao: descricaoInput?.value?.trim() || undefined,
+                                  cor: corInput?.value?.trim() || undefined
+                                })
+
+                                if (novoTopico) {
+                                  toast({ title: 'Tópico criado com sucesso', status: 'success' })
+                                  setTopicos(prev => [...prev, novoTopico])
+                                  // Auto-selecionar o novo tópico
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    topicos: [...prev.topicos, novoTopico.id]
+                                  }))
+                                  // Limpar formulário
+                                  if (nomeInput) nomeInput.value = ''
+                                  if (descricaoInput) descricaoInput.value = ''
+                                  if (corInput) corInput.value = ''
+                                } else {
+                                  toast({ title: 'Erro ao criar tópico', status: 'error' })
+                                }
+                              }}
+                            >
+                              Criar e Selecionar
+                            </Button>
                           </VStack>
-                        ) : (
-                          <Text fontSize="sm" color="gray.500" textAlign="center" py={4}>
-                            Nenhum tópico cadastrado
-                          </Text>
-                        )}
-                      </Box>
-
-                      <Divider />
-
-                      {/* Criar Novo Tópico */}
-                      <Box>
-                        <Text fontSize="sm" mb={2}>Criar Novo Tópico</Text>
-                        <VStack spacing={3} align="stretch">
-                          <HStack spacing={3}>
-                            <Box flex={1}>
-                              <Input
-                                placeholder="Nome do tópico"
-                                size="sm"
-                                id="novo-topico-nome"
-                              />
-                            </Box>
-                            <Box flex={1}>
-                              <Input
-                                placeholder="Descrição (opcional)"
-                                size="sm"
-                                id="novo-topico-descricao"
-                              />
-                            </Box>
-                          </HStack>
-                          <HStack spacing={2} align="center">
-                            <Text fontSize="xs" color="gray.600">Cor:</Text>
-                            {['#E53935', '#E17055', '#FDCB6E', '#00C4A7', '#1A45FC', '#0D249B', '#169DEF', '#B6BEC6', '#FFA07A', '#20B2AA'].map((cor) => (
-                              <Box
-                                key={cor}
-                                w={4}
-                                h={4}
-                                bg={cor}
-                                borderRadius="full"
-                                cursor="pointer"
-                                border="2px solid"
-                                borderColor="transparent"
-                                _hover={{ borderColor: 'gray.400' }}
-                                onClick={() => {
-                                  const input = document.getElementById('novo-topico-cor') as HTMLInputElement
-                                  if (input) input.value = cor
-                                }}
-                              />
-                            ))}
-                            <Input
-                              id="novo-topico-cor"
-                              placeholder="#000000"
-                              size="xs"
-                              maxW="80px"
-                            />
-                          </HStack>
-                          <Button
-                            size="sm"
-                            colorScheme="purple"
-                            variant="outline"
-                            onClick={async () => {
-                              const nomeInput = document.getElementById('novo-topico-nome') as HTMLInputElement
-                              const descricaoInput = document.getElementById('novo-topico-descricao') as HTMLInputElement
-                              const corInput = document.getElementById('novo-topico-cor') as HTMLInputElement
-                              
-                              const nome = nomeInput?.value?.trim()
-                              if (!nome) {
-                                toast({ title: 'Nome do tópico é obrigatório', status: 'warning' })
-                                return
-                              }
-
-                              const novoTopico = await createTopico({
-                                nome,
-                                descricao: descricaoInput?.value?.trim() || undefined,
-                                cor: corInput?.value?.trim() || undefined
-                              })
-
-                              if (novoTopico) {
-                                toast({ title: 'Tópico criado com sucesso', status: 'success' })
-                                setTopicos(prev => [...prev, novoTopico])
-                                // Auto-selecionar o novo tópico
-                                setFormData(prev => ({
-                                  ...prev,
-                                  topicos: [...prev.topicos, novoTopico.id]
-                                }))
-                                // Limpar formulário
-                                if (nomeInput) nomeInput.value = ''
-                                if (descricaoInput) descricaoInput.value = ''
-                                if (corInput) corInput.value = ''
-                              } else {
-                                toast({ title: 'Erro ao criar tópico', status: 'error' })
-                              }
-                            }}
-                          >
-                            Criar e Selecionar
-                          </Button>
-                        </VStack>
-                      </Box>
-                    </VStack>
-                  </TabPanel>
+                        </Box>
+                      </VStack>
+                    </TabPanel>
                   </TabPanels>
                 </HStack>
               </Tabs>
@@ -1608,7 +1608,7 @@ const HistoricoPage = () => {
                                   const nomeInput = document.getElementById('novo-topico-nome-edit') as HTMLInputElement
                                   const descricaoInput = document.getElementById('novo-topico-descricao-edit') as HTMLInputElement
                                   const corInput = document.getElementById('novo-topico-cor-edit') as HTMLInputElement
-                                  
+
                                   const nome = nomeInput?.value?.trim()
                                   if (!nome) {
                                     toast({ title: 'Nome do tópico é obrigatório', status: 'warning' })
@@ -1652,7 +1652,7 @@ const HistoricoPage = () => {
                   <Button variant="ghost" onClick={editModal.onClose}>Cancelar</Button>
                   <Button colorScheme="blue" onClick={async () => {
                     if (!selectedIntervencao?.id) return
-                    
+
                     const payload = {
                       empresa_id: selectedIntervencao.empresa_id || '',
                       setor: selectedIntervencao.setor || undefined,
@@ -1702,11 +1702,11 @@ const HistoricoPage = () => {
               </Text>
               <HStack justify="flex-end" spacing={3}>
                 <Button variant="ghost" onClick={deleteModal.onClose}>Cancelar</Button>
-                <Button 
-                  colorScheme="red" 
+                <Button
+                  colorScheme="red"
                   onClick={async () => {
                     if (!selectedIntervencao?.id) return
-                    
+
                     const sucesso = await deleteIntervencao(selectedIntervencao.id)
                     if (sucesso) {
                       toast({ title: 'Intervenção excluída com sucesso', status: 'success' })

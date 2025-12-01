@@ -34,13 +34,13 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ data, onCellClick }) => {
   // Extrair setores e domínios únicos dos dados
   const setores = [...new Set(data.map(item => item.setor))]
   const domainNames = [
-    'Demandas Psicológicas',
+    'Exigências do trabalho',
     'Demandas Físicas',
-    'Demandas de Trabalho',
-    'Suporte Social e Liderança',
+    'Autonomia e Controle no trabalho',
+    'Suporte Social e Qualidade da Liderança',
     'Esforço e Recompensa',
-    'Interface Trabalho-Vida',
-    'Saúde Emocional'
+    'Equilíbrio Trabalho - Vida',
+    'Saúde Emocional e Bem-Estar'
   ]
 
   // Verificar se há setor selecionado

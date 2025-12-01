@@ -1,7 +1,7 @@
 {
   "dominios": [
     {
-      "dominio": "Domínio 1 - Demandas Psicológicas",
+      "dominio": "Domínio 1 - Exigências do trabalho",
       "classificacao": "critico",
       "acoes": [
         "Workshop de gestão de tempo e priorização",
@@ -10,7 +10,7 @@
       ]
     },
     {
-      "dominio": "Domínio 1 - Demandas Psicológicas",
+      "dominio": "Domínio 1 - Exigências do trabalho",
       "classificacao": "atencao",
       "acoes": [
         "Treinamento em técnicas de organização pessoal",
@@ -19,7 +19,7 @@
       ]
     },
     {
-      "dominio": "Domínio 1 - Demandas Psicológicas",
+      "dominio": "Domínio 1 - Exigências do trabalho",
       "classificacao": "favoravel",
       "acoes": [
         "Reconhecer boas práticas da equipe",
@@ -55,7 +55,7 @@
       ]
     },
     {
-      "dominio": "Domínio 3 - Demandas de Trabalho",
+      "dominio": "Domínio 3 - Autonomia e Controle no trabalho",
       "classificacao": "critico",
       "acoes": [
         "Programa de empowerment e autonomia",
@@ -64,7 +64,7 @@
       ]
     },
     {
-      "dominio": "Domínio 3 - Demandas de Trabalho",
+      "dominio": "Domínio 3 - Autonomia e Controle no trabalho",
       "classificacao": "atencao",
       "acoes": [
         "Treinamento em liderança participativa",
@@ -73,7 +73,7 @@
       ]
     },
     {
-      "dominio": "Domínio 3 - Demandas de Trabalho",
+      "dominio": "Domínio 3 - Autonomia e Controle no trabalho",
       "classificacao": "favoravel",
       "acoes": [
         "Reconhecer lideranças exemplares",
@@ -82,7 +82,7 @@
       ]
     },
     {
-      "dominio": "Domínio 4 - Suporte Social e Liderança",
+      "dominio": "Domínio 4 - Suporte Social e Qualidade da Liderança",
       "classificacao": "critico",
       "acoes": [
         "Programa de desenvolvimento de liderança",
@@ -91,7 +91,7 @@
       ]
     },
     {
-      "dominio": "Domínio 4 - Suporte Social e Liderança",
+      "dominio": "Domínio 4 - Suporte Social e Qualidade da Liderança",
       "classificacao": "atencao",
       "acoes": [
         "Treinamento em feedback construtivo",
@@ -100,7 +100,7 @@
       ]
     },
     {
-      "dominio": "Domínio 4 - Suporte Social e Liderança",
+      "dominio": "Domínio 4 - Suporte Social e Qualidade da Liderança",
       "classificacao": "favoravel",
       "acoes": [
         "Reconhecer líderes exemplares",
@@ -136,7 +136,7 @@
       ]
     },
     {
-      "dominio": "Domínio 6 - Interface Trabalho-Vida",
+      "dominio": "Domínio 6 - Equilíbrio Trabalho - Vida",
       "classificacao": "critico",
       "acoes": [
         "Programa de transparência organizacional",
@@ -145,7 +145,7 @@
       ]
     },
     {
-      "dominio": "Domínio 6 - Interface Trabalho-Vida",
+      "dominio": "Domínio 6 - Equilíbrio Trabalho - Vida",
       "classificacao": "atencao",
       "acoes": [
         "Comunicação clara sobre mudanças",
@@ -154,7 +154,7 @@
       ]
     },
     {
-      "dominio": "Domínio 6 - Interface Trabalho-Vida",
+      "dominio": "Domínio 6 - Equilíbrio Trabalho - Vida",
       "classificacao": "favoravel",
       "acoes": [
         "Reconhecer estabilidade organizacional",
@@ -190,7 +190,7 @@
       ]
     },
     {
-      "dominio": "Domínio 7 - Saúde Emocional",
+      "dominio": "Domínio 7 - Saúde Emocional e Bem-Estar",
       "classificacao": "critico",
       "acoes": [
         "Workshop de regulação emocional",
@@ -199,7 +199,7 @@
       ]
     },
     {
-      "dominio": "Domínio 7 - Saúde Emocional",
+      "dominio": "Domínio 7 - Saúde Emocional e Bem-Estar",
       "classificacao": "atencao",
       "acoes": [
         "Pausas cognitivas programadas",
@@ -208,7 +208,7 @@
       ]
     },
     {
-      "dominio": "Domínio 7 - Saúde Emocional",
+      "dominio": "Domínio 7 - Saúde Emocional e Bem-Estar",
       "classificacao": "favoravel",
       "acoes": [
         "Reforçar boas práticas",
@@ -217,4 +217,4 @@
       ]
     }
   ]
-} 
+}

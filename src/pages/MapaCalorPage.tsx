@@ -24,13 +24,13 @@ const MapaCalorPage = () => {
         if (filteredData.length > 0) {
           // Definir nomes dos domínios alinhados com o HeatmapTable
           const domainNames = [
-            'Demandas Psicológicas',
+            'Exigências do trabalho',
             'Demandas Físicas',
-            'Demandas de Trabalho',
-            'Suporte Social e Liderança',
+            'Autonomia e Controle no trabalho',
+            'Suporte Social e Qualidade da Liderança',
             'Esforço e Recompensa',
-            'Interface Trabalho-Vida',
-            'Saúde Emocional'
+            'Equilíbrio Trabalho - Vida',
+            'Saúde Emocional e Bem-Estar'
           ]
 
           // Mapear campos de dados para nomes dos domínios (usar médias calculadas)

@@ -68,13 +68,13 @@ const colorSchemeByValue = (value: number) => {
 }
 
 const domainMapping: Record<string, string> = {
-  'Saúde Emocional': 'Saúde Emocional (Senturi)',
-  'Demandas Psicológicas': 'Demandas Psicológicas',
+  'Saúde Emocional e Bem-Estar': 'Saúde Emocional e Bem-Estar',
+  'Exigências do trabalho': 'Exigências do trabalho',
   'Demandas Físicas': 'Demandas Físicas',
-  'Demandas de Trabalho': 'Demandas de Trabalho',
-  'Suporte Social e Liderança': 'Suporte Social e Liderança',
+  'Autonomia e Controle no trabalho': 'Autonomia e Controle no trabalho',
+  'Suporte Social e Qualidade da Liderança': 'Suporte Social e Qualidade da Liderança',
   'Esforço e Recompensa': 'Esforço e Recompensa',
-  'Interface Trabalho-Vida': 'Interface Trabalho-Vida'
+  'Equilíbrio Trabalho - Vida': 'Equilíbrio Trabalho - Vida'
 }
 
 const AcoesRecomendadasPage: React.FC = () => {
@@ -111,7 +111,7 @@ const AcoesRecomendadasPage: React.FC = () => {
               ...domain,
               classificacao:
                 domain.valor < 40 ? 'critico' :
-                domain.valor < 55 ? 'vulneravel' : 'moderado'
+                  domain.valor < 55 ? 'vulneravel' : 'moderado'
             }))
 
           setDomainAverages(critical)
@@ -292,12 +292,12 @@ const AcoesRecomendadasPage: React.FC = () => {
                     <strong>Descrição:</strong> {selectedDomain?.classificacao === 'critico'
                       ? 'Alto risco psicossocial com impacto em saúde, absenteísmo e performance.'
                       : selectedDomain?.classificacao === 'vulneravel'
-                      ? 'Risco significativo com sinais iniciais de queda de engajamento e saúde.'
-                      : 'Nível aceitável com fatores pontuais de risco.'}
+                        ? 'Risco significativo com sinais iniciais de queda de engajamento e saúde.'
+                        : 'Nível aceitável com fatores pontuais de risco.'}
                   </Text>
                   <Text fontSize="sm" color="gray.600">
                     <strong>Faixa ISESO:</strong> {selectedDomain && selectedDomain.valor < 40 ? '< 40%' :
-                                                  selectedDomain && selectedDomain.valor < 55 ? '40-55%' : '55-70%'}
+                      selectedDomain && selectedDomain.valor < 55 ? '40-55%' : '55-70%'}
                   </Text>
                 </Box>
 

@@ -33,13 +33,13 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
 
   // Definir nomes dos domínios
   const domainNames = [
-    'Demandas Psicológicas',
+    'Exigências do trabalho',
     'Demandas Físicas',
-    'Demandas de Trabalho',
-    'Suporte Social e Liderança',
+    'Autonomia e Controle no trabalho',
+    'Suporte Social e Qualidade da Liderança',
     'Esforço e Recompensa',
-    'Interface Trabalho-Vida',
-    'Saúde Emocional',
+    'Equilíbrio Trabalho - Vida',
+    'Saúde Emocional e Bem-Estar',
     'ISESO'
   ]
 
@@ -68,7 +68,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
     if (value < 55) return '#f08c2e' // Vulnerável - laranja vívido
     if (value < 70) return '#eccc5c' // Moderado - amarelo vivo
     if (value < 85) return '#2fbf89' // Saudável - verde/teal
-    return '#4d6df5' // Excelente - azul vibrante
+    return '#102dd1ff' // Excelente - azul vibrante
   }
 
   // Função para obter classificação (5 categorias)
@@ -84,11 +84,12 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
     <Box id="domain-scores-chart" position="relative" width={width} height={height} mx="auto">
       <svg width={width} height={height} style={{ overflow: 'visible' }}>
         <defs>
-          {/* Gradiente para dados principais */}
-          <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#4d6df5" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#2fbf89" stopOpacity="0.35" />
-          </linearGradient>
+          {/* Gradiente Radial Vibrante para dados principais */}
+          <radialGradient id="radarRadialGradient" cx="0" cy="0" r={radius} gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#102dd1" stopOpacity="0.1" />
+            <stop offset="50%" stopColor="#102dd1" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#102dd1" stopOpacity="0.9" />
+          </radialGradient>
 
           {/* Gradiente para setor selecionado */}
           <linearGradient id="sectorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -137,15 +138,16 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
             )
           })}
 
-          {/* Área do radar principal com gradiente */}
+          {/* Área do radar principal com gradiente radial */}
           {points.length > 0 && (
             <LinePath
               data={points}
               x={(d) => d.x - centerX}
               y={(d) => d.y - centerY}
-              fill="url(#mainGradient)"
-              stroke="url(#mainGradient)"
-              strokeWidth={2}
+              fill="url(#radarRadialGradient)"
+              stroke="#102dd1"
+              strokeWidth={3}
+              style={{ filter: 'drop-shadow(0 0 10px rgba(16, 45, 209, 0.8))' }}
             />
           )}
 

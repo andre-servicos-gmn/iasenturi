@@ -32,12 +32,13 @@ const FiltrosHistorico = ({ filtros, onFiltrosChange, setores }: FiltrosHistoric
 
   // Domínios COPSOQ para análise de saúde mental
   const dominiosCOPSOQ = [
-    { value: 'Demandas Psicológicas', label: 'Demandas Psicológicas', desc: 'Estresse e pressão mental' },
-    { value: 'Saúde Emocional', label: 'Saúde Emocional', desc: 'Esgotamento e bem-estar' },
-    { value: 'Interface Trabalho-Vida', label: 'Trabalho-Vida', desc: 'Equilíbrio pessoal' },
-    { value: 'Suporte Social e Liderança', label: 'Suporte Social', desc: 'Relacionamentos' },
-    { value: 'Esforço e Recompensa', label: 'Esforço-Recompensa', desc: 'Satisfação no trabalho' },
-    { value: 'Demandas Físicas', label: 'Demandas Físicas', desc: 'Carga física' }
+    { value: 'Exigências do trabalho', label: 'Exigências do trabalho', desc: 'Estresse e pressão mental' },
+    { value: 'Saúde Emocional e Bem-Estar', label: 'Saúde Emocional e Bem-Estar', desc: 'Esgotamento e bem-estar' },
+    { value: 'Equilíbrio Trabalho - Vida', label: 'Equilíbrio Trabalho - Vida', desc: 'Equilíbrio pessoal' },
+    { value: 'Suporte Social e Qualidade da Liderança', label: 'Suporte Social e Qualidade da Liderança', desc: 'Relacionamentos' },
+    { value: 'Esforço e Recompensa', label: 'Esforço e Recompensa', desc: 'Satisfação no trabalho' },
+    { value: 'Demandas Físicas', label: 'Demandas Físicas', desc: 'Carga física' },
+    { value: 'Autonomia e Controle no trabalho', label: 'Autonomia e Controle no trabalho', desc: 'Autonomia' }
   ]
 
   // Períodos de análise predefinidos
@@ -331,4 +332,4 @@ const FiltrosHistorico = ({ filtros, onFiltrosChange, setores }: FiltrosHistoric
   )
 }
 
-export default FiltrosHistorico 
+export default FiltrosHistorico
