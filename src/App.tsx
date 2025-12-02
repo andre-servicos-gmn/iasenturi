@@ -13,6 +13,7 @@ import MapaCalorPage from './pages/MapaCalorPage.tsx'
 import HistoricoPage from './pages/HistoricoPage.tsx'
 import EmpresasPage from './pages/EmpresasPage.tsx'
 import LoginPage from './pages/LoginPage.tsx'
+import AnaliseIAPage from './pages/AnaliseIAPage.tsx'
 import ProtectedRoute from './components/ProtectedRoute.tsx'
 import { FilterProvider } from './contexts/store'
 import { AuthProvider, useAuth } from './contexts/auth'
@@ -103,6 +104,14 @@ function AppRoutes() {
             <ProtectedRoute>
               <Layout>
                 <EmpresasPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/analise-ia" element={
+            <ProtectedRoute>
+              <Layout>
+                <AnaliseIAPage />
               </Layout>
             </ProtectedRoute>
           } />

@@ -141,7 +141,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
           {/* Área do radar principal com gradiente radial */}
           {points.length > 0 && (
             <LinePath
-              data={points}
+              data={[...points, points[0]]}
               x={(d) => d.x - centerX}
               y={(d) => d.y - centerY}
               fill="url(#radarRadialGradient)"
@@ -154,7 +154,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
           {/* Área do setor (apenas se setor selecionado) */}
           {hasSetorSelected && sectorPoints.length > 0 && (
             <LinePath
-              data={sectorPoints}
+              data={[...sectorPoints, sectorPoints[0]]}
               x={(d) => d.x - centerX}
               y={(d) => d.y - centerY}
               fill="url(#sectorGradient)"
@@ -209,7 +209,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
           {/* Labels */}
           {data.map((item, i) => {
             const angle = i * angleStep - Math.PI / 2
-            const labelRadius = radius + 30
+            const labelRadius = radius + 45
             const x = Math.cos(angle) * labelRadius
             const y = Math.sin(angle) * labelRadius
             return (
@@ -219,9 +219,9 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, sectorData }) => {
                 y={y}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="11"
+                fontSize="14"
                 fill={textColor}
-                fontWeight="medium"
+                fontWeight="bold"
               >
                 {domainNames[i] || item.nome}
               </text>

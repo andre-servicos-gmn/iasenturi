@@ -5,7 +5,7 @@ import {
 import { motion } from 'framer-motion'
 import {
   FiHome, FiBarChart2, FiGrid,
-  FiTrendingUp, FiBriefcase, FiAlertTriangle
+  FiTrendingUp, FiBriefcase, FiAlertTriangle, FiCpu
 } from 'react-icons/fi'
 import { Link, useLocation } from 'react-router-dom'
 import { IconType } from 'react-icons'
@@ -68,7 +68,8 @@ const Sidebar = () => {
         { icon: FiBarChart2, label: 'Domínios', path: '/dominios' },
         { icon: FiAlertTriangle, label: 'Ações Recomendadas', path: '/acoes-recomendadas' },
         { icon: FiGrid, label: 'Mapa de Calor', path: '/mapa-calor' },
-        { icon: FiTrendingUp, label: 'Histórico', path: '/historico' }
+        { icon: FiTrendingUp, label: 'Histórico', path: '/historico' },
+        { icon: FiCpu, label: 'Análise IA', path: '/analise-ia', badge: 'Novo' }
       ]
     },
     {
@@ -353,4 +354,4 @@ const Sidebar = () => {
   )
 }
 
-export default Sidebar 
+export default Sidebar
