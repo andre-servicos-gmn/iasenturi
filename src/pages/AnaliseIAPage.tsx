@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import {
     Box,
     VStack,
@@ -103,7 +103,7 @@ const AnaliseIAPage = () => {
         setLoadingStage('Inicializando IA...')
 
         try {
-            const empresaNome = companies.find(c => c.id === filters.empresa)?.nome || filters.empresa
+            // const empresaNome = companies.find(c => c.id === filters.empresa)?.nome || filters.empresa
 
             // Sequence of loading stages
             const stages = [
