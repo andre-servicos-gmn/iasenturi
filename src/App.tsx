@@ -14,6 +14,7 @@ import HistoricoPage from './pages/HistoricoPage.tsx'
 import EmpresasPage from './pages/EmpresasPage.tsx'
 import LoginPage from './pages/LoginPage.tsx'
 import AnaliseIAPage from './pages/AnaliseIAPage.tsx'
+import SemanticAiTest from './pages/SemanticAiTest.tsx'
 import ProtectedRoute from './components/ProtectedRoute.tsx'
 import { FilterProvider } from './contexts/store'
 import { AuthProvider, useAuth } from './contexts/auth'
@@ -112,6 +113,14 @@ function AppRoutes() {
             <ProtectedRoute>
               <Layout>
                 <AnaliseIAPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/semantic-ai-test" element={
+            <ProtectedRoute>
+              <Layout>
+                <SemanticAiTest />
               </Layout>
             </ProtectedRoute>
           } />
